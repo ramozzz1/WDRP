@@ -1,9 +1,13 @@
 package model;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
-public class LatLonPoint implements Serializable {
+import org.mapdb.Serializer;
+
+public class LatLonPoint {
 	
 	public double lat;
 	public double lon;
@@ -12,26 +16,18 @@ public class LatLonPoint implements Serializable {
 		this.lat = lat;
 		this.lon = lon;
 	}
+}
 
-	public double getLat() {
-		return lat;
-	}
+class LatLonPointSerializer implements Serializer<LatLonPoint>, Serializable{
 
-	public double getLon() {
-		return lon;
-	}
-	
-	@Override
-	public int hashCode() {
-		return Double.valueOf(this.lat).hashCode() * Double.valueOf(this.lon).hashCode();
-	}
-	
-	@Override
-	public boolean equals (Object o) {
-		if(o == null)                return false;
-	    if(!(o instanceof LatLonPoint)) return false;
+    @Override
+    public void serialize(DataOutput out, LatLonPoint value) throws IOException {
+        out.writeDouble(value.lat);
+        out.writeDouble(value.lon);
+    }
 
-	    LatLonPoint other = (LatLonPoint) o;
-	    return this.getLat() == other.getLat() && this.getLon() == other.getLon();
-	}
+    @Override
+    public LatLonPoint deserialize(DataInput in, int available) throws IOException {
+        return new LatLonPoint(in.readDouble(), in.readDouble());
+    }
 }

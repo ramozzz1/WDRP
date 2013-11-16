@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.NavigableSet;
 
+import org.mapdb.BTreeKeySerializer;
 import org.mapdb.BTreeMap;
 import org.mapdb.Bind;
 import org.mapdb.DB;
@@ -16,7 +17,7 @@ public class Graph {
 	private int numNodes;
 	private int numEdges;
 	
-	public BTreeMap<Long,Fun.Tuple2<Double,Double>> nodes;
+	public BTreeMap<Long,LatLonPoint> nodes;
 	public NavigableSet<Fun.Tuple2<Long,Arc>> adjacenyList;
 	
 	public Graph() {
@@ -24,30 +25,17 @@ public class Graph {
 	}
 	
 	public Graph(String fileName) {
-/*		this.db = DBMaker
-                .newFileDB(new File(fileName))
-                .transactionDisable()
-                .randomAccessFileEnableKeepIndexMapped()
-                .closeOnJvmShutdown()
-                .make();*/
-		
 		this.db = DBMaker
 				.newFileDB(new File(fileName))
 				.transactionDisable()
-				.asyncFlushDelay(100)
 				.cacheHardRefEnable()
-				.randomAccessFileEnableKeepIndexMapped()
-				.closeOnJvmShutdown()
-                .make();
+				.asyncFlushDelay(100)
+				.make();
 		
-		this.nodes = db.createTreeMap("nodes").keepCounter(true).makeOrGet();
+		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).valueSerializer(new LatLonPointSerializer()).keepCounter(true).makeOrGet();
 		this.adjacenyList = db.createTreeSet("adjacenyList").keepCounter(true).makeOrGet();
 		this.numNodes = this.nodes.size();
 		this.numEdges = this.adjacenyList.size();
-	}
-	
-	public void commit() {
-		db.commit();
 	}
 	
 	public void closeConnection() {
@@ -55,8 +43,7 @@ public class Graph {
 	}
 	
 	public LatLonPoint getNode(long nodeId) {
-		Tuple2<Double, Double> t = nodes.get(nodeId);
-		return new LatLonPoint(t.a, t.b);
+		return nodes.get(nodeId);
 
 	}
 	
@@ -65,10 +52,8 @@ public class Graph {
 	}
 	
 	public void addNode(long nodeId, double lat, double lon) {
-		nodes.put(nodeId, Fun.t2(lat, lon));
-		
+		nodes.put(nodeId, new LatLonPoint(lat, lon));
 		this.numNodes++;
-		//if(this.numNodes%1000000==0) db.commit();
 	}
 	
 	public void addEdge(long sourceId, long targetId, int cost) {
@@ -77,7 +62,6 @@ public class Graph {
 		
 		this.numEdges++;
 		this.numEdges++;
-		//if(this.numEdges%1000000==0) db.commit();
 	}
 	
 	public int getNumNodes() {

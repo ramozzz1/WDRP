@@ -5,3 +5,5 @@
 *.ear
 .project
 .settings
+/bin
+/resources

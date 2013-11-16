@@ -51,7 +51,7 @@ public class GraphUtils {
 
 	//select n node pairs from map
 	public static List<NodePair> getRandomNodePairs(
-			BTreeMap<Long, Tuple2<Double, Double>> nodes, int n) {
+			BTreeMap<Long, LatLonPoint> nodes, int n) {
 		List<NodePair> np = new ArrayList<NodePair>();
 		List<Long> keys = new ArrayList<Long>(nodes.keySet());
 		Random r = new Random();

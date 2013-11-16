@@ -1,16 +1,12 @@
 package reader;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.HashMap;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.XMLStreamReader;
 
 import main.Config;
 import model.Graph;
@@ -37,48 +33,45 @@ public class OSMParser {
 		int numEdges=0;
 		long start = System.currentTimeMillis();
         try {
-        	XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-        	XMLEventReader eventReader = xmlInputFactory.createXMLEventReader(new FileInputStream(path));
+        	XMLInputFactory factory = XMLInputFactory.newInstance();
+        	XMLStreamReader streamReader = factory.createXMLStreamReader(
+        			new FileReader(path));
         	
         	g = new Graph(Config.DBDIR+FilenameUtils.getBaseName(path)+"."+Config.EXTENSION);
     		OSMNode node = null;
     		OSMWay way = null;
     		
-        	while(eventReader.hasNext()) {
-	    		XMLEvent event = eventReader.nextEvent();
-	            if(event.isStartElement()) {
-	            	StartElement startElement = event.asStartElement();
-	            	if (startElement.getName().getLocalPart().equals("node")) {
-	                	node = new OSMNode();
-	                	node.setId(Long.parseLong(startElement.getAttributeByName(new QName("id")).getValue()));
-	                	node.setLat(Double.parseDouble(startElement.getAttributeByName(new QName("lat")).getValue()));
-	                	node.setLon(Double.parseDouble(startElement.getAttributeByName(new QName("lon")).getValue()));
+        	while(streamReader.hasNext()) {
+	    		streamReader.next();
+	    		if(streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
+	    			String ln = streamReader.getLocalName();
+	            	if (ln.equals("node")) {
+	            		long id = Long.valueOf(streamReader.getAttributeValue(null, "id"));
+			    		double lat = Double.valueOf(streamReader.getAttributeValue(null, "lat"));
+			    		double lon = Double.valueOf(streamReader.getAttributeValue(null, "lon"));
+			    		node = new OSMNode(id,lat,lon);
 	                }
-	            	else if (startElement.getName().getLocalPart().equals("way")) {
-	                	way = new OSMWay();
-	                }
-	            	else if (way != null && startElement.getName().getLocalPart().equals("nd")) {
-	            		way.addNodeRef(Long.parseLong(startElement.getAttributeByName(new QName("ref")).getValue()));
-	                }
-	            	else if (way != null && startElement.getName().getLocalPart().equals("tag")) {
-	            		way.addTag(startElement.getAttributeByName(new QName("k")).getValue(), startElement.getAttributeByName(new QName("v")).getValue());
+	            	else if(ln.equals("way")) {
+			    		way = new OSMWay();
+			    	}
+			    	else if(way != null  && ln.equals("nd")) {
+			    		way.addNodeRef(Long.valueOf(streamReader.getAttributeValue(null, "ref")));
+			    	}
+	            	else if (way != null && ln.equals("tag")) {
+	            		way.addTag(streamReader.getAttributeValue(null, "k"), streamReader.getAttributeValue(null, "v"));
 	                }
 	            }
-	            
-	            if (event.isEndElement()) {
-	            	EndElement endElement = event.asEndElement();
-	                if (endElement.getName().getLocalPart().equals("node")) {
-	                	/*g.addNode(node.getId(),node.getLat(),node.getLon());
-	                	node = null;*/
+	    		else if(streamReader.getEventType() == XMLStreamReader.END_ELEMENT) {
+	    			String ln = streamReader.getLocalName();
+	                if (ln.equals("node")) {
+	                	g.addNode(node.id,node.lat,node.lon);
 	                	
-	                	if(numNodes%1000000==0) {
-	                		System.out.println(""+numNodes);
-	                	}
+	                	if(numNodes%1000000==0) System.out.println(""+numNodes);
 	                	numNodes++;
 	                }
-	                else if (endElement.getName().getLocalPart().equals("way")) {
+	                else if (ln.equals("way")) {
 	                	if(way.isHighway()) { //only highways
-	                		if(way.getNumOfNodeRef() > 1) {
+	                		//if(way.getNumOfNodeRef() > 1) {
 	                			String roadType = way.getRoadType();
 	                			if(speedTable.containsKey(roadType)) {
 	                				double speed = speedTable.get(roadType)*0.277778;
@@ -86,16 +79,16 @@ public class OSMParser {
 	                					long sourceId = way.getNodesRef().get(i);
 	                					long targetId = way.getNodesRef().get(i+1);
 	                					LatLonPoint sourcePoint = g.getNode(sourceId);
-		                				//LatLonPoint targetPoint = g.getNode(targetId);
-		                				//double distance = DistanceUtils.latlonDistance(sourcePoint.getLat(), sourcePoint.getLon(), targetPoint.getLat(), targetPoint.getLon());
+		                				LatLonPoint targetPoint = g.getNode(targetId);
+		                				double distance = DistanceUtils.latlonDistance(sourcePoint.lat, sourcePoint.lon, targetPoint.lat, targetPoint.lon);
 		                				
-		                				/*g.addEdge(sourceId,targetId,(int)Math.ceil(distance/speed));
-			                			*/
+		                				g.addEdge(sourceId,targetId,(int)Math.ceil(distance/speed));
+			                			
 										if(numEdges%100000==0) System.out.println(""+numEdges);
 		        	                	numEdges++;
 		                			}
 	                			}
-	                		}
+	                		//}
 	                	}
 	                	way = null;
 	                }
