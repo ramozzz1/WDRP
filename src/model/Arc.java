@@ -21,9 +21,16 @@ public class Arc implements Serializable, Comparable<Arc> {
 	}
 	
 	@Override
-	public int compareTo(Arc arc) {
-		if((headNode<arc.headNode && cost==arc.cost)||(headNode==arc.headNode && cost<arc.cost)) return -1;
-		if((headNode==arc.headNode && cost>arc.cost)||(headNode>arc.headNode && cost==arc.cost)) return 1;
-		return 0;
+	public int compareTo(Arc a) {
+		if(this.headNode > a.headNode)
+			return 1;
+		else if(this.headNode < a.headNode)
+			return -1;
+		else if(this.cost > a.cost)
+			return 1;
+		else if(this.cost < a.cost)
+			return -1;
+		else
+			return 0;
 	}
 }

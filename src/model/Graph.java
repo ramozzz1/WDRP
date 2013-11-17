@@ -30,9 +30,10 @@ public class Graph {
 				.transactionDisable()
 				.cacheHardRefEnable()
 				.asyncFlushDelay(100)
+				.randomAccessFileEnableKeepIndexMapped()
 				.make();
 		
-		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).valueSerializer(new LatLonPointSerializer()).keepCounter(true).makeOrGet();
+		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).keepCounter(true).makeOrGet();
 		this.adjacenyList = db.createTreeSet("adjacenyList").keepCounter(true).makeOrGet();
 		this.numNodes = this.nodes.size();
 		this.numEdges = this.adjacenyList.size();
