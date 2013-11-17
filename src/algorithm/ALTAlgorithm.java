@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Graph;
+import storage.DBHashMap;
+import storage.DBLongIntHashMap;
 import util.CommonUtils;
 
 public class ALTAlgorithm extends DijkstraAlgorithm {
 
 	private List<Long> landMarks;
-	private THashMap<Long,THashMap<Long,Integer>> landMarkDistances;
+	private THashMap<Long,DBHashMap<Long,Integer>> landMarkDistances;
 	private int numLandmarks;
 	
 	public ALTAlgorithm(Graph graph) {
@@ -44,11 +46,12 @@ public class ALTAlgorithm extends DijkstraAlgorithm {
 	}
 
 	//calculate distances from all landmarks to all nodes   
-	public THashMap<Long,THashMap<Long,Integer>> calculateLandmarkDistances() {
-		THashMap<Long,THashMap<Long,Integer>> ld = new THashMap<Long,THashMap<Long,Integer>>();
+	public THashMap<Long,DBHashMap<Long,Integer>> calculateLandmarkDistances() {
+		THashMap<Long,DBHashMap<Long,Integer>> ld = new THashMap<Long,DBHashMap<Long,Integer>>();
 		for (Long landmarkId : this.landMarks) {
+			System.out.println("Landmark: "+landmarkId);
 			super.computeShortestPath(landmarkId, -1);
-			ld.put(landmarkId, super.distance);
+			ld.put(landmarkId, new DBLongIntHashMap(super.distance));
 		}
 		return ld;
 	}
@@ -58,7 +61,7 @@ public class ALTAlgorithm extends DijkstraAlgorithm {
 	public int getHeuristicValue(long nodeId, long targetId) {
 		if(targetId != -1) {
 			int maxDist = 0;
-			for (THashMap<Long,Integer> ld : landMarkDistances.values()) {
+			for (DBHashMap<Long,Integer> ld : landMarkDistances.values()) {
 				int lmDist = Math.abs(ld.get(nodeId) - ld.get(targetId));
 				maxDist = Math.max(maxDist, lmDist);
 			}
@@ -75,12 +78,12 @@ public class ALTAlgorithm extends DijkstraAlgorithm {
 		this.landMarks = landMarks;
 	}
 
-	public THashMap<Long,THashMap<Long,Integer>> getLandMarkDistances() {
+	public THashMap<Long,DBHashMap<Long,Integer>> getLandMarkDistances() {
 		return landMarkDistances;
 	}
 	
 	public void setLandMarkDistances(
-			THashMap<Long, THashMap<Long,Integer>> landMarkDistances) {
+			THashMap<Long, DBHashMap<Long,Integer>> landMarkDistances) {
 		this.landMarkDistances = landMarkDistances;
 	}
 	

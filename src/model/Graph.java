@@ -29,7 +29,7 @@ public class Graph {
 				.newFileDB(new File(fileName))
 				.transactionDisable()
 				.cacheHardRefEnable()
-				.asyncFlushDelay(100)
+				.asyncFlushDelay(5000)
 				.randomAccessFileEnableKeepIndexMapped()
 				.make();
 		
