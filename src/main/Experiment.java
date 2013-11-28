@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import model.Graph;
 import model.NodePair;
 import util.GraphUtils;
+import util.IOUtils;
 import algorithm.AbstractRoutingAlgorithm;
 import algorithm.ArcFlagsAlgorithm;
 
@@ -25,7 +26,8 @@ public class Experiment {
 	private static final List<String> METRICS = Arrays.asList(PRECOMPUTATION_TIME,AVG_RUNNING_TIME,AVG_TRAVEL_TIME,AVG_VISITED_NODES);
 	
 	//run SP on algorithms by selecting random nodes from graph and running them numberOfTimes
-	public static void doExperiment(Graph g, List<AbstractRoutingAlgorithm> algorithms, int numberOfTimes) {
+	public static void doExperiment(Graph g, List<AbstractRoutingAlgorithm> algorithms, 
+			int numberOfTimes, boolean writePathsToFile) {
 		System.out.println("SELECTING "+numberOfTimes+" RANDOM NODE PAIRS");
 		
 		//select random node pairs from graph
@@ -76,6 +78,10 @@ public class Experiment {
 				long start = System.nanoTime();
 				int travelTime = alg.computeShortestPath(nodePair.getSource(), nodePair.getTarget());
 				long elapsed = (System.nanoTime() - start)/1000000;
+				
+				if(writePathsToFile)
+					IOUtils.writePathToFile(alg.getName(), alg.extractPath(nodePair.getTarget()),nodePair.getSource(), nodePair.getTarget());
+				
 				metrics.put(AVG_RUNNING_TIME, (int) (metrics.get(AVG_RUNNING_TIME)+elapsed));
 				metrics.put(AVG_TRAVEL_TIME, metrics.get(AVG_TRAVEL_TIME)+travelTime);
 				metrics.put(AVG_VISITED_NODES, metrics.get(AVG_VISITED_NODES)+alg.visitedNodesMarks.size());

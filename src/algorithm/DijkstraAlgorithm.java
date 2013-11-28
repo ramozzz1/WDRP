@@ -11,6 +11,8 @@ import java.util.Queue;
 
 import model.Arc;
 import model.Graph;
+import model.LatLonPoint;
+import model.Node;
 import model.NodeEntry;
 import model.Path;
 
@@ -81,13 +83,15 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		return paths;
 	}
 	
+	@Override
 	public Path extractPath(long nodeId) {
 		Path path = new Path();
 		
 		if(previous.containsKey(nodeId)) {
 			long prevNode = previous.get(nodeId);
 			do {
-				path.addNode(nodeId, graph.getEdge(prevNode, nodeId));
+				LatLonPoint p = graph.getNode(nodeId);
+				path.addNode(new Node(nodeId,p.lat,p.lon), graph.getEdge(prevNode, nodeId));
 				nodeId = prevNode;
 				prevNode = previous.get(nodeId);
 			} while(nodeId != NULL_NODE);

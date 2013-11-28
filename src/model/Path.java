@@ -16,14 +16,14 @@ public class Path {
 	 * add node n to the head of the list
 	 * @param n
 	 */
-	public void addNode(long from, Arc a) {
+	public void addNode(Node from, Arc a) {
 		parts.add(0, new PathPart(from, a));
 		if(a!=null)
 			this.cost += a.getCost();
 	}
 
-	public List<Long> getNodes() {
-		List<Long> nodes = new ArrayList<Long>();
+	public List<Node> getNodes() {
+		List<Node> nodes = new ArrayList<Node>();
 		for (PathPart part : parts)
 			nodes.add(part.from);
 		return nodes;

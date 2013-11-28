@@ -58,6 +58,12 @@ public class GraphUtils {
 		g.closeConnection();
 	}
 
+	public static Long getRandomNode(
+			List<Long> nodes) {
+		Random r = new Random();
+		return nodes.get(r .nextInt(nodes.size()));
+	}
+		
 	//select n node pairs from map
 	public static List<NodePair> getRandomNodePairs(
 			BTreeMap<Long, LatLonPoint> nodes, int n) {

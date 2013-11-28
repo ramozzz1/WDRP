@@ -30,7 +30,7 @@ public class AstarAlgorithm extends DijkstraAlgorithm {
 	
 	@Override
 	public String getName() {
-		return "A*";
+		return "Astar";
 	}
 	
 	@Override
