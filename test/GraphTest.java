@@ -38,7 +38,7 @@ public class GraphTest {
 		g.addNode(n2);
 		g.addEdge(n0,n2,3);
 		g.addEdge(n1,n2,5);
-		assertEquals("{3, 4, [(2,0,3), (2,1,5), (1,2,5), (0,2,3)]}", g.toString());
+		assertEquals("{3, 4, [(2,1,5), (2,0,3), (1,2,5), (0,2,3)]}", g.toString());
 	}
 	
 	@Test
@@ -77,10 +77,10 @@ public class GraphTest {
 		g.addEdge(n0, n1, 1);
 		assertEquals("{2, 2, [(1,0,1), (0,1,1)]}", g.toString());
 		
-		g.removeEdge(n0);
+		g.removeAllEdgesOfNode(n0);
 		assertEquals("{2, 1, [(1,0,1)]}", g.toString());
 		
-		g.removeEdge(n1);
+		g.removeAllEdgesOfNode(n1);
 		assertEquals("{2, 0, []}", g.toString());
 	}
 	

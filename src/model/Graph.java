@@ -29,7 +29,7 @@ public class Graph {
 				.newFileDB(new File(fileName))
 				.transactionDisable()
 				.cacheHardRefEnable()
-				.asyncFlushDelay(5000)
+				.asyncFlushDelay(100)
 				.randomAccessFileEnableKeepIndexMapped()
 				.make();
 		
@@ -45,7 +45,21 @@ public class Graph {
 	
 	public LatLonPoint getNode(long nodeId) {
 		return nodes.get(nodeId);
-
+	}
+	
+	/**
+	 * Gets edge with sourc=souceId and target=targetId
+	 * @param sourceId
+	 * @param targetId
+	 * @return the edge (sourceId,targetId) if present else returns null 
+	 */
+	public Arc getEdge(long sourceId, long targetId) {
+		for (Arc a : getNeighbors(sourceId)) {
+			if(a.getHeadNode() == targetId) {
+				return a;
+			}
+		}
+		return null;
 	}
 	
 	public void addNode(long nodeId) {
@@ -58,10 +72,16 @@ public class Graph {
 	}
 	
 	public void addEdge(long sourceId, long targetId, int cost) {
-		this.adjacenyList.add(Fun.t2(sourceId,new Arc(targetId,cost)));
-		this.adjacenyList.add(Fun.t2(targetId,new Arc(sourceId,cost)));
-		
-		this.numEdges++;
+		addEdge(sourceId,targetId,cost,false);
+	}
+	
+	public void addEdge(long sourceId, long targetId, int cost, boolean arcFlag) {
+		addEdge(sourceId,new Arc(targetId,cost,arcFlag));
+		addEdge(targetId,new Arc(sourceId,cost,arcFlag));
+	}
+	
+	public void addEdge(long sourceId, Arc a) {
+		this.adjacenyList.add(Fun.t2(sourceId,a));
 		this.numEdges++;
 	}
 	
@@ -71,6 +91,52 @@ public class Graph {
 	
 	public int getNumEdges() {
 		return this.numEdges;
+	}
+
+	public Iterable<Arc> getNeighbors(long nodeId) {
+		return Bind.findVals2(this.adjacenyList, nodeId);
+	}
+
+	public void removeNode(long nodeId) {
+		this.nodes.remove(nodeId);
+		this.numNodes--;
+	}
+	
+	/**
+	 * Removes all edges of a node
+	 * @param nodeId
+	 */
+	public void removeAllEdgesOfNode(long nodeId) {
+		for (Arc a : getNeighbors(nodeId)) {
+			this.adjacenyList.remove(Fun.t2(nodeId, a));
+			this.numEdges--;
+		}
+	}
+	
+	/**
+	 * Removes the an Arc of a node
+	 * @param sourceId
+	 * @param arc
+	 */
+	public void removeEdge(long sourceId, Arc arc) {
+		this.adjacenyList.remove(Fun.t2(sourceId, arc));
+	}
+	
+	/**
+	 * Removes the Arc with source=sourceId and target=targetId
+	 * @param sourceId
+	 * @param targetId
+	 */
+	public void removeEdge(long sourceId, long targetId) {
+		removeEdge(sourceId, getEdge(sourceId, targetId));
+	}
+	
+	public void clear() {
+		this.nodes.clear();
+		this.adjacenyList.clear();
+		this.numEdges=0;
+		this.numNodes=0;
+		closeConnection();
 	}
 	
 	@Override
@@ -91,29 +157,5 @@ public class Graph {
 		s += arrayS+"]";
 		s += "}";
 		return s;
-	}
-
-	public Iterable<Arc> getNeighbors(long nodeId) {
-		return Bind.findVals2(this.adjacenyList, nodeId);
-	}
-
-	public void clear() {
-		this.nodes.clear();
-		this.adjacenyList.clear();
-		this.numEdges=0;
-		this.numNodes=0;
-		closeConnection();
-	}
-
-	public void removeNode(long nodeId) {
-		this.nodes.remove(nodeId);
-		this.numNodes--;
-	}
-	
-	public void removeEdge(long nodeId) {
-		for (Arc a : getNeighbors(nodeId))
-			this.adjacenyList.remove(Fun.t2(nodeId, a));
-		
-		this.numEdges--;
 	}
 }

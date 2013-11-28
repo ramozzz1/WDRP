@@ -5,7 +5,7 @@ import java.util.Set;
 import model.Graph;
 
 public abstract class AbstractRoutingAlgorithm {
-	protected Graph graph;
+	public Graph graph;
 	public Set<Long> visitedNodesMarks;
 	
 	public AbstractRoutingAlgorithm(Graph graph) {

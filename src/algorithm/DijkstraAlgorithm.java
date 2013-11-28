@@ -4,20 +4,26 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.set.hash.THashSet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 import model.Arc;
 import model.Graph;
 import model.NodeEntry;
+import model.Path;
 
 public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	
-	private TLongLongHashMap previous;
+	private static final long NULL_NODE = -1L;
+	public TLongLongHashMap previous;
 	public THashMap<Long, Integer> distance;
+	public boolean considerArcFlags;
 	
 	public DijkstraAlgorithm(Graph graph) {
 		super(graph);
+		this.considerArcFlags=false;
 	}
 	
 	@Override
@@ -27,7 +33,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		this.visitedNodesMarks = new THashSet<Long>();
 		
 		distance.put(sourceId, 0);
-		previous.put(sourceId, -1L);
+		previous.put(sourceId, NULL_NODE);
 		
 		Queue<NodeEntry> queue = new PriorityQueue<NodeEntry>();
 		queue.add(new NodeEntry(sourceId, 0));
@@ -45,16 +51,17 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 				continue;
 			
 			//System.out.println("MIN:"+u.getNodeId());
-			
-			for (Arc e : graph.getNeighbors(u.getNodeId()) ) {
-				//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());
-				int dist = distU + e.getCost();
-				if(!distance.containsKey(e.getHeadNode()) || dist < distance.get(e.getHeadNode())) {
-					distance.put(e.getHeadNode(), dist);
-					//previous.put(e.getHeadNode(), u.getNodeId());
-					h = getHeuristicValue(e.getHeadNode(),targetId);
-					queue.add(new NodeEntry(e.getHeadNode(), dist+h));
-					//System.out.println(u.getNodeId()+" UPDATE "+e.getHeadNode()+" WITH "+(dist+h));
+			for (Arc e : graph.getNeighbors(u.getNodeId())) {
+				if(!this.considerArcFlags || (this.considerArcFlags && e.isArcFlag())) { 
+					//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());
+					int dist = distU + e.getCost();
+					if(!distance.containsKey(e.getHeadNode()) || dist < distance.get(e.getHeadNode())) {
+						distance.put(e.getHeadNode(), dist);
+						previous.put(e.getHeadNode(), u.getNodeId());
+						h = getHeuristicValue(e.getHeadNode(),targetId);
+						queue.add(new NodeEntry(e.getHeadNode(), dist+h));
+						//System.out.println(u.getNodeId()+" UPDATE "+e.getHeadNode()+" WITH "+(dist+h));
+					}
 				}
 			}
 		}
@@ -64,6 +71,29 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 
 	public int getHeuristicValue(long nodeId, long targetId) {
 		return 0;
+	}
+	
+	public List<Path> extractPathAllPath() {
+		List<Path> paths = new ArrayList<Path>();
+		for (Long node : graph.nodes.keySet()) {
+			paths.add(extractPath(node));
+		}
+		return paths;
+	}
+	
+	public Path extractPath(long nodeId) {
+		Path path = new Path();
+		
+		if(previous.containsKey(nodeId)) {
+			long prevNode = previous.get(nodeId);
+			do {
+				path.addNode(nodeId, graph.getEdge(prevNode, nodeId));
+				nodeId = prevNode;
+				prevNode = previous.get(nodeId);
+			} while(nodeId != NULL_NODE);
+		}
+			
+		return path;
 	}
 
 	@Override

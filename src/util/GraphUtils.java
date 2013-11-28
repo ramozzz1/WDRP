@@ -4,16 +4,15 @@ import gnu.trove.set.hash.THashSet;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
-import org.mapdb.BTreeMap;
-import org.mapdb.Fun.Tuple2;
 
 import model.Graph;
 import model.LatLonPoint;
 import model.NodePair;
+
+import org.mapdb.BTreeMap;
+
 import algorithm.DijkstraAlgorithm;
 
 public class GraphUtils {
@@ -41,7 +40,7 @@ public class GraphUtils {
 			if(count%100000==0) System.out.println(count);
 			if (!maxVisitedNodes.contains(id)) {
 				g.removeNode(id);
-				g.removeEdge(id);
+				g.removeAllEdgesOfNode(id);
 			}
 			count++;
 		}

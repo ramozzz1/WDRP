@@ -1,4 +1,5 @@
 import static org.junit.Assert.assertEquals;
+import model.Path;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -63,5 +64,45 @@ public class DijkstraAlgorithmTest extends SPTestBase {
 	public void testNoPath(){
 		int dist = d.computeShortestPath(0, 999);
 		assertEquals(dist,-1);
+	}
+	
+	@Test
+	public void testExtractPath() {
+		d.computeShortestPath(0, 5);
+		Path p = d.extractPath(5);
+		assertEquals(p.getNodes().size(), 5);
+		assertEquals(p.getArcs().size(), 4);
+		assertEquals(p.getCost(), 4);
+		assertEquals(p.toString(), "[0->1->2->3->5]");
+	}
+	
+	@Test
+	public void testExtractPathNeighbor() {
+		d.computeShortestPath(0, 1);
+		Path p = d.extractPath(1);
+		assertEquals(p.getNodes().size(), 2);
+		assertEquals(p.getArcs().size(), 1);
+		assertEquals(p.getCost(), 1);
+		assertEquals(p.toString(), "[0->1]");
+	}
+	
+	@Test
+	public void testExtractNoPath() {
+		d.computeShortestPath(0, 999);
+		Path p = d.extractPath(999);
+		assertEquals(p.getNodes().size(), 0);
+		assertEquals(p.getArcs().size(), 0);
+		assertEquals(p.getCost(), 0);
+		assertEquals(p.toString(), "[]");
+	}
+	
+	@Test
+	public void testExtractSoureSourcePath() {
+		d.computeShortestPath(0, 0);
+		Path p = d.extractPath(0);
+		assertEquals(p.getNodes().size(), 1);
+		assertEquals(p.getArcs().size(), 0);
+		assertEquals(p.getCost(), 0);
+		assertEquals(p.toString(), "[0]");
 	}
 }
