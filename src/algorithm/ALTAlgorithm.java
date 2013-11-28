@@ -48,8 +48,10 @@ public class ALTAlgorithm extends DijkstraAlgorithm {
 	//calculate distances from all landmarks to all nodes   
 	public THashMap<Long,DBHashMap<Long,Integer>> calculateLandmarkDistances() {
 		THashMap<Long,DBHashMap<Long,Integer>> ld = new THashMap<Long,DBHashMap<Long,Integer>>();
+		int count = 0;
 		for (Long landmarkId : this.landMarks) {
-			System.out.println("Landmark: "+landmarkId);
+			count++;
+			System.out.println("Landmark #"+count+": "+landmarkId);
 			super.computeShortestPath(landmarkId, -1);
 			ld.put(landmarkId, new DBLongIntHashMap(super.distance));
 		}

@@ -15,15 +15,17 @@ import org.mapdb.Fun.Tuple2;
 
 public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
 
-	private double latMin;
-	private double latMax;
-	private double lonMin;
-	private double lonMax;
+	public double latMin;
+	public double latMax;
+	public double lonMin;
+	public double lonMax;
 	public THashSet<Long> nodesInRegion;
+	private int numberOfArcFlags;
 	
 	public ArcFlagsAlgorithm(Graph graph, double latMin, double latMax, double lonMin, double lonMax) {
 		super(graph);
 		setRegion(latMin, latMax, lonMin, lonMax);
+		numberOfArcFlags=0;
 	}
 	
 	public void setRegion(double latMin, double latMax, double lonMin, double lonMax) {
@@ -38,11 +40,17 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
 		//get all the nodes of the region
 		nodesInRegion = computeNodesInRegion(latMin, latMax, lonMin, lonMax);
 		
+		System.out.println("#nodesInRegion: " +nodesInRegion.size());
+		
 		//get the boundaryNodes of a given region 
 		THashSet<Long> boundaryNodes = computeBoundaryNodes(nodesInRegion); 
 		
+		System.out.println("#boundaryNodes: " +boundaryNodes.size());
+		
 		//compute the correct arc flags for the boundary nodes and region nodes
 		computeArcFlags(boundaryNodes, nodesInRegion);
+		
+		System.out.println("#Arc flags: " + numberOfArcFlags);
 	}
 	
 	public void computeArcFlags(THashSet<Long> boundaryNodes, THashSet<Long> regionNodes) {
@@ -62,14 +70,21 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
 	}
 
 	private void computeArcFlagsForBoundaryNodes(THashSet<Long> boundaryNodes) {
+		int count=0;
 		for (Long node : boundaryNodes) {
+			count++;
+			System.out.println(count+" computing All-SP for node: " + node);
+			
 			//first compute the shortest path from this node to all other nodes
 			super.computeShortestPath(node, -1);
+			
+			System.out.println("Updating visisted arc flags");
 			
 			//check which arcs were visited and set their flags to true
 			super.previous.forEachEntry(new TLongLongProcedure() {
 				@Override
 				public boolean execute(long currNode, long prevNode) {
+					//get the reverse edge
 					Arc oldArc = graph.getEdge(currNode, prevNode);
 					if(oldArc!=null)
 						updateArcFlag(currNode, oldArc);
@@ -120,6 +135,8 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
 				
 				//add the new edge
 				graph.addEdge(currNode, newArc);
+				
+				numberOfArcFlags++;
 			}
 		}
 	}

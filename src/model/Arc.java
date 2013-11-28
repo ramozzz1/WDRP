@@ -52,10 +52,10 @@ public class Arc implements Serializable, Comparable<Arc> {
 			return 1;
 		else if(this.cost < a.cost)
 			return -1;
-		else if(this.arcFlag==false && a.arcFlag==true)
+		/*else if(this.arcFlag==false && a.arcFlag==true)
 			return -1;
 		else if(this.arcFlag==true && a.arcFlag==false)
-			return 1;
+			return 1;*/
 		else
 			return 0;
 	}

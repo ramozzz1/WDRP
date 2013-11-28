@@ -28,6 +28,7 @@ public class OSMParser {
 	}
 	
 	public Graph osmToGraph(String path) {
+		System.out.println("Started parsing osm: "+path);
 		Graph g = null;
 		int numNodes=0;
 		int numEdges=0;
@@ -105,6 +106,7 @@ public class OSMParser {
         long end = System.currentTimeMillis() - start;
         System.out.println("Processed "+numNodes+" nodes and "+ numEdges+" edges.");
         System.out.println("Processing time "+end+"ms");
+        System.out.println("Done parsing osm");
         
         g.closeConnection();
         

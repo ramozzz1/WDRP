@@ -1,7 +1,9 @@
 package main;
 
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +14,7 @@ import model.Graph;
 import model.NodePair;
 import util.GraphUtils;
 import algorithm.AbstractRoutingAlgorithm;
+import algorithm.ArcFlagsAlgorithm;
 
 public class Experiment {
 	private static final String AVG_TRAVEL_TIME = "avg-travel-time(s)";
@@ -26,7 +29,17 @@ public class Experiment {
 		System.out.println("SELECTING "+numberOfTimes+" RANDOM NODE PAIRS");
 		
 		//select random node pairs from graph
-		List<NodePair> randomNodePairs = GraphUtils.getRandomNodePairs(g.nodes, numberOfTimes);
+		List<NodePair> randomNodePairs = new ArrayList<NodePair>();
+		ArcFlagsAlgorithm a = getArcFlagAlgorithm(algorithms);
+		if(a!=null) {
+			//hack: if we have an arc flag algorithm we have to only get targets from nodes region
+			THashSet<Long> regionNodes =  a.computeNodesInRegion(a.latMin, a.latMax, a.lonMin, a.lonMax);
+			System.out.println(regionNodes.size());
+			randomNodePairs = GraphUtils.getRandomNodePairs(g.nodes, new ArrayList<Long>(regionNodes) ,numberOfTimes);
+		}
+		else {
+			randomNodePairs = GraphUtils.getRandomNodePairs(g.nodes, numberOfTimes);
+		}
 		
 		for (AbstractRoutingAlgorithm alg : algorithms) {
 			TreeMap<String, Integer> metrics = new TreeMap<String, Integer>();
@@ -93,5 +106,14 @@ public class Experiment {
 			
 			System.out.println();
 		}
+	}
+
+	private static ArcFlagsAlgorithm getArcFlagAlgorithm(
+			List<AbstractRoutingAlgorithm> algorithms) {
+		for (AbstractRoutingAlgorithm abstractRoutingAlgorithm : algorithms) {
+			if(abstractRoutingAlgorithm instanceof ArcFlagsAlgorithm)
+				return (ArcFlagsAlgorithm)abstractRoutingAlgorithm;
+		}
+		return null;
 	}
 }

@@ -6,9 +6,9 @@ public class OSMNode {
 	public double lon;
 	public double lat;
 	
-	public OSMNode(long id, double lon, double lat) {
+	public OSMNode(long id, double lat, double lon) {
 		this.id = id;
-		this.lon = lon;
 		this.lat = lat;
+		this.lon = lon;
 	}
 }
