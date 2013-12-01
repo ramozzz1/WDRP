@@ -1,5 +1,62 @@
 /* The web page should use fill the whole browser window, without borders */
 html { height: 100% }
-body { height: 100%; margin: 0px; padding: 0px }
+body { 
+	color: #000;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;    
+    line-height: 1.4;    
+    color: #111111;
+    background-color: #FFF;
+	height: 100%; 
+	margin: 0px; 
+	padding: 0px; 
+	overflow: hidden;
+}
 /* The div in which we draw the map should fill out the whole web page */
-#map_canvas { width: 100%; height: 100% }
+#map_canvas {
+	height: 100%;
+    cursor: default;
+    border: 1px solid #d9d9d9;
+	border-color: rgba(102,102,102,0.25);
+	position: relative;
+	z-index: 1;
+	background: #e5e3df;
+	overflow: hidden;
+}
+
+#input {
+	width: 255px;
+    float: left;                
+    padding-left: 10px; 
+    padding-right: 15px;
+}
+
+#planButton {
+    float: right;
+    margin-bottom: 5px;
+}
+
+.vehicle-btn {
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    background-image: linear-gradient(to bottom, white, #e7e7e7);
+}
+
+.vehicle-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+.selectvehicle {
+    // background-clip: padding-box;
+    background-color: #bbb;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    background-image: linear-gradient(to bottom, #9f9f9f, #e7e7e7);    
+}
+
+.clear {
+    clear: both;
+}

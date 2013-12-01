@@ -2,6 +2,7 @@ package model;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NavigableSet;
 
 import org.mapdb.BTreeKeySerializer;
@@ -11,6 +12,8 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.Fun;
 import org.mapdb.Fun.Tuple2;
+
+import util.DistanceUtils;
 
 public class Graph {
 	private DB db;
@@ -95,6 +98,26 @@ public class Graph {
 
 	public Iterable<Arc> getNeighbors(long nodeId) {
 		return Bind.findVals2(this.adjacenyList, nodeId);
+	}
+	
+	/**
+	 * Gets the closest node to the given lat lon points
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
+	public long getClosestNode(double lat, double lon) {
+		long minNode = -1;
+		double minDist = Integer.MAX_VALUE;
+		for (Map.Entry<Long, LatLonPoint> e : this.nodes.entrySet()) {
+			LatLonPoint p = e.getValue();
+			double dist = DistanceUtils.latlonDistance(p.lat, p.lon, lat, lon);
+			if(dist < minDist) {
+				minNode = e.getKey();
+				minDist = dist;
+			}
+		}
+		return minNode;
 	}
 
 	public void removeNode(long nodeId) {

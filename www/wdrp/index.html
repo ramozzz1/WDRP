@@ -18,7 +18,47 @@
 </head>
 
 <body>
-  <div id="map_canvas"></div>
+	<div id="input">
+		
+		<div id="header">
+			WDRP (Weather Dependent Route Planning)
+		</div>
+		
+        <div id="options">
+            <span id="vehicles">
+            	<button class="vehicle-btn selectvehicle" title="Car" id="car">
+            		<img src="img/car.png" alt="Car">
+            	</button>
+            	<button class="vehicle-btn" title="Bike" id="bike">
+            		<img src="img/bike.png" alt="Bike">
+            	</button>
+            	<button class="vehicle-btn" title="Foot" id="foot">
+            		<img src="img/foot.png" alt="Foot">
+            	</button>
+            </span>
+        </div>
+        
+        <form id="locationform">
+        
+            <div id="sourceDiv">
+                <input id="sourceInput" type="text" placeholder="From"/>                   
+            </div>
+            
+            <div id="targetDiv">
+                <input id="targetInput" type="text" placeholder="To"/>                   
+            </div>
+            
+            <input id="planButton" type="submit" value="Plan">
+        </form>
+        
+        <div class="clear"></div>
+        
+        <div id="info" class="small_text"></div>
+        
+        <div id="error" class="error"></div>
+	</div>
+	
+	<div id="map_canvas"></div>
 </body>
 
 </html>

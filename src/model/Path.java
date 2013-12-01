@@ -42,6 +42,18 @@ public class Path {
 		return cost;
 	}
 	
+	public String toJsonArray() {
+		String s = "[";
+		for (int i = 0; i < parts.size(); i++) {
+			PathPart part = parts.get(i);
+			s += "[" + part.from.getLat() + "," + part.from.getLon() + "]";
+			if(i < parts.size() - 1)
+				s += ",";
+		}
+		s += "]";
+		return s;
+	}
+	
 	@Override
 	public String toString() {
 		String s = "[";
@@ -55,5 +67,9 @@ public class Path {
 		}
 		s += "]";
 		return s;
+	}
+
+	public int length() {
+		return parts.size();
 	}
 }
