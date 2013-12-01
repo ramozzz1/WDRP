@@ -11,7 +11,7 @@ import algorithm.DijkstraAlgorithm;
 
 
 
-public class Main {
+public class WDRP {
 	String regionBoxSaarland = "49.20,49.25,6.95,7.05";
 	String regionBoxBW = "47.95,48.05,7.75,7.90";
 	
