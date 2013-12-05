@@ -8,6 +8,8 @@ var line;
 var googleLine;
 var firstClickToRoute;
 var directionsService = new google.maps.DirectionsService();
+var routeApiEndPoint = "route";
+var graphBoundsApiEndPoint = "graph_bounds";
 
 // Main program code. The jQuery construct $(document).ready(function(){ ... }
 // ensures that this is executed only when the page has been loaded.
@@ -22,6 +24,7 @@ $(document).ready(function(){
 		};
 	
 	map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+	getGraphBounds();
 	
 	line = new google.maps.Polyline({map: map, path: [],
 		  strokeColor: "blue", strokeWeight: 8, strokeOpacity: 0.5});
@@ -67,12 +70,51 @@ function computeGoogleMapsPath() {
 
 function computePath() {
 	if(source!=null && target!=null) {
-		var url = "http://"+host+":"+port+"/?"
-	    + source.getPosition().lat() + "," + source.getPosition().lng() + ","
-	    + target.getPosition().lat() + "," + target.getPosition().lng();
+		var url = "http://"+host+":"+port+"?";
 		
-		$.ajax(url, { dataType: "jsonp" });
+		url += "action=" + routeApiEndPoint;
+		url += "&source=" + source.getPosition().lat() + "," + source.getPosition().lng();
+		url += "&target=" + target.getPosition().lat() + "," + target.getPosition().lng();
+		
+		$.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json", 
+            error: function(err) {
+                console.log(err);
+            }, 
+            success: function(json) {
+            	drawPath(json.path);
+            }
+        });
 	}
+}
+
+function getGraphBounds() {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + graphBoundsApiEndPoint;
+	
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	var bounds = json.bounds;
+        	map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(bounds.minLat,bounds.minLon), new google.maps.LatLng(bounds.maxLat,bounds.maxLon)));
+        	
+        	var boundsPath = new Array();
+        	boundsPath.push(new google.maps.LatLng(bounds.minLat,bounds.minLon));
+        	boundsPath.push(new google.maps.LatLng(bounds.minLat,bounds.maxLon));
+        	boundsPath.push(new google.maps.LatLng(bounds.maxLat,bounds.maxLon));
+        	boundsPath.push(new google.maps.LatLng(bounds.maxLat,bounds.minLon));
+        	boundsPath.push(new google.maps.LatLng(bounds.minLat,bounds.minLon));
+        	
+        	new google.maps.Polyline({map: map, path: boundsPath, strokeColor: "green", strokeWeight: 10, strokeOpacity: 0.8});
+        }
+    });
 }
 
 function placeMarker(location) {
@@ -102,9 +144,14 @@ function drawStraightLine() {
 }
 
 // Function that is called when the server has sent its answer.
-function redrawLineServerCallback(json) {
-	var path = new Array();
-	for(i=0;i<json.path.length;i++)
-		path.push(new google.maps.LatLng(json.path[i][0], json.path[i][1]));	
-	line.setPath(path);
+function drawPath(path) {
+	var pathList = new Array();
+	var bounds = new google.maps.LatLngBounds();
+	for(i=0;i<path.length;i++) {
+		var latlng = new google.maps.LatLng(path[i][0], path[i][1]);
+		pathList.push(latlng);
+		bounds.extend(latlng);
+	}
+	line.setPath(pathList);
+	map.fitBounds(bounds);
 }

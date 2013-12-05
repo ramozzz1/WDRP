@@ -22,6 +22,7 @@ public class Graph {
 	
 	public BTreeMap<Long,LatLonPoint> nodes;
 	public NavigableSet<Fun.Tuple2<Long,Arc>> adjacenyList;
+	private NavigableSet<Bounds> bounds;
 	
 	public Graph() {
 		this("temp");
@@ -38,6 +39,11 @@ public class Graph {
 		
 		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).keepCounter(true).makeOrGet();
 		this.adjacenyList = db.createTreeSet("adjacenyList").keepCounter(true).makeOrGet();
+		this.bounds = db.createTreeSet("bound").keepCounter(true).makeOrGet();
+		if(this.bounds.size() == 0) {
+			this.bounds.add(new Bounds());
+		}
+		
 		this.numNodes = this.nodes.size();
 		this.numEdges = this.adjacenyList.size();
 	}
@@ -71,9 +77,16 @@ public class Graph {
 	
 	public void addNode(long nodeId, double lat, double lon) {
 		nodes.put(nodeId, new LatLonPoint(lat, lon));
+		extendBounds(lat,lon);
 		this.numNodes++;
 	}
 	
+	public void extendBounds(double lat, double lon) {
+		Bounds b = this.bounds.pollFirst();
+		b.updateBounds(lat, lon);
+		this.bounds.add(b);
+	}
+
 	public void addEdge(long sourceId, long targetId, int cost) {
 		addEdge(sourceId,targetId,cost,false);
 	}
@@ -98,6 +111,10 @@ public class Graph {
 
 	public Iterable<Arc> getNeighbors(long nodeId) {
 		return Bind.findVals2(this.adjacenyList, nodeId);
+	}
+	
+	public Bounds getBounds() {
+		return this.bounds.first();
 	}
 	
 	/**

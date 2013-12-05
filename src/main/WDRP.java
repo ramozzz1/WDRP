@@ -1,93 +1,127 @@
 package main;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.PrintStream;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 import model.Graph;
 import model.Path;
-import algorithm.AbstractRoutingAlgorithm;
+
+import org.simpleframework.http.Query;
+import org.simpleframework.http.Request;
+import org.simpleframework.http.Response;
+import org.simpleframework.http.core.Container;
+import org.simpleframework.http.core.ContainerServer;
+import org.simpleframework.transport.Server;
+import org.simpleframework.transport.connect.Connection;
+import org.simpleframework.transport.connect.SocketConnection;
+
 import algorithm.DijkstraAlgorithm;
 
 
 
 public class WDRP {
+	private static Graph graph;
+	private static DijkstraAlgorithm algorithm;
 	String regionBoxSaarland = "49.20,49.25,6.95,7.05";
 	String regionBoxBW = "47.95,48.05,7.75,7.90";
 	
-    public static void main(String[] args) throws IOException{
-    	int port = 8888;
-    	ServerSocket server = new ServerSocket(port);
-    	BufferedReader in = null;
-    	PrintWriter out = null;
-    	
-    	Graph graph = new Graph("resources/db/saarland.graph");
-    	AbstractRoutingAlgorithm algorithm = new DijkstraAlgorithm(graph);
+	public static class WDRPHandler implements Container {
+
+		@Override
+		public void handle(Request request, Response response) {
+			try {
+				Query query = request.getQuery();
+				String action = query.get("action");
+				System.out.println(action);
+				if(action != null) {
+					String content = "Invalid request";
+					if(action.equals("graph_bounds")) {
+						content = "{\n";
+						content += "\"bounds\":"+graph.getBounds().toJsonArray();
+						content += "\n}";
+					} 
+					else if(action.equals("route")) {
+						String s = query.get("source");
+						String t = query.get("target");
+						System.out.println(s + " " + t);
+						if(s != null && t != null) {
+							String[] source = s.split(",");
+							String[] target = t.split(",");
+							if(source.length == 2 && target.length == 2) {
+					    		float sourceLat = Float.parseFloat(source[0]);
+					    		float sourceLon = Float.parseFloat(source[1]);
+					    		float targetLat = Float.parseFloat(target[0]);
+					    		float targetLon = Float.parseFloat(target[1]);
+					    		
+					    		System.out.println("source:" + sourceLat + ", " + sourceLon);
+					    		System.out.println("target:" + targetLat + ", " + targetLon);
+					    		
+								long sourceId = graph.getClosestNode(sourceLat,sourceLon);
+					    		long targetId = graph.getClosestNode(targetLat,targetLon); 
+					    		
+					    		System.out.println("Closest source:" + sourceId);
+					    		System.out.println("Closest target:" + targetId);
+					    		
+					    		long start = System.currentTimeMillis();
+					    		int travelTime = algorithm.computeShortestPath(sourceId, targetId);
+					    		long end = System.currentTimeMillis() - start;
+					    		Path p = algorithm.extractPath(targetId);
+					    		System.out.println("Path found within: " + end + "ms");
+					    		System.out.println("#Visited nodes: " + algorithm.visitedNodesMarks.size());
+					    		System.out.println("Travel time: " +travelTime);
+					    		System.out.println("Path length: " + p.length());
+					    		
+					    		content = "{\n"
+					    				+ " \"travel_time\": " + travelTime + ",\n"
+					    				+ " \"bounds\": " + p.getBounds().toJsonArray() + ",\n"
+					    				+ " \"path\":" + p.toJsonArray()
+					    				+ "\n}";
+							}
+							else {
+								System.err.println("Wrong input source,target");
+							}
+						}
+						else {
+							System.err.println("Wrong input source,target");
+						}
+					}
+					else {
+						System.err.println("No action handler for: " +action);
+					}
+					
+					PrintStream body = response.getPrintStream();
+					long time = System.currentTimeMillis();
+					response.setValue("Content-Type", "application/json");
+					response.setValue("Server", "WDRPHandler/1.0 (Simple 4.0)");
+					response.setValue("Access-Control-Allow-Origin", "*");
+					response.setDate("Date", time);
+					response.setDate("Last-Modified", time);
+					body.println(content);
+					body.close();
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+		    }
+		}
+		
+	}
+	
+	public static void main(String[] args) throws IOException{
+		int port = 8888;
+		
+		graph = new Graph("resources/db/saarland.graph");
+    	algorithm = new DijkstraAlgorithm(graph);
     	algorithm.precompute();
     	
-    	int i = 0;
-    	while(true) {
-    		System.out.println("[" + (i++) + "]"
-    				+ "Waiting for query on port " + port + "...");
-    		Socket client = server.accept();
-    		in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-    		
-    		//Get the request line
-    		String request = in.readLine();
-    		System.out.println("Request string is \""
-    				+ (request.length() < 99 ? request : request.substring(0,97) + "...")
-    				+ "\"");
-    		
-    		int pos =  request.indexOf("&");
-    		if(pos != -1) {
-    			request = request.substring(6, pos);
-    		}
-    		
-    		System.out.println("Raw request: " + request);
-    		
-    		String[] parts = request.split(",");
-    		float sourceLat = Float.parseFloat(parts[0]);
-    		float sourceLon = Float.parseFloat(parts[1]);
-    		float targetLat = Float.parseFloat(parts[2]);
-    		float targetLon = Float.parseFloat(parts[3]);
-    		
-    		System.out.println("source:" + sourceLat + ", " + sourceLon);
-    		System.out.println("target:" + targetLat + ", " + targetLon);
-    		
-			long sourceId = graph.getClosestNode(sourceLat,sourceLon);
-    		long targetId = graph.getClosestNode(targetLat,targetLon); 
-    		
-    		System.out.println("Closest source:" + sourceId);
-    		System.out.println("Closest target:" + targetId);
-    		
-    		long start = System.currentTimeMillis();
-    		int travelTime = algorithm.computeShortestPath(sourceId, targetId);
-    		long end = System.currentTimeMillis() - start;
-    		Path p = algorithm.extractPath(targetId);
-    		System.out.println("Path found within: " + end + "ms");
-    		System.out.println("#Visited nodes: " + algorithm.visitedNodesMarks.size());
-    		System.out.println("Travel time: " +travelTime);
-    		System.out.println("Path length: " + p.length());
-    		
-    		String jsonp = "redrawLineServerCallback({\n"
-    				+ " \"travel_time\": " + travelTime + "," 
-    				+ " \"path\":" + p.toJsonArray() +"\n"
-    				+ "})\n";
-    		
-    		String answer = "HTTP/1.0 200 OK" + "\r\n"
-    				+ "Content-Length: " + jsonp.length() + "\r\n"
-    				+ "Content-Type: plain/text" + "\r\n"
-    				+ "Connection: close" + "\r\n"
-    				+ "\r\n" + jsonp;
-    		
-    		out = new PrintWriter(client.getOutputStream(),true);
-    		out.write(answer);
-    		out.flush();
-    		client.close();
-    	}
+		Container container = new WDRPHandler();
+		Server server = new ContainerServer(container);
+		Connection connection = new SocketConnection(server);
+		SocketAddress address = new InetSocketAddress(port);
+		
+  		connection.connect(address);
+  		
     	//GraphUtils.convertOSMToGraph("saarland");
     	
     	/*Graph g = new Graph("resources/db/saarland.graph");	

@@ -6,10 +6,12 @@ import java.util.List;
 public class Path {
 	private List<PathPart> parts;
 	private int cost;
+	private Bounds bounds;
 	
 	public Path() {
 		this.parts = new ArrayList<PathPart>();
 		this.cost = 0;
+		this.bounds = new Bounds();
 	}
 	
 	/**
@@ -18,8 +20,10 @@ public class Path {
 	 */
 	public void addNode(Node from, Arc a) {
 		parts.add(0, new PathPart(from, a));
-		if(a!=null)
+		if(a!=null) {
 			this.cost += a.getCost();
+			this.bounds.updateBounds(from.getLat(),from.getLon());
+		}
 	}
 
 	public List<Node> getNodes() {
@@ -40,6 +44,10 @@ public class Path {
 	
 	public int getCost() {
 		return cost;
+	}
+	
+	public Bounds getBounds() {
+		return bounds;
 	}
 	
 	public String toJsonArray() {

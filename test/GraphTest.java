@@ -95,6 +95,19 @@ public class GraphTest {
 		assertEquals("{1, 0, []}", g.toString());
 	}
 	
+	@Test
+	public void testBounds(){
+		Graph g = new Graph();
+		g.addNode(0,0,0);
+		g.addNode(1,0,1);
+		g.addNode(2,1,1);
+		g.addNode(3,1,2);
+		g.addNode(4,2,1);
+		g.addNode(5,1,3);		
+		g.addNode(999,-10,10);
+		assertEquals("{\"minLat\":-10.0, \"maxLat\":2.0, \"minLon\":0.0, \"maxLon\":10.0}", g.getBounds().toString());
+	}
+	
 	/*@Test
 	public void testAddDoubleEdge(){
 		Graph g = new Graph();
