@@ -35,16 +35,16 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
 	@Test
 	public void testContractNodeAndNoShortcutsAdded() {
-		a.contractNode(0);
+		int sh = a.contractNode(0);
 		
-		assertEquals(a.getNumberOfShortcuts(), 0);
+		assertEquals(sh, 0);
 	}
 	
 	@Test
 	public void testContractNodeAndShortcutsAdded() {
-		a.contractNode(1);
+		int sh = a.contractNode(1);
 		
-		assertEquals(a.getNumberOfShortcuts(), 2);
+		assertEquals(sh, 2);
 		Arc a1 = customGraph.getEdge(0, 2);
 		assertNotNull(a1);
 		assertEquals(a1.getCost(), 2);

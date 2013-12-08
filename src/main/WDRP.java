@@ -13,6 +13,7 @@ import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
 import org.simpleframework.http.core.Container;
 
+import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.DijkstraAlgorithm;
 
 
@@ -121,6 +122,8 @@ public class WDRP {
     	//GraphUtils.convertOSMToGraph("saarland");
     	
   		Graph g = new Graph("resources/db/saarland.graph");
+  		ContractionHierarchiesAlgorithm a = new ContractionHierarchiesAlgorithm(g,1000);
+  		a.precompute();
   		/*List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	algorithms.add(new AstarAlgorithm(g));

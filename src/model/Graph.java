@@ -151,6 +151,13 @@ public class Graph {
 		return Bind.findVals2(this.adjacenyList, nodeId);
 	}
 	
+	@SuppressWarnings("unused")
+	public int getNumNeighbors(long nodeId) {
+		int count = 0;
+		for(Arc a : getNeighbors(nodeId)) count++;
+		return count;
+	}
+	
 	public Bounds getBounds() {
 		return this.bounds.first();
 	}

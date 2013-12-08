@@ -1,6 +1,7 @@
 package algorithm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import model.Arc;
@@ -36,8 +37,14 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 		int numOfContractions = Math.min(this.maxNumberContractions, this.nodesOrdering.size());
 		//contract the nodes in the nodes ordering
 		for (int i = 0; i < numOfContractions; i++) {
-			long  node = this.nodesOrdering.get(i);
-			contractNode(node);
+			long node = this.nodesOrdering.get(i);
+			long start = System.nanoTime();
+			int shortcuts = contractNode(node);
+			this.numberOfShortcuts += shortcuts;
+			System.out.println(i + " contracted node " + node);
+			System.out.println("\t #shortcuts added: " + shortcuts);
+			System.out.println("\t ED: " + (shortcuts - graph.getNumNeighbors(node)));
+			System.out.println("\t time: " +(System.nanoTime()-start)+ "us");
 		}
 	}
 	
@@ -51,8 +58,10 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 	/**
 	 * contract the node and add shortcuts if necessary
 	 * @param v
+	 * Return the #shortcuts added
 	 */
-	public void contractNode(long v) {
+	public int contractNode(long v) {
+		int shortcuts = 0;
 		Iterable<Arc> neighbors = graph.getNeighbors(v);
 		for (Arc arc : neighbors) {
 			//first set all the neighbors to false,i.e. to indicate unreachablity from node v
@@ -75,11 +84,13 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 						/*no sp could be found or sp found which is longer than the direct one (i.e. the real sp)
 						  so we have to add a shortcut*/
 						graph.addEdge(u, w, directCost, true);
-						this.numberOfShortcuts++;
+						shortcuts++;
 					}
 				}
 			}
 		}
+		
+		return shortcuts;
 	}
 	
 	@Override
