@@ -1,11 +1,21 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 public class CommonUtils {
+	
+	public static <K> List<K> generateRandomOrder(List<K> arr) {
+		Random r = new Random();
+		for (int i = arr.size() - 1; i > 0; i--) {
+			int j = r.nextInt(i);
+			Collections.swap(arr, i, j);
+		}
+		return arr;
+	}
 	
 	//get n random keys from map m
 	public static <K,E> List<K> getRandomKeys(Map<K,E> m, int n) {

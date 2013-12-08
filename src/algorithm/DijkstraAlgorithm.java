@@ -22,10 +22,18 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	public TLongLongHashMap previous;
 	public THashMap<Long, Integer> distance;
 	public boolean considerArcFlags;
+	public int costUpperbound;
+	public int maxNumSettledNodes;
 	
 	public DijkstraAlgorithm(Graph graph) {
 		super(graph);
+		
+	}
+	
+	protected void setDefaultSettings() {
 		this.considerArcFlags=false;
+		this.costUpperbound=Integer.MAX_VALUE;
+		this.maxNumSettledNodes=Integer.MAX_VALUE;
 	}
 	
 	@Override
@@ -46,6 +54,12 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 			
 			if(u.getNodeId() == targetId)
 				return distance.get(targetId);
+			
+			if(u.getDistance() > costUpperbound)
+				return -1;
+			
+			if(visitedNodesMarks.size() > maxNumSettledNodes)
+				return -1;
 			
 			int h = getHeuristicValue(u.getNodeId(),targetId);
 			int distU = distance.get(u.getNodeId());

@@ -33,7 +33,7 @@ public class Graph {
 				.newFileDB(new File(fileName))
 				.transactionDisable()
 				.cacheHardRefEnable()
-				.asyncFlushDelay(100)
+				.asyncFlushDelay(500)
 				.randomAccessFileEnableKeepIndexMapped()
 				.make();
 		
@@ -99,6 +99,35 @@ public class Graph {
 	public void addEdge(long sourceId, Arc a) {
 		this.adjacenyList.add(Fun.t2(sourceId,a));
 		this.numEdges++;
+	}
+	
+	/**
+	 * Set the arc flags for all edges
+	 * @param arcFlag
+	 */
+	public void setArcFlagsForAllEdges(boolean arcFlag) {
+		Iterator<Tuple2<Long,Arc>> itr = this.adjacenyList.descendingIterator();
+		while(itr.hasNext()) {
+			Tuple2<Long,Arc> arc = itr.next();
+			setArcFlagForEdge(arc.a, arc.b, arcFlag);
+		}
+	}
+	/**
+	 * Sets the arc flag for an edge
+	 * @param currNode
+	 * @param oldArc
+	 * @param arcFlag
+	 */
+	public void setArcFlagForEdge(long currNode, Arc oldArc, boolean arcFlag) {
+		//make copy of arc
+		Arc newArc = new Arc(oldArc);
+		newArc.setArcFlag(arcFlag);
+		
+		//remove the edge
+		removeEdge(currNode,oldArc);
+		
+		//add the new edge
+		addEdge(currNode, newArc);
 	}
 	
 	public int getNumNodes() {

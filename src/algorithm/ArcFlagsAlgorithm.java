@@ -122,20 +122,11 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
 	 * @param oldArc
 	 */
 	private void updateArcFlag(long currNode, Arc oldArc) {
-		//get the edge
 		if(oldArc!= null) {
 			//check if arc flag already set to true
 			if(!oldArc.isArcFlag()) {
-				//create new arc with arcFlag set to true
-				Arc newArc = new Arc(oldArc);
-				newArc.setArcFlag(true);
-				
-				//remove the edge
-				graph.removeEdge(currNode,oldArc);
-				
-				//add the new edge
-				graph.addEdge(currNode, newArc);
-				
+				//update arc with arcFlag set to true
+				graph.setArcFlagForEdge(currNode, oldArc, true);
 				numberOfArcFlags++;
 			}
 		}

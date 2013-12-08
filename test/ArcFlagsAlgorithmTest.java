@@ -20,7 +20,6 @@ public class ArcFlagsAlgorithmTest extends SPTestBase {
 	@Before
 	public void setUpAF() {
 		a = new ArcFlagsAlgorithm(g,-1.0,1.0,-1.0,1.0);
-		//a.precompute();
 	}
 	
 	@Test

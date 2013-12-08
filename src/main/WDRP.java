@@ -2,8 +2,8 @@ package main;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Graph;
 import model.Path;
@@ -12,10 +12,6 @@ import org.simpleframework.http.Query;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
 import org.simpleframework.http.core.Container;
-import org.simpleframework.http.core.ContainerServer;
-import org.simpleframework.transport.Server;
-import org.simpleframework.transport.connect.Connection;
-import org.simpleframework.transport.connect.SocketConnection;
 
 import algorithm.DijkstraAlgorithm;
 
@@ -109,9 +105,9 @@ public class WDRP {
 	}
 	
 	public static void main(String[] args) throws IOException{
-		int port = 8888;
+		/*int port = 8888;
 		
-		graph = new Graph("resources/db/saarland.graph");
+		graph = new Graph("resources/db/baden-wuerttemberg.graph");
     	algorithm = new DijkstraAlgorithm(graph);
     	algorithm.precompute();
     	
@@ -120,11 +116,11 @@ public class WDRP {
 		Connection connection = new SocketConnection(server);
 		SocketAddress address = new InetSocketAddress(port);
 		
-  		connection.connect(address);
+  		connection.connect(address);*/
   		
     	//GraphUtils.convertOSMToGraph("saarland");
     	
-    	/*Graph g = new Graph("resources/db/saarland.graph");	
+  		/*Graph g = new Graph("resources/db/saarland.graph");
     	List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	algorithms.add(new AstarAlgorithm(g));
