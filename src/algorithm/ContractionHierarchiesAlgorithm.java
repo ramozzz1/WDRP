@@ -53,12 +53,10 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 	 * @param v
 	 */
 	public void contractNode(long v) {
-		System.out.println("Contracting node " + v);
 		Iterable<Arc> neighbors = graph.getNeighbors(v);
 		for (Arc arc : neighbors) {
 			//first set all the neighbors to false,i.e. to indicate unreachablity from node v
 			graph.setArcFlagForEdge(v, arc, false);
-			System.out.println(v + " " + arc);
 		}
 		
 		for (Arc inArc : neighbors) {
@@ -68,24 +66,17 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 				if(u != w) {
 					//store the cost of visiting the node through node v
 					int directCost = inArc.getCost() + outArc.getCost();
-					System.out.println(u+ "->" +v + "->" + w + " direct cost: "+directCost);
 					//calculate the sp from node u to w while ignoring v
 					super.considerArcFlags = true;
 					super.maxNumSettledNodes = 20;
 					super.costUpperbound = directCost;
 					int spCost = super.computeShortestPath(u, w);
-					System.out.println(u+ "->" + w + " sp cost (without v): "+spCost);
 					if(spCost == -1 || spCost > directCost) { 
 						/*no sp could be found or sp found which is longer than the direct one (i.e. the real sp)
 						  so we have to add a shortcut*/
-						System.out.println("Adding shortcut "+ u + "->" + w + " with cost: " + directCost);
 						graph.addEdge(u, w, directCost, true);
 						this.numberOfShortcuts++;
 					}
-					else {
-						System.out.println("No shortcut added "+ u + "->" + w + " sp without v: " + spCost);
-					}
-					//System.out.println(u + " " + w + " dc: " + directCost + " sp: " + spCost);
 				}
 			}
 		}

@@ -25,17 +25,26 @@ public class Graph {
 	private NavigableSet<Bounds> bounds;
 	
 	public Graph() {
-		this("temp");
+		this("temp", true);
 	}
 	
 	public Graph(String fileName) {
-		this.db = DBMaker
-				.newFileDB(new File(fileName))
-				.transactionDisable()
-				.cacheHardRefEnable()
-				.asyncFlushDelay(500)
-				.randomAccessFileEnableKeepIndexMapped()
-				.make();
+		this(fileName, false);
+	}
+	
+	public Graph(String fileName, boolean temp) {
+		if(!temp) {
+			this.db = DBMaker
+					.newFileDB(new File(fileName))
+					.transactionDisable()
+					.cacheHardRefEnable()
+					.asyncFlushDelay(500)
+					.randomAccessFileEnableKeepIndexMapped()
+					.make();
+		}
+		else {
+			this.db = DBMaker.newTempFileDB().transactionDisable().make();
+		}
 		
 		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).keepCounter(true).makeOrGet();
 		this.adjacenyList = db.createTreeSet("adjacenyList").keepCounter(true).makeOrGet();

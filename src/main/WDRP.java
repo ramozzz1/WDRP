@@ -120,8 +120,8 @@ public class WDRP {
   		
     	//GraphUtils.convertOSMToGraph("saarland");
     	
-  		/*Graph g = new Graph("resources/db/saarland.graph");
-    	List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
+  		Graph g = new Graph("resources/db/saarland.graph");
+  		/*List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,42));    	
