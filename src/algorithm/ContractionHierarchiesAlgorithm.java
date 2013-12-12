@@ -1,9 +1,9 @@
 package algorithm;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import main.Histogram;
 import model.Arc;
 import model.Graph;
 import util.CommonUtils;
@@ -28,24 +28,39 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 	@Override
 	public void precompute() {
 		//set the arc flag for all edges to true
+		System.out.println("Setting arc flags for all edges to true");
 		graph.setArcFlagsForAllEdges(true); 
 		
 		//compute a random node ordering
+		System.out.println("Computing random node ordering");
 		this.nodesOrdering = computeRandomNodeOrdering();
 		
 		//determine number of contractions
 		int numOfContractions = Math.min(this.maxNumberContractions, this.nodesOrdering.size());
+		
+		long totalTime = 0;
+		Histogram shHistogram = new Histogram(4);
+		Histogram edHistogram = new Histogram(3);
 		//contract the nodes in the nodes ordering
+		System.out.println("Starting contracting "+numOfContractions+ " nodes");
 		for (int i = 0; i < numOfContractions; i++) {
 			long node = this.nodesOrdering.get(i);
+			System.out.println(i + " contracting node " + node);
 			long start = System.nanoTime();
 			int shortcuts = contractNode(node);
+			totalTime += (System.nanoTime()-start)/1000;
+			int ed = shortcuts - graph.getNumNeighbors(node);
+			shHistogram.addDataPoint(shortcuts);
+			edHistogram.addDataPoint(ed);
 			this.numberOfShortcuts += shortcuts;
-			System.out.println(i + " contracted node " + node);
-			System.out.println("\t #shortcuts added: " + shortcuts);
-			System.out.println("\t ED: " + (shortcuts - graph.getNumNeighbors(node)));
-			System.out.println("\t time: " +(System.nanoTime()-start)+ "us");
 		}
+		System.out.println("#contractions: " +numOfContractions);
+		System.out.println("time (average): " +(totalTime/numOfContractions)+ "us");
+		System.out.println("total shortcuts: " +this.numberOfShortcuts);
+		System.out.println("shortcut histogram:");
+		shHistogram.printHistogram();
+		System.out.println("ED histogram:");
+		edHistogram.printHistogram();
 	}
 	
 	/**
