@@ -2,26 +2,36 @@ package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
-import main.Histogram;
 import model.Arc;
 import model.Graph;
 import util.CommonUtils;
 
 public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
-
-	private List<Long> nodesOrdering;
-	private int maxNumberContractions;
-	private int numberOfShortcuts;
-	
-	public ContractionHierarchiesAlgorithm(Graph graph) {
-		this(graph,Integer.MAX_VALUE);
+	public enum HeuristicTypes {
+		LAZY_PERIODIC, LAZY, PERIODIC;
 	}
 	
-	public ContractionHierarchiesAlgorithm(Graph graph, int maxNumberContractions) {
+	private Queue<QEntry> nodesOrdering;
+	private int maxNumberContractions;
+	private int numberOfShortcuts;
+	private HeuristicTypes heuristicType;
+	
+	public ContractionHierarchiesAlgorithm(Graph graph) {
+		this(graph,Integer.MAX_VALUE, HeuristicTypes.LAZY);
+	}
+	
+	public ContractionHierarchiesAlgorithm(Graph graph, HeuristicTypes heuristicType) {
+		this(graph,Integer.MAX_VALUE, heuristicType);
+	}
+	
+	public ContractionHierarchiesAlgorithm(Graph graph, int maxNumberContractions, HeuristicTypes heuristicType) {
 		super(graph);
-		this.nodesOrdering = new ArrayList<Long>();
+		this.nodesOrdering = new PriorityQueue<QEntry>();
 		this.maxNumberContractions = maxNumberContractions;
+		this.heuristicType = heuristicType;
 		this.numberOfShortcuts = 0;
 	}
 
@@ -32,56 +42,115 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 		graph.setArcFlagsForAllEdges(true); 
 		
 		//compute a random node ordering
-		System.out.println("Computing random node ordering");
+		System.out.println("Computing node ordering");
 		this.nodesOrdering = computeRandomNodeOrdering();
 		
 		//determine number of contractions
 		int numOfContractions = Math.min(this.maxNumberContractions, this.nodesOrdering.size());
 		
-		long totalTime = 0;
-		Histogram shHistogram = new Histogram(4);
-		Histogram edHistogram = new Histogram(3);
 		//contract the nodes in the nodes ordering
 		System.out.println("Starting contracting "+numOfContractions+ " nodes");
 		for (int i = 0; i < numOfContractions; i++) {
-			long node = this.nodesOrdering.get(i);
-			System.out.println(i + " contracting node " + node);
-			long start = System.nanoTime();
+			if(numOfContractions%100000==0)System.out.println("#nodes contracted: "+i);
+			
+			//get node with smallest ed
+			long node = this.nodesOrdering.poll().getNodeId();
+			
+			//contract node
 			int shortcuts = contractNode(node);
-			totalTime += (System.nanoTime()-start)/1000;
-			int ed = shortcuts - graph.getNumNeighbors(node);
-			shHistogram.addDataPoint(shortcuts);
-			edHistogram.addDataPoint(ed);
-			this.numberOfShortcuts += shortcuts;
+			
+			//update the node ordering
+			updateNodeOrdering(this.nodesOrdering);
+			
+			this.numberOfShortcuts += shortcuts;			
 		}
-		System.out.println("#contractions: " +numOfContractions);
-		System.out.println("time (average): " +(totalTime/numOfContractions)+ "us");
-		System.out.println("total shortcuts: " +this.numberOfShortcuts);
-		System.out.println("shortcut histogram:");
-		shHistogram.printHistogram();
-		System.out.println("ED histogram:");
-		edHistogram.printHistogram();
+	}
+	
+	public void updateNodeOrdering(Queue<QEntry> queue) {
+		if(heuristicType == HeuristicTypes.LAZY) {
+			lazyUpdate(queue);
+		}
+	}
+
+	public void lazyUpdate(Queue<QEntry> queue) {
+		//get the current node with the smallest ED
+		QEntry entry = queue.peek();
+		long currentMinNode = entry.getNodeId();
+		
+		//compute the ed again
+		int newEd = computeEdgeDifference(currentMinNode);
+		
+		if(newEd > entry.getEd()) {
+			//new ed is larger so this node is not the minimum anymore, add it again with the new ed
+			queue.poll();
+			queue.add(new QEntry(currentMinNode, newEd));
+			
+			//repeat again with
+			lazyUpdate(queue);
+		}
+		else {
+			//stop: the node with the smallest ed is still the smallest
+			return;
+		}
+	}
+
+	public Queue<QEntry> computeNodeOrdering() {
+		Queue<QEntry> queue = new PriorityQueue<QEntry>();
+		for (Long node : graph.nodes.keySet()) {
+			int ed = computeEdgeDifference(node);
+			queue.add(new QEntry(node, ed));
+		}
+		return queue;
 	}
 	
 	/**
 	 * Compute random node ordering
 	 */
-	public List<Long> computeRandomNodeOrdering() {
-		return CommonUtils.generateRandomOrder(new ArrayList<Long>(graph.nodes.keySet()));
+	public Queue<QEntry> computeRandomNodeOrdering() {
+		Queue<QEntry> queue = new PriorityQueue<QEntry>();
+		List<Long> randOrderList = CommonUtils.generateRandomOrder(new ArrayList<Long>(graph.nodes.keySet()));
+		for (Long node : randOrderList) {
+			queue.add(new QEntry(node, 0));
+		}
+		return queue;
+	}
+	
+	/**
+	 * Compute the edge difference: #shortcuts - #edges 
+	 * @param v
+	 * @return
+	 */
+	public int computeEdgeDifference(long v) {
+		//calculate the #shortcuts without adding them
+		int shortcuts = contractNode(v, false);
+		
+		//set the node v to reachable again
+		Iterable<Arc> neighbors = graph.getNeighbors(v);
+		for (Arc arc : neighbors)
+			graph.setArcFlagForEdge(v, arc, true);
+		
+		//compute ed
+		int edgeDifference = shortcuts - graph.getNumNeighbors(v);
+		return edgeDifference;
+	}
+	
+	public int contractNode(long v) {
+		return contractNode(v,true);
 	}
 	
 	/**
 	 * contract the node and add shortcuts if necessary
-	 * @param v
+	 * @param v the node to contract
+	 * @param addShortcut if true the shortcuts are added to the graph else not 
 	 * Return the #shortcuts added
 	 */
-	public int contractNode(long v) {
+	public int contractNode(long v, boolean addShortcut) {
 		int shortcuts = 0;
+		
+		//first set all the neighbors to false,i.e. to indicate unreachablity from node v
 		Iterable<Arc> neighbors = graph.getNeighbors(v);
-		for (Arc arc : neighbors) {
-			//first set all the neighbors to false,i.e. to indicate unreachablity from node v
+		for (Arc arc : neighbors)
 			graph.setArcFlagForEdge(v, arc, false);
-		}
 		
 		for (Arc inArc : neighbors) {
 			for (Arc outArc : neighbors) {
@@ -98,7 +167,8 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 					if(spCost == -1 || spCost > directCost) { 
 						/*no sp could be found or sp found which is longer than the direct one (i.e. the real sp)
 						  so we have to add a shortcut*/
-						graph.addEdge(u, w, directCost, true, v);
+						if(addShortcut)
+							graph.addEdge(u, w, directCost, true, v);
 						shortcuts++;
 					}
 				}
@@ -123,5 +193,29 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 	@Override
 	public String getName() {
 		return "Contraction Hierachies";
+	}
+}
+
+class QEntry implements Comparable<QEntry>
+{	
+	private long nodeId;
+	private int ed;
+
+	public QEntry(long nodeId, int ed) {
+		this.nodeId = nodeId;
+		this.ed = ed;
+	}
+
+	public long getNodeId() {
+		return nodeId;
+	}
+	
+	public long getEd() {
+		return ed;
+	}
+
+	@Override
+	public int compareTo(QEntry o) {
+		return Integer.compare(this.ed, o.ed);
 	}
 }
