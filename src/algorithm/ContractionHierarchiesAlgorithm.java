@@ -98,7 +98,7 @@ public class ContractionHierarchiesAlgorithm extends DijkstraAlgorithm {
 					if(spCost == -1 || spCost > directCost) { 
 						/*no sp could be found or sp found which is longer than the direct one (i.e. the real sp)
 						  so we have to add a shortcut*/
-						graph.addEdge(u, w, directCost, true);
+						graph.addEdge(u, w, directCost, true, v);
 						shortcuts++;
 					}
 				}

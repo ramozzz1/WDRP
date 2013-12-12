@@ -22,16 +22,18 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	public TLongLongHashMap previous;
 	public THashMap<Long, Integer> distance;
 	public boolean considerArcFlags;
+	public boolean considerShortcuts;
 	public int costUpperbound;
 	public int maxNumSettledNodes;
 	
 	public DijkstraAlgorithm(Graph graph) {
 		super(graph);
-		
+		setDefaultSettings();
 	}
 	
 	protected void setDefaultSettings() {
 		this.considerArcFlags=false;
+		this.considerShortcuts = false;
 		this.costUpperbound=Integer.MAX_VALUE;
 		this.maxNumSettledNodes=Integer.MAX_VALUE;
 	}
@@ -68,7 +70,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 			
 			//System.out.println("MIN:"+u.getNodeId());
 			for (Arc e : graph.getNeighbors(u.getNodeId())) {
-				if(!this.considerArcFlags || (this.considerArcFlags && e.isArcFlag())) { 
+				if(considerEdge(e)) {
 					//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());
 					int dist = distU + e.getCost();
 					if(!distance.containsKey(e.getHeadNode()) || dist < distance.get(e.getHeadNode())) {
@@ -83,6 +85,14 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		}
 		
 		return -1;
+	}
+	
+	private boolean considerEdge(Arc e) {
+		if(!this.considerArcFlags || (this.considerArcFlags && e.isArcFlag())) {
+			if(this.considerShortcuts || !e.isShortcut())
+				return true;
+		}
+		return false;
 	}
 
 	public int getHeuristicValue(long nodeId, long targetId) {

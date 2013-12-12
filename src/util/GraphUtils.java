@@ -32,7 +32,7 @@ public class GraphUtils {
     	Set<Long> maxVisitedNodes = new THashSet<Long>();
     	int count = 0;
 		for (Long id : g.nodes.keySet()) {
-			if(count%100000==0) System.out.println(count);
+			if(count%100000==0) System.out.println("#nodes processed: "+count);
 			if (!visitedNodes.contains(id)) {
 				DijkstraAlgorithm d = new DijkstraAlgorithm(g);
 				d.computeShortestPath(id, -1);
@@ -42,19 +42,27 @@ public class GraphUtils {
 			}
 			count++;
 		}
+		
 		System.out.println("|V|:"+g.nodes.size()+" |E|:"+g.adjacenyList.size()/2);
 		System.out.println("LCC: "+ maxVisitedNodes.size());
+		
+		System.out.println("Removing nodes/edges not part of LCC");
 		count = 0;
+		int removedNodes = 0;
 		for (Long id : g.nodes.keySet()) {
-			if(count%100000==0) System.out.println(count);
+			if(count%100000==0) System.out.println("#nodes processed: "+count + " #nodes removed: " +removedNodes);
 			if (!maxVisitedNodes.contains(id)) {
 				g.removeNode(id);
 				g.removeAllEdgesOfNode(id);
+				removedNodes++;
 			}
 			count++;
 		}
+		
 		System.out.println("Graph converted to LCC Graph");
 		System.out.println("|V|:"+g.nodes.size()+" |E|:"+g.adjacenyList.size()/2);
+		System.out.println("Total #nodes removed: " + removedNodes);
+		
 		g.closeConnection();
 	}
 

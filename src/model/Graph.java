@@ -97,12 +97,12 @@ public class Graph {
 	}
 
 	public void addEdge(long sourceId, long targetId, int cost) {
-		addEdge(sourceId,targetId,cost,false);
+		addEdge(sourceId,targetId,cost,false,-1);
 	}
 	
-	public void addEdge(long sourceId, long targetId, int cost, boolean arcFlag) {
-		addEdge(sourceId,new Arc(targetId,cost,arcFlag));
-		addEdge(targetId,new Arc(sourceId,cost,arcFlag));
+	public void addEdge(long sourceId, long targetId, int cost, boolean arcFlag, long shortcutNode) {
+		addEdge(sourceId,new Arc(targetId,cost,arcFlag,shortcutNode));
+		addEdge(targetId,new Arc(sourceId,cost,arcFlag,shortcutNode));
 	}
 	
 	public void addEdge(long sourceId, Arc a) {

@@ -7,23 +7,27 @@ public class Arc implements Serializable, Comparable<Arc> {
 	private long headNode;
 	private int cost;
 	private boolean arcFlag;
+	private long shortcutNode;
 	
 	public Arc(Arc arc) {
 		this.headNode = arc.headNode;
 		this.cost = arc.cost;
 		this.arcFlag = arc.arcFlag;
+		this.shortcutNode = arc.shortcutNode;
 	}
 	
-	public Arc(long headNode, int cost, boolean arcFlag) {
+	public Arc(long headNode, int cost, boolean arcFlag, long shortcutNode) {
 		this.headNode = headNode;
 		this.cost = cost;
-		this.arcFlag = arcFlag;
+		this.arcFlag = arcFlag;		
+		this.shortcutNode = shortcutNode;
 	}
 	
 	public Arc(long headNode, int cost) {
 		this.headNode = headNode;
 		this.cost = cost;
 		this.arcFlag = false;
+		this.shortcutNode = -1;
 	}
 
 	public long getHeadNode() {
@@ -42,6 +46,14 @@ public class Arc implements Serializable, Comparable<Arc> {
 		return this.arcFlag;	
 	}
 	
+	public boolean isShortcut() { 
+		return this.shortcutNode != -1;
+	}
+	
+	public long getShortcutNode() { 
+		return this.shortcutNode;
+	}
+	
 	@Override
 	public int compareTo(Arc a) {
 		if(this.headNode > a.headNode)
@@ -51,6 +63,10 @@ public class Arc implements Serializable, Comparable<Arc> {
 		else if(this.cost > a.cost)
 			return 1;
 		else if(this.cost < a.cost)
+			return -1;
+		else if(this.shortcutNode > a.shortcutNode)
+			return 1;
+		else if(this.shortcutNode < a.shortcutNode)
 			return -1;
 		/*else if(this.arcFlag==false && a.arcFlag==true)
 			return -1;
@@ -62,6 +78,6 @@ public class Arc implements Serializable, Comparable<Arc> {
 	
 	@Override
 	public String toString() {
-		return "("+headNode+", "+cost+", "+arcFlag+")";
+		return "("+headNode+", "+cost+", "+arcFlag+", "+shortcutNode+")";
 	}
 }

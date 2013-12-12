@@ -2,8 +2,6 @@ package main;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import model.Graph;
 import model.Path;
@@ -13,7 +11,7 @@ import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
 import org.simpleframework.http.core.Container;
 
-import algorithm.ContractionHierarchiesAlgorithm;
+import util.GraphUtils;
 import algorithm.DijkstraAlgorithm;
 
 
@@ -119,11 +117,11 @@ public class WDRP {
 		
   		connection.connect(address);*/
   		
-    	//GraphUtils.convertOSMToGraph("saarland");
+    	GraphUtils.convertOSMToGraph("saarland");
     	
-  		Graph g = new Graph("resources/db/saarland.graph");
+  		/*Graph g = new Graph("resources/db/saarland.graph");
   		ContractionHierarchiesAlgorithm a = new ContractionHierarchiesAlgorithm(g,1000);
-  		a.precompute();
+  		a.precompute();*/
   		/*List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	algorithms.add(new AstarAlgorithm(g));

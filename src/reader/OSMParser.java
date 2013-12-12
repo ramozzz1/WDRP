@@ -67,7 +67,7 @@ public class OSMParser {
 	                if (ln.equals("node")) {
 	                	g.addNode(node.id,node.lat,node.lon);
 	                	
-	                	if(numNodes%1000000==0) System.out.println(""+numNodes);
+	                	if(numNodes%1000000==0) System.out.println("#nodes processed: "+numNodes);
 	                	numNodes++;
 	                }
 	                else if (ln.equals("way")) {
@@ -85,7 +85,7 @@ public class OSMParser {
 		                				
 		                				g.addEdge(sourceId,targetId,(int)Math.ceil(distance/speed));
 			                			
-										if(numEdges%100000==0) System.out.println(""+numEdges);
+										if(numEdges%100000==0) System.out.println("#edges processed: "+numEdges);
 		        	                	numEdges++;
 		                			}
 	                			}
