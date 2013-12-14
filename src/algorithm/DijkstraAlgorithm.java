@@ -51,7 +51,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		queue.add(new NodeEntry(sourceId, 0));
 		while(!queue.isEmpty()) {
 			NodeEntry u = queue.poll();
-			
+			//System.out.println("MIN:"+u.getNodeId());
 			visitedNodesMarks.add(u.getNodeId());
 			
 			if(u.getNodeId() == targetId)
@@ -68,7 +68,6 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 			if(distU+h < u.getDistance())
 				continue;
 			
-			//System.out.println("MIN:"+u.getNodeId());
 			for (Arc e : graph.getNeighbors(u.getNodeId())) {
 				if(considerEdge(e)) {
 					//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());

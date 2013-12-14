@@ -54,6 +54,10 @@ public class Arc implements Serializable, Comparable<Arc> {
 		return this.shortcutNode;
 	}
 	
+	public Arc reverseEdge(long v) {
+		return new Arc(v, cost, arcFlag, shortcutNode);
+	}
+	
 	@Override
 	public int compareTo(Arc a) {
 		if(this.headNode > a.headNode)

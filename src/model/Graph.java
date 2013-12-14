@@ -1,7 +1,9 @@
 package model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 
@@ -151,10 +153,9 @@ public class Graph {
 		return Bind.findVals2(this.adjacenyList, nodeId);
 	}
 	
-	@SuppressWarnings("unused")
-	public int getNumNeighbors(long nodeId) {
+	public int getNumNeighbors(long nodeId, boolean onlyArcFlags) {
 		int count = 0;
-		for(Arc a : getNeighbors(nodeId)) count++;
+		for(Arc a : getNeighbors(nodeId)) { if(!onlyArcFlags || (onlyArcFlags && a.isArcFlag())) count++;}
 		return count;
 	}
 	
