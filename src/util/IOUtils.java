@@ -1,5 +1,6 @@
 package util;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -33,5 +34,10 @@ public class IOUtils {
 		{
 		     System.err.println("Could not make file: " +e);
 		} 
+	}
+	
+	public static boolean deleteFile(String fileName) {
+		File file = new File(fileName);
+		return file.delete();
 	}
 }

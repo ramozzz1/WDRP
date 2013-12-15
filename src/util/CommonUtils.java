@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Random;
 
 public class CommonUtils {
@@ -49,5 +51,12 @@ public class CommonUtils {
 				randomIndices.add(randomIndex);
 		}
 		return randomIndices;
+	}
+	
+	public static <K> List<K> convertQueueToArray(Queue<K> q) {
+		Queue<K> temp = new PriorityQueue<K>( q );
+		List<K> list = new ArrayList<K>();
+		while(temp.size()>0) list.add(temp.poll());
+		return list;
 	}
 }

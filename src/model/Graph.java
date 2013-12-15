@@ -153,9 +153,10 @@ public class Graph {
 		return Bind.findVals2(this.adjacenyList, nodeId);
 	}
 	
-	public int getNumNeighbors(long nodeId, boolean onlyArcFlags) {
+	@SuppressWarnings("unused")
+	public int getNumNeighbors(long nodeId) {
 		int count = 0;
-		for(Arc a : getNeighbors(nodeId)) { if(!onlyArcFlags || (onlyArcFlags && a.isArcFlag())) count++;}
+		for(Arc a : getNeighbors(nodeId)) { count++;}
 		return count;
 	}
 	
@@ -181,6 +182,69 @@ public class Graph {
 			}
 		}
 		return minNode;
+	}
+	
+	/**
+	 * disable node, i.e. set the arc flags of the 
+	 *    incoming edges of this node to false 
+	 * @param n
+	 */
+	public void disableNode(long n) {
+		for (Arc a : getNeighbors(n)) {
+			setArcFlagForEdge(a.getHeadNode(),a.reverseEdge(n), false);
+		}
+	}
+	
+	/**
+	 * enable node, i.e. set the arc flags of the 
+	 *    incoming edges of this node to true 
+	 * @param n the node id
+	 */
+	public void enableNode(long n) {
+		for (Arc a : getNeighbors(n)) {
+			setArcFlagForEdge(a.getHeadNode(),a.reverseEdge(n), true);
+		}
+	}
+	
+	/**
+	 * Get arcs that are outgoing to this node but not disabled
+	 * @param n the node id
+	 * @return
+	 */
+	public List<Arc> getNeighborsNotDisabled(long n) {
+		List<Arc> nonDisabledArcs = new ArrayList<Arc>(); 
+		for (Arc a : getNeighbors(n)) {
+			if(a.isArcFlag())
+				nonDisabledArcs.add(a);
+		}
+		return nonDisabledArcs;
+	}
+	
+	/**
+	 * Get number of neighbors not disabled
+	 * @param n the node id
+	 * @return
+	 */
+	public int getNumNeighborsNotDisabled(long n) {
+		int count = 0;
+		for (Arc a : getNeighbors(n)) {
+			if(a.isArcFlag())
+				count++;
+		}
+		return count;
+	}
+	
+	/**
+	 * Get the arcs that are not disabled, i.e. the arcs that have an arc flag which is true
+	 * @return
+	 */
+	public List<Arc> getArcsNotDisabled() {
+		List<Arc> arcs = new ArrayList<Arc>();
+		for (Tuple2<Long,Arc> arc : this.adjacenyList) {
+			if(arc.b.isArcFlag())
+				arcs.add(arc.b);
+		}
+		return arcs;
 	}
 
 	public void removeNode(long nodeId) {

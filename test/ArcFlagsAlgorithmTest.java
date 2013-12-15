@@ -1,17 +1,14 @@
 import static org.junit.Assert.assertEquals;
 import gnu.trove.set.hash.THashSet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.Arc;
-import model.Path;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import algorithm.ArcFlagsAlgorithm;
-import algorithm.DijkstraAlgorithm;
 
 public class ArcFlagsAlgorithmTest extends SPTestBase {
 	
@@ -114,7 +111,6 @@ public class ArcFlagsAlgorithmTest extends SPTestBase {
 		a.setRegion(1.0,3.0,1.0,3.0);
 		a.precompute();
 		System.out.println(a.nodesInRegion);
-		List<Arc> arcs = a.getArcFlags();
 		int dist = a.computeShortestPath(0, 3);
 		assertEquals(dist,3);
 	}

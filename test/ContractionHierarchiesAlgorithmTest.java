@@ -16,11 +16,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import util.CommonUtils;
 import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.ContractionHierarchiesAlgorithm.QEntry;
 
 public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
+	private ContractionHierarchiesAlgorithm d;
 	private ContractionHierarchiesAlgorithm a;
 	private Graph customGraph;
 	
@@ -28,6 +30,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	public void setUpAF() {
 		createCustomGraph();
 		a = new ContractionHierarchiesAlgorithm(customGraph);
+		d = new ContractionHierarchiesAlgorithm(g);
 	}
 	
 	@Test
@@ -39,6 +42,90 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		
 		assertEquals(nodes.size(), customGraph.nodes.size());
 		assertThat(nodes.toString(), not(is(customGraph.nodes.keySet().toString())));
+	}
+	
+	@Test
+	public void testComputeShortcuts() {
+		int n = 2;
+		customGraph.disableNode(n);
+		int sh = a.computeShortcuts(n, false);
+		customGraph.enableNode(n);
+		assertEquals(sh, 0);
+		
+		n = 0;
+		customGraph.disableNode(n);
+		sh = a.computeShortcuts(n, false);
+		customGraph.enableNode(n);
+		assertEquals(sh, 0);
+		
+		n = 3;
+		customGraph.disableNode(n);
+		sh = a.computeShortcuts(n, false);
+		customGraph.enableNode(n);
+		assertEquals(sh, 0);
+		
+		n = 5;
+		customGraph.disableNode(n);
+		sh = a.computeShortcuts(n, false);
+		customGraph.enableNode(n);
+		assertEquals(sh, 0);
+		
+		n = 4;
+		customGraph.disableNode(n);
+		sh = a.computeShortcuts(n, false);
+		customGraph.enableNode(n);
+		assertEquals(sh, 2);
+		
+		n = 1;
+		customGraph.disableNode(n);
+		sh = a.computeShortcuts(n, false);
+		customGraph.enableNode(n);
+		assertEquals(sh, 8);
+	}
+	
+	@Test
+	public void testLazyHeuristic() {
+		Queue<QEntry> queue = a.computeEDNodeOrdering();
+		
+		a.lazyUpdate(queue);
+		List<QEntry> list = CommonUtils.convertQueueToArray(queue);
+		assertEquals(list.toString(), "[{3,-3}, {0,-2}, {5,-2}, {2,-1}, {4,-1}, {1,3}]");
+		
+		a.contractSingleNode(queue.poll().getNodeId());
+		
+		a.lazyUpdate(queue);
+		list = CommonUtils.convertQueueToArray(queue);
+		assertEquals(list.toString(), "[{5,-2}, {0,-1}, {2,-1}, {4,-1}, {1,3}]");
+		
+		a.contractSingleNode(queue.poll().getNodeId());
+		
+		a.lazyUpdate(queue);
+		list = CommonUtils.convertQueueToArray(queue);
+		assertEquals(list.toString(), "[{0,-1}, {2,-1}, {4,-1}, {1,3}]");
+		
+		a.contractSingleNode(queue.poll().getNodeId());
+		
+		a.lazyUpdate(queue);
+		list = CommonUtils.convertQueueToArray(queue);
+		assertEquals(list.toString(), "[{2,-1}, {4,-1}, {1,3}]");
+		
+		a.contractSingleNode(queue.poll().getNodeId());
+		
+		a.lazyUpdate(queue);
+		list = CommonUtils.convertQueueToArray(queue);
+		assertEquals(list.toString(), "[{4,-1}, {1,3}]");
+		
+		a.contractSingleNode(queue.poll().getNodeId());
+		
+		a.lazyUpdate(queue);
+		list = CommonUtils.convertQueueToArray(queue);
+		assertEquals(list.toString(), "[{1,3}]");
+		
+		a.contractSingleNode(queue.poll().getNodeId());
+		
+		a.lazyUpdate(queue);
+		list = CommonUtils.convertQueueToArray(queue);
+		assertEquals(list.toString(), "[]");
 	}
 	
 	@Test
@@ -75,7 +162,17 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	public void testNodesHieracy() {
 		Queue<QEntry> nodesEDOrdering = a.computeEDNodeOrdering();
 		TLongIntHashMap nodesHierachy =  a.contractNodes(nodesEDOrdering.size(), nodesEDOrdering);
-		assertEquals(nodesHierachy.toString(), "{5=1, 4=4, 3=0, 2=2, 1=5, 0=3}");
+		assertEquals(nodesHierachy.toString(), "{5=1, 4=4, 3=0, 2=3, 1=5, 0=2}");
+	}
+	
+	@Test
+	public void testUpwardGraph() {
+		Queue<QEntry> nodesEDOrdering = a.computeEDNodeOrdering();
+		TLongIntHashMap nodesHierachy =  a.contractNodes(nodesEDOrdering.size(), nodesEDOrdering);		
+		a.constructUpwardsGraph(nodesHierachy);
+		
+		assertEquals(a.getNumberOfShortcuts(), 0);
+		assertEquals(customGraph.getArcsNotDisabled().size(), 8);
 	}
 	
 	@Test
@@ -118,7 +215,76 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		assertEquals(sh, 0);
 		
 		ed = a.computeEdgeDifference(0);
+		assertEquals(ed, -1);
+		
+		sh = a.contractSingleNode(0);
+		assertEquals(sh, 0);
+		
+		ed = a.computeEdgeDifference(2);
+		assertEquals(ed, -1);
+		
+		sh = a.contractSingleNode(2);
+		assertEquals(sh, 0);
+		
+		ed = a.computeEdgeDifference(5);
+		assertEquals(ed, -2);
+		
+		sh = a.contractSingleNode(5);
+		assertEquals(sh, 0);
+		
+		ed = a.computeEdgeDifference(4);
+		assertEquals(ed, -1);
+		
+		sh = a.contractSingleNode(4);
+		assertEquals(sh, 0);
+		
+		ed = a.computeEdgeDifference(1);
 		assertEquals(ed, 0);
+		
+		sh = a.contractSingleNode(1);
+		assertEquals(sh, 0);
+	}
+	
+	@Test
+	public void testShortestPathSourceSource() {
+		d.precompute();
+		int dist = d.computeShortestPath(0, 0);
+		assertEquals(dist,0);
+	}
+	
+	@Test
+	public void testShortestPathSourceNeighbor() {		
+		d.precompute();
+		int dist = d.computeShortestPath(0, 1);
+		assertEquals(dist,1);
+	}
+	
+	@Test
+	public void testShortestPathSourceTarget(){
+		d.precompute();
+		int dist = d.computeShortestPath(0, 3);
+		assertEquals(dist,3);
+	}
+	
+	@Test
+	public void testShortestPathSourceTarget2(){
+		d.precompute();
+		int dist = d.computeShortestPath(0, 4);
+		assertEquals(dist,4);
+	}
+	
+	@Test
+	public void testShortestPathSourceTarget3(){
+		d.precompute();
+		int dist = d.computeShortestPath(0, 5);
+		assertEquals(dist,4);
+	}
+	
+	@Test
+	public void testNoPath(){
+		d.precompute();
+		int dist = d.computeShortestPath(0, 999);
+		assertEquals(dist,-1);
 	}
 
 	private void createCustomGraph() {

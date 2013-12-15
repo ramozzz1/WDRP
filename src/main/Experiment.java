@@ -84,7 +84,7 @@ public class Experiment {
 				
 				metrics.put(AVG_RUNNING_TIME, (int) (metrics.get(AVG_RUNNING_TIME)+elapsed));
 				metrics.put(AVG_TRAVEL_TIME, metrics.get(AVG_TRAVEL_TIME)+travelTime);
-				metrics.put(AVG_VISITED_NODES, metrics.get(AVG_VISITED_NODES)+alg.visitedNodesMarks.size());
+				//metrics.put(AVG_VISITED_NODES, metrics.get(AVG_VISITED_NODES)+alg.visitedNodesMarks.size());
 				results.put(name, metrics);
 			}
 			i++;
@@ -95,14 +95,14 @@ public class Experiment {
 		System.out.println("----------RESULTS "+ numberOfTimes + "X-----------");
 		//print the header for the result table
 		Collections.sort(METRICS);
-		System.out.printf("%-20s","Algorithm");
+		System.out.printf("%-25s","Algorithm");
 		for (String metric : METRICS)
 			System.out.printf(" %-20s",metric);
 		System.out.println();
 			
 		//print the metric results
 		for (Entry<String, TreeMap<String, Integer>> entry : results.entrySet()) {
-			System.out.printf("%-20s",entry.getKey());
+			System.out.printf("%-25s",entry.getKey());
 			for (Entry<String, Integer> metric : entry.getValue().entrySet()) {
 				int value = metric.getValue();
 				if(!metric.getKey().equals(PRECOMPUTATION_TIME))

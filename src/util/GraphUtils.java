@@ -18,11 +18,14 @@ import algorithm.DijkstraAlgorithm;
 
 public class GraphUtils {
 	
-	public static void convertOSMToGraph (String fileName) {
+	public static Graph convertOSMToGraph (String fileName) {
 		OSMParser parser = new OSMParser();
+		IOUtils.deleteFile("resources/db/"+fileName+".graph");
 		parser.osmToGraph("resources/osm/"+fileName+".osm");
 		Graph g = new Graph("resources/db/"+fileName+".graph");
 		GraphUtils.convertToLCC(g);
+		
+		return new Graph("resources/db/"+fileName+".graph");
 	}
 	
 	//convert graph to largest connected component

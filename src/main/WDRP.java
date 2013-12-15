@@ -2,6 +2,8 @@ package main;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Graph;
 import model.Path;
@@ -12,6 +14,8 @@ import org.simpleframework.http.Response;
 import org.simpleframework.http.core.Container;
 
 import util.GraphUtils;
+import algorithm.AbstractRoutingAlgorithm;
+import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.DijkstraAlgorithm;
 
 
@@ -116,17 +120,14 @@ public class WDRP {
 		SocketAddress address = new InetSocketAddress(port);
 		
   		connection.connect(address);*/
-  		
-    	GraphUtils.convertOSMToGraph("saarland");
-    	
-  		/*Graph g = new Graph("resources/db/saarland.graph");
-  		ContractionHierarchiesAlgorithm a = new ContractionHierarchiesAlgorithm(g,1000);
-  		a.precompute();*/
-  		/*List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
+		
+		Graph g = GraphUtils.convertOSMToGraph("saarland");
+  		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
-    	algorithms.add(new AstarAlgorithm(g));
+    	algorithms.add(new ContractionHierarchiesAlgorithm(g));
+    	//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,42));    	
-    	algorithms.add(new ArcFlagsAlgorithm(g,49.20,49.25,6.95,7.05));
-    	Experiment.doExperiment(g, algorithms, 1, true);*/
+    	//algorithms.add(new ArcFlagsAlgorithm(g,49.20,49.25,6.95,7.05));
+    	Experiment.doExperiment(g, algorithms, 100, false);
     }   
 }

@@ -108,6 +108,39 @@ public class GraphTest {
 		assertEquals("{\"minLat\":-10.0, \"maxLat\":2.0, \"minLon\":0.0, \"maxLon\":10.0}", g.getBounds().toString());
 	}
 	
+	@Test
+	public void testEnableDisableNode(){
+		Graph g = new Graph();
+		int n0 = 0;
+		int n1 = 1;
+		int n2 = 2;
+		
+		g.addNode(n0);
+		g.addNode(n1);
+		g.addNode(n2);
+		g.addEdge(n0, n1, 1);
+		g.addEdge(n1, n2, 1);
+		g.addEdge(n2, n0, 1);
+		
+		g.setArcFlagsForAllEdges(true);
+		
+		assertEquals(g.getNumNeighborsNotDisabled(n1),2);
+		assertEquals(g.getNeighborsNotDisabled(n1).toString(),"[(0, 1, true, -1), (2, 1, true, -1)]");
+		
+		g.disableNode(n0);
+		assertEquals(g.getNumNeighborsNotDisabled(n1),1);
+		assertEquals(g.getNeighborsNotDisabled(n1).toString(),"[(2, 1, true, -1)]");
+		
+		g.enableNode(n0);
+		assertEquals(g.getNumNeighborsNotDisabled(n1),2);
+		assertEquals(g.getNeighborsNotDisabled(n1).toString(),"[(0, 1, true, -1), (2, 1, true, -1)]");
+		
+		g.disableNode(n0);
+		g.disableNode(n2);
+		assertEquals(g.getNumNeighborsNotDisabled(n1),0);
+		assertEquals(g.getNeighborsNotDisabled(n1).toString(),"[]");
+	}
+	
 	/*@Test
 	public void testAddDoubleEdge(){
 		Graph g = new Graph();
