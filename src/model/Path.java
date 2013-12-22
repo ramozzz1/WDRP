@@ -92,7 +92,7 @@ public class Path {
 	 * @param p
 	 */
 	public void connect(Path p) {
-		if(p.isEmpty()) {
+		if(!p.isEmpty()) {
 			for (int i = 1; i < p.parts.size(); i++) {
 				addPathPart(-1, p.parts.get(i));
 			}

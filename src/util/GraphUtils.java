@@ -18,14 +18,14 @@ import algorithm.DijkstraAlgorithm;
 
 public class GraphUtils {
 	
-	public static Graph convertOSMToGraph (String fileName) {
-		OSMParser parser = new OSMParser();
+	public static Graph convertOSMToGraph (String fileName) {		
 		IOUtils.deleteFile("resources/db/"+fileName+".graph");
-		parser.osmToGraph("resources/osm/"+fileName+".osm");
-		Graph g = new Graph("resources/db/"+fileName+".graph");
+		
+		OSMParser parser = new OSMParser();
+		Graph g = parser.osmToGraph("resources/osm/"+fileName+".osm");
 		GraphUtils.convertToLCC(g);
 		
-		return new Graph("resources/db/"+fileName+".graph");
+		return g;
 	}
 	
 	//convert graph to largest connected component
@@ -65,8 +65,6 @@ public class GraphUtils {
 		System.out.println("Graph converted to LCC Graph");
 		System.out.println("|V|:"+g.nodes.size()+" |E|:"+g.adjacenyList.size()/2);
 		System.out.println("Total #nodes removed: " + removedNodes);
-		
-		g.closeConnection();
 	}
 
 	public static Long getRandomNode(

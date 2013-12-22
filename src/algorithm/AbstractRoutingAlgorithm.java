@@ -6,7 +6,6 @@ import java.util.Set;
 
 import model.Arc;
 import model.Graph;
-import model.LatLonPoint;
 import model.Path;
 
 public abstract class AbstractRoutingAlgorithm {

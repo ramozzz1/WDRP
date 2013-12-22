@@ -108,8 +108,6 @@ public class OSMParser {
         System.out.println("Processing time "+end+"ms");
         System.out.println("Done parsing osm");
         
-        g.closeConnection();
-        
         return g;
 	}
 	

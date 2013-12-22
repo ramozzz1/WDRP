@@ -12,6 +12,7 @@ import java.util.Queue;
 
 import model.Arc;
 import model.Graph;
+import model.Node;
 import model.Path;
 
 import org.junit.After;
@@ -21,7 +22,6 @@ import org.junit.Test;
 import util.CommonUtils;
 import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.ContractionHierarchiesAlgorithm.QEntry;
-import algorithm.DijkstraAlgorithm;
 
 public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
@@ -295,7 +295,6 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		d.precompute();
 		int c = d.computeShortestPath(0, 5);
 		Path p = d.extractPath(5);
-		System.out.println(p);
 		assertEquals(p.getNodes().size(), 5);
 		assertEquals(p.getArcs().size(), 4);
 		assertEquals(p.getCost(), c);
