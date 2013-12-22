@@ -70,7 +70,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		System.out.println("Constructing upwards graph");
 		constructUpwardsGraph(this.nodesHierachy);
 		
-		System.out.println("#shortcust added: "+this.numberOfShortcuts);
+		System.out.println("total #shortcust added: "+this.numberOfShortcuts);
 	}
 
 	/**

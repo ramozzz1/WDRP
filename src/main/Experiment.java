@@ -57,9 +57,12 @@ public class Experiment {
 			String name = alg.getName();
 			TreeMap<String, Integer> metrics = results.get(name); 
 			System.out.println("Precomputing for "+name);
+			
 			long start = System.nanoTime();
 			alg.precompute();
 			long elapsed = (System.nanoTime() - start)/1000000;
+			
+			System.out.println("Completed precomputing for "+name);
 			metrics.put(PRECOMPUTATION_TIME, (int) elapsed);
 			results.put(name, metrics);
 		}
