@@ -42,6 +42,7 @@ public class Graph {
 					.cacheHardRefEnable()
 					.asyncFlushDelay(500)
 					.randomAccessFileEnableKeepIndexMapped()
+					.closeOnJvmShutdown()
 					.make();
 		}
 		else {

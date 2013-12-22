@@ -64,8 +64,10 @@ public class ALTAlgorithm extends DijkstraAlgorithm {
 		if(targetId != -1) {
 			int maxDist = 0;
 			for (DBHashMap<Long,Integer> ld : landMarkDistances.values()) {
-				int lmDist = Math.abs(ld.get(nodeId) - ld.get(targetId));
-				maxDist = Math.max(maxDist, lmDist);
+				if(ld.containsKey(nodeId)){
+					int lmDist = Math.abs(ld.get(nodeId) - ld.get(targetId));
+					maxDist = Math.max(maxDist, lmDist);
+				}
 			}
 			return maxDist;
 		}

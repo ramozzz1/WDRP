@@ -43,14 +43,8 @@ public abstract class AbstractRoutingAlgorithm {
 			do {				
 				long prevNode = previous.get(currNode);
 				Arc a = graph.getEdge(prevNode, currNode);
-				if(a != null && a.isShortcut()) {
-					//Path shPath = new Path(); 
+				if(a != null && a.isShortcut())
 					convertShortcutArcToPath(a, prevNode, currNode, p);
-					//System.out.println(shPath);
-					System.out.println(p);
-					//shPath.connect(p);
-					//p = shPath;
-				}
 				else
 					p.addNode(graph.getNode(currNode), a);
 				currNode = prevNode;

@@ -22,7 +22,7 @@ import algorithm.DijkstraAlgorithm;
 
 public class WDRP {
 	private static Graph graph;
-	private static DijkstraAlgorithm algorithm;
+	private static AbstractRoutingAlgorithm algorithm;
 	String regionBoxSaarland = "49.20,49.25,6.95,7.05";
 	String regionBoxBW = "47.95,48.05,7.75,7.90";
 	
@@ -111,8 +111,7 @@ public class WDRP {
 		/*int port = 8888;
 		
 		graph = new Graph("resources/db/saarland.graph");
-    	algorithm = new DijkstraAlgorithm(graph);
-    	algorithm.precompute();
+    	algorithm = new ContractionHierarchiesAlgorithm(graph);
     	
 		Container container = new WDRPHandler();
 		Server server = new ContainerServer(container);
@@ -121,13 +120,13 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
-		Graph g = GraphUtils.convertOSMToGraph("saarland");
+		Graph g = GraphUtils.convertOSMToGraph("saarland");	
   		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	algorithms.add(new ContractionHierarchiesAlgorithm(g));
     	//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,42));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,49.20,49.25,6.95,7.05));
-    	Experiment.doExperiment(g, algorithms, 100, false);
+    	Experiment.doExperiment(g, algorithms, 1, false);
     }   
 }
