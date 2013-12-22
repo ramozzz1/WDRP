@@ -2,12 +2,15 @@ package algorithm;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongIntHashMap;
+import gnu.trove.map.hash.TLongLongHashMap;
+import gnu.trove.set.hash.THashSet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 import model.Arc;
 import model.Graph;
@@ -23,6 +26,11 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	private HeuristicTypes heuristicType;
 	private int maxNumberContractions;
 	private int numberOfShortcuts;
+	private long minCommonNode;
+	private TLongLongHashMap previousSource;
+	private TLongLongHashMap previousTarget;
+	private Set<Long> visitedNodesSource;
+	private Set<Long> visitedNodesTarget;
 	
 	public ContractionHierarchiesAlgorithm(Graph graph) {
 		this(graph,Integer.MAX_VALUE, HeuristicTypes.LAZY);
@@ -175,7 +183,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	 * @return
 	 */
 	public int computeEdgeDifference(long v) {
-		//first set all the neighbors to false,i.e. to indicate unreachablity from node v
+		//first set all the neighbors to false,i.e. to indicate unreachability from node v
 		graph.disableNode(v);
 				
 		//calculate the #shortcuts without adding them
@@ -186,6 +194,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		
 		//compute ed		
 		int edgeDifference = shortcuts - graph.getNumNeighborsNotDisabled(v);
+		
 		return edgeDifference;
 	}
 	
@@ -256,6 +265,8 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		dijkstraSource.considerShortcuts = true;
 		dijkstraSource.computeShortestPath(sourceId, -1);
 		THashMap<Long, Integer> distSource = dijkstraSource.distance;
+		this.previousSource = dijkstraSource.previous;
+		this.visitedNodesSource = dijkstraSource.visitedNodesMarks;
 		
 		//compute dijkstra one-to-all from target
 		DijkstraAlgorithm dijkstraTarget = new DijkstraAlgorithm(this.graph);
@@ -263,11 +274,22 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		dijkstraTarget.considerShortcuts = true;
 		dijkstraTarget.computeShortestPath(targetId, -1);
 		THashMap<Long, Integer> distTarget = dijkstraTarget.distance;
+		this.previousTarget = dijkstraTarget.previous;
+		this.visitedNodesTarget = dijkstraTarget.visitedNodesMarks;
 		
+		//get the minimum common node between the visited nodes of source and target
 		int min = Integer.MAX_VALUE;
+		this.minCommonNode = -1;
 		for (Entry<Long, Integer> n : distSource.entrySet()) {
-			if(distTarget.contains(n.getKey()))
-				min = Math.min(min, (n.getValue() + distTarget.get(n.getKey())));
+			long node = n.getKey();
+			if(distTarget.contains(node)) {
+				int sumDist = n.getValue() + distTarget.get(node);
+				if(sumDist < min) {
+					min = sumDist;
+					this.minCommonNode = node;
+				}
+				
+			}
 		}
 		
 		if(min == Integer.MAX_VALUE) min = -1;
@@ -276,22 +298,31 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	}
 	
 	@Override
-	public Path extractPath(long targetId) {
-		Path path = new Path();
-		
-		/*if(previous.containsKey(nodeId)) {
-			long prevNode = previous.get(nodeId);
-			do {
-				LatLonPoint p = graph.getNode(nodeId);
-				path.addNode(new Node(nodeId,p.lat,p.lon), graph.getEdge(prevNode, nodeId));
-				nodeId = prevNode;
-				prevNode = previous.get(nodeId);
-			} while(nodeId != NULL_NODE);
-		}*/
-			
-		return path;
+	/**
+	 * Get visited nodes by returning the intersection of the visited nodes from 
+	 * the source and the visited nodes from the target
+	 */
+	public Set<Long> getVisitedNodes() {
+		this.visitedNodesMarks = new THashSet<Long>(this.visitedNodesSource);
+		this.visitedNodesMarks.addAll(this.visitedNodesTarget);
+		return this.visitedNodesMarks;
 	}
 	
+	@Override
+	public Path extractPath(long nodeId) {
+		//contruct path from source to the minimum common node [s->...->c]
+		Path sourcePath = contructPath(this.previousSource, this.minCommonNode);
+		
+		//contruct path from target to the minimum common node [c->...->t]
+		Path targetPath = contructPath(this.previousTarget, this.minCommonNode).reversePath();
+		
+		//connect the source path and target path
+		sourcePath.connect(targetPath);
+		
+		//return the connected path
+		return sourcePath;
+	}
+
 	public int getNumberOfShortcuts() {
 		return this.numberOfShortcuts;
 	}
@@ -343,5 +374,4 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 			return "{"+nodeId+","+ed+"}";
 		}
 	}
-	
 }

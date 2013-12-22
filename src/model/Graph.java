@@ -63,7 +63,11 @@ public class Graph {
 		db.close();
 	}
 	
-	public LatLonPoint getNode(long nodeId) {
+	public Node getNode(long nodeId) {
+		return new Node(nodeId,nodes.get(nodeId));
+	}
+	
+	public LatLonPoint getLatLon(long nodeId) {
 		return nodes.get(nodeId);
 	}
 	

@@ -84,14 +84,15 @@ public class Experiment {
 				
 				metrics.put(AVG_RUNNING_TIME, (int) (metrics.get(AVG_RUNNING_TIME)+elapsed));
 				metrics.put(AVG_TRAVEL_TIME, metrics.get(AVG_TRAVEL_TIME)+travelTime);
-				//metrics.put(AVG_VISITED_NODES, metrics.get(AVG_VISITED_NODES)+alg.visitedNodesMarks.size());
+				metrics.put(AVG_VISITED_NODES, metrics.get(AVG_VISITED_NODES)+alg.getVisitedNodes().size());
 				results.put(name, metrics);
 			}
 			i++;
 		}
 		System.out.println("----------DONE WITH COMPUTATIONS-----------");
 		System.out.println();
-		
+	
+		System.out.println("#nodes:"+g.nodes.size()+" #edges(including shortcuts):"+g.adjacenyList.size()/2);
 		System.out.println("----------RESULTS "+ numberOfTimes + "X-----------");
 		//print the header for the result table
 		Collections.sort(METRICS);

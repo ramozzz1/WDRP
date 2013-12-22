@@ -19,10 +19,30 @@ public class Path {
 	 * @param n
 	 */
 	public void addNode(Node from, Arc a) {
-		parts.add(0, new PathPart(from, a));
-		if(a!=null) {
-			this.cost += a.getCost();
-			this.bounds.updateBounds(from.getLat(),from.getLon());
+		addPathPart(new PathPart(from, a));
+	}
+	
+	/**
+	 * Add a @PathPart to the head of the list
+	 * @param p
+	 */
+	public void addPathPart(PathPart p) {
+		addPathPart(0,p);
+	}
+	
+	/**
+	 * Add a @PathPart to position i
+	 * @param p
+	 */
+	public void addPathPart(int i, PathPart p) {
+		if(i==-1)
+			parts.add(p);
+		else
+			parts.add(i, p);
+		
+		if(p.arc!=null) {
+			this.cost += p.arc.getCost();
+			this.bounds.updateBounds(p.from.getLat(),p.from.getLon());
 		}
 	}
 
@@ -50,6 +70,35 @@ public class Path {
 		return bounds;
 	}
 	
+	public boolean isEmpty() {
+		return this.parts.isEmpty();
+	}
+	
+	public Path reversePath() {
+		Path reversePath = new Path();
+		for (PathPart part : parts) {
+			Arc a = null;
+			if(part.arc != null)
+				a = part.arc.reverseEdge(part.from.getId());
+			reversePath.addNode(part.from, a);
+		}
+		
+		return reversePath; 
+	}
+	
+	/**
+	 * Connect two paths together
+	 * @precondition The last node of this path should be equal to the first node of the other path 
+	 * @param p
+	 */
+	public void connect(Path p) {
+		if(p.isEmpty()) {
+			for (int i = 1; i < p.parts.size(); i++) {
+				addPathPart(-1, p.parts.get(i));
+			}
+		}
+	}
+	
 	public String toJsonArray() {
 		String s = "[";
 		for (int i = 0; i < parts.size(); i++) {
@@ -66,7 +115,7 @@ public class Path {
 	public String toString() {
 		String s = "[";
 		if(parts.size() > 0) {
-			s += parts.get(0).from;
+			s += parts.get(0).from.getId();
 			for (PathPart part : parts) {
 				Arc a = part.arc;
 				if(a != null)

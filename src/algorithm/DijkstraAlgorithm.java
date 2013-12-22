@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 import model.Arc;
 import model.Graph;
@@ -18,7 +19,6 @@ import model.Path;
 
 public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	
-	private static final long NULL_NODE = -1L;
 	public TLongLongHashMap previous;
 	public THashMap<Long, Integer> distance;
 	public boolean considerArcFlags;
@@ -108,19 +108,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	
 	@Override
 	public Path extractPath(long nodeId) {
-		Path path = new Path();
-		
-		if(previous.containsKey(nodeId)) {
-			long prevNode = previous.get(nodeId);
-			do {
-				LatLonPoint p = graph.getNode(nodeId);
-				path.addNode(new Node(nodeId,p.lat,p.lon), graph.getEdge(prevNode, nodeId));
-				nodeId = prevNode;
-				prevNode = previous.get(nodeId);
-			} while(nodeId != NULL_NODE);
-		}
-			
-		return path;
+		return contructPath(this.previous, nodeId);
 	}
 
 	@Override
@@ -129,5 +117,10 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	@Override
 	public String getName() {
 		return "Dijkstra";
+	}
+
+	@Override
+	public Set<Long> getVisitedNodes() {
+		return this.visitedNodesMarks;
 	}
 }

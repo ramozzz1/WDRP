@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import gnu.trove.map.hash.TLongIntHashMap;
+import gnu.trove.map.hash.TLongLongHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Queue;
 
 import model.Arc;
 import model.Graph;
+import model.Path;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +21,7 @@ import org.junit.Test;
 import util.CommonUtils;
 import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.ContractionHierarchiesAlgorithm.QEntry;
+import algorithm.DijkstraAlgorithm;
 
 public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
@@ -285,6 +288,158 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		d.precompute();
 		int dist = d.computeShortestPath(0, 999);
 		assertEquals(dist,-1);
+	}
+	
+	@Test
+	public void testExtractPath() {
+		d.precompute();
+		int c = d.computeShortestPath(0, 5);
+		Path p = d.extractPath(5);
+		System.out.println(p);
+		assertEquals(p.getNodes().size(), 5);
+		assertEquals(p.getArcs().size(), 4);
+		assertEquals(p.getCost(), c);
+		assertEquals(p.getCost(), 4);
+		assertEquals(p.toString(), "[0->1->2->3->5]");
+	}
+	
+	@Test
+	public void testExtractPathNeighbor() {
+		d.precompute();
+		d.computeShortestPath(0, 1);
+		Path p = d.extractPath(1);
+		assertEquals(p.getNodes().size(), 2);
+		assertEquals(p.getArcs().size(), 1);
+		assertEquals(p.getCost(), 1);
+		assertEquals(p.toString(), "[0->1]");
+	}
+	
+	@Test
+	public void testExtractNoPath() {
+		d.precompute();
+		d.computeShortestPath(0, 999);
+		Path p = d.extractPath(999);
+		assertEquals(p.getNodes().size(), 0);
+		assertEquals(p.getArcs().size(), 0);
+		assertEquals(p.getCost(), 0);
+		assertEquals(p.toString(), "[]");
+	}
+	
+	@Test
+	public void testExtractSoureSourcePath() {
+		d.precompute();
+		d.computeShortestPath(0, 0);
+		Path p = d.extractPath(0);
+		assertEquals(p.getNodes().size(), 1);
+		assertEquals(p.getArcs().size(), 0);
+		assertEquals(p.getCost(), 0);
+		assertEquals(p.toString(), "[0]");
+	}
+	
+	@Test
+	public void testConstructPathWithShortcuts() {
+		TLongLongHashMap previous = new TLongLongHashMap();
+		Graph g = new Graph();
+		g.addNode(0);
+		g.addNode(1);
+		g.addNode(2);
+		g.addNode(3);
+		g.addNode(4);
+		g.addNode(5);
+		g.addEdge(0, 1, 0, true, -1);
+		g.addEdge(1, 2, 0, true, -1);
+		g.addEdge(1, 3, 0, true, 2);
+		g.addEdge(1, 4, 0, true, 3);
+		g.addEdge(2, 3, 0, true, -1);
+		g.addEdge(3, 4, 0, true, -1);
+		g.addEdge(4, 5, 0, true, -1);
+		
+		previous.put(5,4);
+		previous.put(4,1);
+		previous.put(1,0);
+		previous.put(0,-1);
+		
+		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		Path p = ch.contructPath(previous, 5);
+		assertEquals(p.toString(), "[0->1->2->3->4->5]");
+	}
+	
+	@Test
+	public void testConstructPathWithShortcuts1() {
+		TLongLongHashMap previous = new TLongLongHashMap();
+		Graph g = new Graph();
+		g.addNode(0);
+		g.addNode(1);
+		g.addNode(2);
+		g.addNode(3);
+		g.addNode(4);
+		g.addNode(5);
+		g.addEdge(0, 1, 0, true, -1);
+		g.addEdge(1, 2, 0, true, -1);
+		g.addEdge(1, 3, 0, true, 2);
+		g.addEdge(1, 4, 0, true, 3);
+		g.addEdge(2, 3, 0, true, -1);
+		g.addEdge(3, 4, 0, true, -1);
+		g.addEdge(4, 5, 0, true, -1);
+		
+		previous.put(3,1);
+		previous.put(1,-1);
+		
+		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		Path p = ch.contructPath(previous, 3);
+		assertEquals(p.toString(), "[1->2->3]");
+	}
+	
+	@Test
+	public void testConstructPathWithShortcuts2() {
+		TLongLongHashMap previous = new TLongLongHashMap();
+		Graph g = new Graph();
+		g.addNode(0);
+		g.addNode(1);
+		g.addNode(2);
+		g.addNode(3);
+		g.addNode(4);
+		g.addNode(5);
+		g.addEdge(0, 1, 0, true, -1);
+		g.addEdge(1, 2, 0, true, -1);
+		g.addEdge(1, 3, 0, true, 2);
+		g.addEdge(1, 4, 0, true, 3);
+		g.addEdge(2, 3, 0, true, -1);
+		g.addEdge(3, 4, 0, true, -1);
+		g.addEdge(4, 5, 0, true, -1);
+		
+		previous.put(1,4);
+		previous.put(4,-1);
+		
+		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		Path p = ch.contructPath(previous, 1);
+		assertEquals(p.toString(), "[4->3->2->1]");
+	}
+	
+	@Test
+	public void testConstructPathWithShortcuts3() {
+		TLongLongHashMap previous = new TLongLongHashMap();
+		Graph g = new Graph();
+		g.addNode(0);
+		g.addNode(1);
+		g.addNode(2);
+		g.addNode(3);
+		g.addNode(4);
+		g.addNode(5);
+		g.addEdge(0, 1, 0, true, -1);
+		g.addEdge(0, 2, 0, true, 1);
+		g.addEdge(0, 4, 0, true, 2);
+		g.addEdge(1, 2, 0, true, -1);
+		g.addEdge(2, 3, 0, true, -1);
+		g.addEdge(2, 4, 0, true, 3);
+		g.addEdge(3, 4, 0, true, -1);
+		
+		previous.put(4,0);
+		previous.put(0,-1);
+		
+		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		Path p = ch.contructPath(previous, 4);
+		assertEquals(p.toString(), "[0->1->2->3->4]");
 	}
 
 	private void createCustomGraph() {

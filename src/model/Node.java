@@ -9,15 +9,18 @@ public class Node implements Serializable {
 	private double lat;
 	private double lon;
 	
-	public Node(long id) {
-		this.id = id;
-		this.lat = 0;
-		this.lon = 0;
-	}
-	
 	public Node(long nodeId, double lat, double lon) {
+		this.id = nodeId;
 		this.lat = lat;
 		this.lon = lon;
+	}
+	
+	public Node(long id) {
+		this(id,0,0);
+	}
+
+	public Node(long nodeId, LatLonPoint latLonPoint) {
+		this(nodeId,latLonPoint.lat,latLonPoint.lon);
 	}
 
 	public long getId() {

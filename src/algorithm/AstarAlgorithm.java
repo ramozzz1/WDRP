@@ -37,8 +37,8 @@ public class AstarAlgorithm extends DijkstraAlgorithm {
 	public int getHeuristicValue(long nodeId, long targetId) {
 		if(targetId != -1) {
 			int h = 0;
-			LatLonPoint nodePoint = graph.getNode(nodeId);
-			if(targetPoint == null) targetPoint =  graph.getNode(targetId);
+			LatLonPoint nodePoint = graph.getLatLon(nodeId);
+			if(targetPoint == null) targetPoint =  graph.getLatLon(targetId);
 			if(targetPoint!=null && nodePoint!=null) {
 				if(this.heuristicType == HeuristicTypes.LATLON_DISTANCE)
 					h = (int)Math.ceil(DistanceUtils.latlonDistance(nodePoint.lat, nodePoint.lon, targetPoint.lat, targetPoint.lon)/(130*0.277778));

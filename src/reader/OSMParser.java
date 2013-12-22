@@ -79,8 +79,8 @@ public class OSMParser {
 	                				for (int i = 0; i < way.getNumOfNodeRef()-1; i++) {
 	                					long sourceId = way.getNodesRef().get(i);
 	                					long targetId = way.getNodesRef().get(i+1);
-	                					LatLonPoint sourcePoint = g.getNode(sourceId);
-		                				LatLonPoint targetPoint = g.getNode(targetId);
+	                					LatLonPoint sourcePoint = g.getLatLon(sourceId);
+		                				LatLonPoint targetPoint = g.getLatLon(targetId);
 		                				double distance = DistanceUtils.latlonDistance(sourcePoint.lat, sourcePoint.lon, targetPoint.lat, targetPoint.lon);
 		                				
 		                				g.addEdge(sourceId,targetId,(int)Math.ceil(distance/speed));

@@ -39,9 +39,9 @@ public class GraphUtils {
 			if (!visitedNodes.contains(id)) {
 				DijkstraAlgorithm d = new DijkstraAlgorithm(g);
 				d.computeShortestPath(id, -1);
-				if(d.visitedNodesMarks.size() >  maxVisitedNodes.size())
-					maxVisitedNodes = d.visitedNodesMarks;
-				visitedNodes.addAll(d.visitedNodesMarks);
+				if(d.getVisitedNodes().size() >  maxVisitedNodes.size())
+					maxVisitedNodes = d.getVisitedNodes();
+				visitedNodes.addAll(d.getVisitedNodes());
 			}
 			count++;
 		}
