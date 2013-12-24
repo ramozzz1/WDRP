@@ -71,8 +71,10 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 			for (Arc e : graph.getNeighbors(u.getNodeId())) {
 				if(considerEdge(e)) {
 					//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());
+					
+					Object distN = distance.get(e.getHeadNode());
 					int dist = distU + e.getCost();
-					if(!distance.containsKey(e.getHeadNode()) || dist < distance.get(e.getHeadNode())) {
+					if(distN==null || dist < (int)distN) {
 						distance.put(e.getHeadNode(), dist);
 						previous.put(e.getHeadNode(), u.getNodeId());
 						h = getHeuristicValue(e.getHeadNode(),targetId);
