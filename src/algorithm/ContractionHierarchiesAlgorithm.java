@@ -329,7 +329,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	
 	@Override
 	public String getName() {
-		return "Contraction Hierachies";
+		return "Contraction Hierarchies";
 	}
 	
 	/**

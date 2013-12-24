@@ -1,13 +1,10 @@
 import static org.junit.Assert.assertEquals;
 import model.Arc;
-import model.Graph;
 import model.Node;
 import model.Path;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import algorithm.ContractionHierarchiesAlgorithm;
 
 
 public class PathTest {
@@ -52,12 +49,11 @@ public class PathTest {
 	
 	@Test
 	public void testConnectPath() {
-		Path reverseTp = tp.reversePath();
-		sp.connect(reverseTp);
+		sp.connect(tp);
 		
-		//assertEquals(sp.getNodes().size(), 10);
-		//assertEquals(sp.getArcs().size(), 9);
-		//assertEquals(sp.getCost(), 0);
-		//assertEquals(sp.toString(), "[0->1->2->3->5->6->7->8->9->10->11]");
+		assertEquals(sp.getNodes().size(), 11);
+		assertEquals(sp.getArcs().size(), 10);
+		assertEquals(sp.getCost(), 70);
+		assertEquals(sp.toString(), "[0->1->2->3->4->5->6->7->8->9->10]");
 	}
 }
