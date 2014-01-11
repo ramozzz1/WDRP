@@ -1,3 +1,4 @@
+package algorithms;
 import static org.junit.Assert.assertEquals;
 import gnu.trove.map.hash.THashMap;
 

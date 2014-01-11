@@ -1,14 +1,11 @@
 package algorithm;
 
 import model.Graph;
+import model.HeuristicTypes;
 import model.LatLonPoint;
 import util.DistanceUtils;
 
 public class AstarAlgorithm extends DijkstraAlgorithm {
-	public enum HeuristicTypes {
-		EUCLIDEAN_DISTANCE, LATLON_DISTANCE;
-	}
-	
 	private HeuristicTypes heuristicType;
 	private LatLonPoint targetPoint;
 	

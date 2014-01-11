@@ -23,7 +23,7 @@ import util.CommonUtils;
 public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
-	private HeuristicTypes heuristicType;
+	private UpdateHeuristicTypes heuristicType;
 	private int maxNumberContractions;
 	private int numberOfShortcuts;
 	private long minCommonNode;
@@ -31,19 +31,23 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	private TLongLongHashMap previousTarget;
 	private Set<Long> visitedNodesSource;
 	private Set<Long> visitedNodesTarget;
+	private List<Long> finalContractionOrder;
+	private THashMap<Long, Integer> distSource;
+	private THashMap<Long, Integer> distTarget;
 	
 	public ContractionHierarchiesAlgorithm(Graph graph) {
-		this(graph,Integer.MAX_VALUE, HeuristicTypes.LAZY);
+		this(graph,Integer.MAX_VALUE, UpdateHeuristicTypes.LAZY);
 	}
 	
-	public ContractionHierarchiesAlgorithm(Graph graph, HeuristicTypes heuristicType) {
+	public ContractionHierarchiesAlgorithm(Graph graph, UpdateHeuristicTypes heuristicType) {
 		this(graph,Integer.MAX_VALUE, heuristicType);
 	}
 	
-	public ContractionHierarchiesAlgorithm(Graph graph, int maxNumberContractions, HeuristicTypes heuristicType) {
+	public ContractionHierarchiesAlgorithm(Graph graph, int maxNumberContractions, UpdateHeuristicTypes heuristicType) {
 		super(graph);
 		this.contractionOrder = new PriorityQueue<QEntry>();
 		this.nodesHierachy = new TLongIntHashMap();
+		this.finalContractionOrder = new ArrayList<Long>();
 		this.maxNumberContractions = maxNumberContractions;
 		this.heuristicType = heuristicType;
 		this.numberOfShortcuts = 0;
@@ -108,6 +112,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 			
 			//store the level of this node
 			hierarchy.put(node, i);
+			finalContractionOrder.add(node);
 			
 			//contract node
 			int shortcuts = contractSingleNode(node);
@@ -123,7 +128,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	}
 	
 	public void updateNodeContractionOrdering(Queue<QEntry> queue) {
-		if(heuristicType == HeuristicTypes.LAZY) {
+		if(heuristicType == UpdateHeuristicTypes.LAZY) {
 			lazyUpdate(queue);
 		}
 	}
@@ -264,7 +269,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		dijkstraSource.considerArcFlags = true;
 		dijkstraSource.considerShortcuts = true;
 		dijkstraSource.computeShortestPath(sourceId, -1);
-		THashMap<Long, Integer> distSource = dijkstraSource.distance;
+		this.distSource = dijkstraSource.distance;
 		this.previousSource = dijkstraSource.previous;
 		this.visitedNodesSource = dijkstraSource.visitedNodesMarks;
 		
@@ -273,13 +278,13 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		dijkstraTarget.considerArcFlags = true;
 		dijkstraTarget.considerShortcuts = true;
 		dijkstraTarget.computeShortestPath(targetId, -1);
-		THashMap<Long, Integer> distTarget = dijkstraTarget.distance;
+		this.distTarget = dijkstraTarget.distance;
 		this.previousTarget = dijkstraTarget.previous;
 		this.visitedNodesTarget = dijkstraTarget.visitedNodesMarks;
 		
 		//get the minimum common node between the visited nodes of source and target
 		int min = Integer.MAX_VALUE;
-		this.minCommonNode = -1;
+		this.minCommonNode = NULL_NODE;
 		for (Entry<Long, Integer> n : distSource.entrySet()) {
 			long node = n.getKey();
 			if(distTarget.contains(node)) {
@@ -308,6 +313,39 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		return this.visitedNodesMarks;
 	}
 	
+	/**
+	 * Get the united parent pointers (united on the minCommonNode)
+	 */
+	public TLongLongHashMap getParentPointers() {
+		TLongLongHashMap pp = new TLongLongHashMap();
+		
+		if(this.minCommonNode != NULL_NODE) {
+			long currNode = this.minCommonNode;
+			while(currNode != NULL_NODE) {
+				long prevNode = previousSource.get(currNode);
+				pp.put(currNode, prevNode);
+				currNode = prevNode;
+			}
+			
+			currNode = this.minCommonNode;
+			while(currNode != NULL_NODE) {
+				long prevNode = previousTarget.get(currNode);
+				if(prevNode != NULL_NODE)
+					pp.put(prevNode, currNode);
+				currNode = prevNode;
+			}
+		}
+		
+		return pp;
+	}
+	
+	/**
+	 * Get parent pointers of source
+	 */
+	public TLongLongHashMap getParentPointersSource() {
+		return this.previousSource;
+	}
+	
 	@Override
 	public Path extractPath(long nodeId) {
 		//contruct path from source to the minimum common node [s->...->c]
@@ -323,6 +361,10 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		return sourcePath;
 	}
 
+	public List<Long> getContractionOrder() {
+		return finalContractionOrder;
+	}
+	
 	public int getNumberOfShortcuts() {
 		return this.numberOfShortcuts;
 	}
@@ -337,7 +379,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	 * @author zakaria
 	 *
 	 */
-	public enum HeuristicTypes {
+	public enum UpdateHeuristicTypes {
 		LAZY_PERIODIC, LAZY, PERIODIC;
 	}
 	

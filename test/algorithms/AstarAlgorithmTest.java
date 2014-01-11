@@ -1,10 +1,11 @@
+package algorithms;
 import static org.junit.Assert.assertEquals;
+import model.HeuristicTypes;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import algorithm.AstarAlgorithm;
-import algorithm.AstarAlgorithm.HeuristicTypes;
 
 public class AstarAlgorithmTest extends SPTestBase {
 	

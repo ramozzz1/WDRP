@@ -1,3 +1,4 @@
+package algorithms;
 import static org.junit.Assert.assertEquals;
 import model.Path;
 
@@ -44,6 +45,12 @@ public class DijkstraAlgorithmTest extends SPTestBase {
 	public void testShortestPathSourceTarget3(){
 		int dist = d.computeShortestPath(0, 5);
 		assertEquals(dist,4);
+	}
+	
+	@Test
+	public void testShortestPathSourceTarget4(){
+		int dist = d.computeShortestPath(4, 5);
+		assertEquals(dist,3);
 	}
 	
 	@Test

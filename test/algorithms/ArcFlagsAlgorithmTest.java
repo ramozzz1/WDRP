@@ -1,9 +1,6 @@
+package algorithms;
 import static org.junit.Assert.assertEquals;
 import gnu.trove.set.hash.THashSet;
-
-import java.util.List;
-
-import model.Arc;
 
 import org.junit.Before;
 import org.junit.Test;

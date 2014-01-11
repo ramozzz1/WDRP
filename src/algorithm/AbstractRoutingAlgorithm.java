@@ -2,6 +2,9 @@ package algorithm;
 
 import gnu.trove.map.hash.TLongLongHashMap;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import model.Arc;
@@ -27,14 +30,32 @@ public abstract class AbstractRoutingAlgorithm {
 
 	public abstract Set<Long> getVisitedNodes();
 	
+	public List<Long> getNodesOnPath(TLongLongHashMap previous, long targetId) {
+		List<Long> nodes = new ArrayList<Long>();
+		
+		long currNode = targetId;
+		if(previous.containsKey(currNode)) {
+			do {				
+				long prevNode = previous.get(currNode);
+				nodes.add(currNode);
+				currNode = prevNode;
+			} while(currNode != NULL_NODE);
+		}
+		
+		Collections.reverse(nodes);
+		
+		return nodes;
+	}
+	
 	/**
 	 * Construct path from nodeId to the first element of previous (i.e) the one that was inserted the first (source)
-	 * Note: shortcut edges are transformed into "real" edges
+	 * Note: shortcut edges are transformed into "real" edges if convertShortcut is set to true
 	 * @param previous
 	 * @param targetId
+	 * @param convertShortcuts true if we need to convert shortcuts to real edges
 	 * @return
 	 */
-	public Path contructPath(TLongLongHashMap previous, long targetId) {
+	public Path contructPath(TLongLongHashMap previous, long targetId, boolean convertShortcuts) {
 		Path p = new Path();
 		
 		long currNode = targetId;
@@ -42,7 +63,7 @@ public abstract class AbstractRoutingAlgorithm {
 			do {				
 				long prevNode = previous.get(currNode);
 				Arc a = graph.getEdge(prevNode, currNode);
-				if(a != null && a.isShortcut())
+				if(convertShortcuts && (a != null && a.isShortcut()))
 					convertShortcutArcToPath(a, prevNode, currNode, p);
 				else
 					p.addNode(graph.getNode(currNode), a);
@@ -51,6 +72,11 @@ public abstract class AbstractRoutingAlgorithm {
 		}
 		
 		return p;
+	}
+	
+	//wrapper method
+	public Path contructPath(TLongLongHashMap previous, long targetId) {
+		return contructPath(previous, targetId, true);
 	}
 	
 	private void convertShortcutArcToPath(Arc a,long fromNode, long toNode, Path p) {

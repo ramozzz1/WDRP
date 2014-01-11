@@ -1,9 +1,13 @@
 package main;
 
+import gnu.trove.map.hash.TLongIntHashMap;
+import gnu.trove.procedure.TIntProcedure;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import model.Graph;
 import model.Path;
@@ -123,13 +127,21 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
-		Graph g = GraphUtils.convertOSMToGraph("baden-wuerttemberg");	
+		/*Graph g = GraphUtils.convertOSMToGraph("baden-wuerttemberg");	
   		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	//algorithms.add(new ContractionHierarchiesAlgorithm(g));
   		//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,16));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,47.95,48.05,7.75,7.90));
-    	Experiment.doExperiment(g, algorithms, 100, false);
+    	Experiment.doExperiment(g, algorithms, 100, false);*/
+		
+		TLongIntHashMap map = new TLongIntHashMap();
+		Random r = new Random();
+		for (int i = 0; i < 100; i++) {
+			map.put(i, r.nextInt());
+		}
+		
+		
     }   
 }

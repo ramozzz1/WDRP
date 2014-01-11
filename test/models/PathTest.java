@@ -1,3 +1,4 @@
+package models;
 import static org.junit.Assert.assertEquals;
 import model.Arc;
 import model.Node;

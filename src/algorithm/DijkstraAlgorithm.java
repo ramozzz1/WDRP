@@ -12,8 +12,6 @@ import java.util.Set;
 
 import model.Arc;
 import model.Graph;
-import model.LatLonPoint;
-import model.Node;
 import model.NodeEntry;
 import model.Path;
 
@@ -44,42 +42,44 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		this.previous = new TLongLongHashMap();
 		this.visitedNodesMarks = new THashSet<Long>();
 		
-		distance.put(sourceId, 0);
-		previous.put(sourceId, NULL_NODE);
-		
-		Queue<NodeEntry> queue = new PriorityQueue<NodeEntry>();
-		queue.add(new NodeEntry(sourceId, 0));
-		while(!queue.isEmpty()) {
-			NodeEntry u = queue.poll();
-			//System.out.println("MIN:"+u.getNodeId());
-			visitedNodesMarks.add(u.getNodeId());
+		if(sourceId != NULL_NODE) {
+			distance.put(sourceId, 0);
+			previous.put(sourceId, NULL_NODE);
 			
-			if(u.getNodeId() == targetId)
-				return distance.get(targetId);
-			
-			if(u.getDistance() > costUpperbound)
-				return -1;
-			
-			if(visitedNodesMarks.size() > maxNumSettledNodes)
-				return -1;
-			
-			int h = getHeuristicValue(u.getNodeId(),targetId);
-			int distU = distance.get(u.getNodeId());
-			if(distU+h < u.getDistance())
-				continue;
-			
-			for (Arc e : graph.getNeighbors(u.getNodeId())) {
-				if(considerEdge(e)) {
-					//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());
-					
-					Object distN = distance.get(e.getHeadNode());
-					int dist = distU + e.getCost();
-					if(distN==null || dist < (int)distN) {
-						distance.put(e.getHeadNode(), dist);
-						previous.put(e.getHeadNode(), u.getNodeId());
-						h = getHeuristicValue(e.getHeadNode(),targetId);
-						queue.add(new NodeEntry(e.getHeadNode(), dist+h));
-						//System.out.println(u.getNodeId()+" UPDATE "+e.getHeadNode()+" WITH "+(dist+h));
+			Queue<NodeEntry> queue = new PriorityQueue<NodeEntry>();
+			queue.add(new NodeEntry(sourceId, 0));
+			while(!queue.isEmpty()) {
+				NodeEntry u = queue.poll();
+				//System.out.println("MIN:"+u.getNodeId());
+				visitedNodesMarks.add(u.getNodeId());
+				
+				if(u.getNodeId() == targetId)
+					return distance.get(targetId);
+				
+				if(u.getDistance() > costUpperbound)
+					return -1;
+				
+				if(visitedNodesMarks.size() > maxNumSettledNodes)
+					return -1;
+				
+				int h = getHeuristicValue(u.getNodeId(),targetId);
+				int distU = distance.get(u.getNodeId());
+				if(distU+h < u.getDistance())
+					continue;
+				
+				for (Arc e : graph.getNeighbors(u.getNodeId())) {
+					if(considerEdge(e)) {
+						//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());
+						
+						Object distN = distance.get(e.getHeadNode());
+						int dist = distU + e.getCost();
+						if(distN==null || dist < (int)distN) {
+							distance.put(e.getHeadNode(), dist);
+							previous.put(e.getHeadNode(), u.getNodeId());
+							h = getHeuristicValue(e.getHeadNode(),targetId);
+							queue.add(new NodeEntry(e.getHeadNode(), dist+h));
+							//System.out.println(u.getNodeId()+" UPDATE "+e.getHeadNode()+" WITH "+(dist+h));
+						}
 					}
 				}
 			}

@@ -1,3 +1,4 @@
+package algorithms;
 import model.Graph;
 
 import org.junit.After;

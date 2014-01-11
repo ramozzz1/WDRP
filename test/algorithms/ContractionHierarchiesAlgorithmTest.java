@@ -1,3 +1,4 @@
+package algorithms;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -12,7 +13,6 @@ import java.util.Queue;
 
 import model.Arc;
 import model.Graph;
-import model.Node;
 import model.Path;
 
 import org.junit.After;
@@ -30,7 +30,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	private Graph customGraph;
 	
 	@Before
-	public void setUpAF() {
+	public void setUpCH() {
 		createCustomGraph();
 		a = new ContractionHierarchiesAlgorithm(customGraph);
 		d = new ContractionHierarchiesAlgorithm(g);
