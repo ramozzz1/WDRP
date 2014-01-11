@@ -24,6 +24,7 @@ import algorithm.ArcFlagsAlgorithm;
 import algorithm.AstarAlgorithm;
 import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.DijkstraAlgorithm;
+import algorithm.TransitNodeRoutingAlgorithm;
 
 
 
@@ -127,21 +128,14 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
-		/*Graph g = GraphUtils.convertOSMToGraph("baden-wuerttemberg");	
+		Graph g = GraphUtils.convertOSMToGraph("saarland");	
   		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
+    	algorithms.add(new TransitNodeRoutingAlgorithm(g));
     	//algorithms.add(new ContractionHierarchiesAlgorithm(g));
   		//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,16));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,47.95,48.05,7.75,7.90));
-    	Experiment.doExperiment(g, algorithms, 100, false);*/
-		
-		TLongIntHashMap map = new TLongIntHashMap();
-		Random r = new Random();
-		for (int i = 0; i < 100; i++) {
-			map.put(i, r.nextInt());
-		}
-		
-		
+    	Experiment.doExperiment(g, algorithms, 20, false);
     }   
 }

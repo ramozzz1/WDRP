@@ -44,12 +44,16 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 	@Override
 	public void precompute() {
 		//compute the set of transit nodes using CH precomp
+		System.out.println("Computing the set of transit nodes using CH precomp");
 		this.transitNodes = computeTransitNodes(this.numTransitNodes);
 		
 		//compute the distances/paths between the transit nodes and store them
+		System.out.println("Computing the distances/paths between the transit nodes ("+this.numTransitNodes+") and store them");
 		this.transitNodesDistances = computeAllToAllDistances(this.transitNodes, this.transitNodes);
 		
 		//for each node compute the set of access nodes with distances/paths and store them
+		System.out.println("Compute the access nodes");
+		int count = 0;
 		for (Long n : graph.nodes.keySet()) {
 			//compute the access nodes nodes from this node
 			Set<Long> an = computeAccessNodes(n, this.transitNodes);
@@ -59,6 +63,9 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 			
 			//store the access nodes for this node
 			accessNodes.put(n, accessNodesDistances);
+			
+			count++;
+			if(count%1000==0) System.out.println("#nodes processed: "+count);
 		}
 	}
 
@@ -119,10 +126,13 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 	
 	public THashMap<Long, THashMap<Long, PPDist>> computeAllToAllDistances(Set<Long> setA, Set<Long> setB) {
 		THashMap<Long, THashMap<Long, PPDist>> allToAllDistances = new THashMap<Long, THashMap<Long, PPDist>>();
-		
+		int count = 0;
 		for (Long nodeA : setA) {
 			THashMap<Long, PPDist> distanceMap = computeOneToAllDistances(nodeA, setB);
 			allToAllDistances.put(nodeA, distanceMap);
+			
+			count++;
+			if(count%((int)this.numTransitNodes*0.10)==0) System.out.println("#nodes processed: "+count);
 		}
 		
 		return allToAllDistances;
@@ -149,9 +159,11 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		THashSet<Long> tn = new THashSet<Long>();
 		
 		//do the precomputation of CH algorithm
+		System.out.println("Starting precomputation of CH algorithm");
 		this.ch.precompute();
 		
 		//after the precomp of CH get the last numTransitNodes contracted; these are the transit nodes
+		System.out.println("Select the transit nodes based on CH precomp");
 		List<Long> order = this.ch.getContractionOrder();
 		for (int i = order.size()-1; i >= order.size()-nTransitNodes; i--)
 			tn.add(order.get(i));
@@ -241,7 +253,17 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 
 	@Override
 	public Path extractPath(long targetId) {
-		// TODO Auto-generated method stub
+//		//contruct path from source to the minimum common node [s->...->c]
+//		Path sourcePath = contructPath(this.previousSource, this.minCommonNode);
+//		
+//		//contruct path from target to the minimum common node [c->...->t]
+//		Path targetPath = contructPath(this.previousTarget, this.minCommonNode).reversePath();
+//		
+//		//connect the source path and target path
+//		sourcePath.connect(targetPath);
+//		
+//		//return the connected path
+//		return sourcePath;
 		return null;
 	}
 
