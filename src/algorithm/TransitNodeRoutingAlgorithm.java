@@ -48,7 +48,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		this.transitNodes = computeTransitNodes(this.numTransitNodes);
 		
 		//compute the distances/paths between the transit nodes and store them
-		System.out.println("Computing the distances/paths between the transit nodes ("+this.numTransitNodes+") and store them");
+		System.out.println("Computing the distances/paths between the transit nodes ("+this.transitNodes.size()+") and store them");
 		this.transitNodesDistances = computeAllToAllDistances(this.transitNodes, this.transitNodes);
 		
 		//for each node compute the set of access nodes with distances/paths and store them
@@ -132,7 +132,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 			allToAllDistances.put(nodeA, distanceMap);
 			
 			count++;
-			if(count%((int)this.numTransitNodes*0.10)==0) System.out.println("#nodes processed: "+count);
+			System.out.println("#nodes processed: "+count);
 		}
 		
 		return allToAllDistances;
