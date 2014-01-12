@@ -7,6 +7,7 @@ import gnu.trove.map.hash.THashMap;
 import java.util.Set;
 
 import model.HeuristicTypes;
+import model.Path;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +91,7 @@ public class TransitNodeRoutingAlgorithmTest extends SPTestBase {
 		Set<Long> tn = a.computeTransitNodes(num);
 		a.computeAccessNodes(4, tn);
 		int minRadius = a.radiusNodes.get(4);
-		assertEquals(minRadius, 3);
+		assertEquals(minRadius, 2);
 	}
 	
 	@Test
@@ -181,5 +182,49 @@ public class TransitNodeRoutingAlgorithmTest extends SPTestBase {
 		a.precompute();
 		int dist = a.computeShortestPath(0, 999);
 		assertEquals(dist,-1);
+	}
+	
+	@Test
+	public void testExtractPath() {
+		a.precompute();
+		a.computeShortestPath(0, 5);
+		Path p = a.extractPath(5);
+		assertEquals(p.getNodes().size(), 5);
+		assertEquals(p.getArcs().size(), 4);
+		assertEquals(p.getCost(), 4);
+		assertEquals(p.toString(), "[0->1->2->3->5]");
+	}
+	
+	@Test
+	public void testExtractPathNeighbor() {
+		a.precompute();
+		a.computeShortestPath(0, 1);
+		Path p = a.extractPath(1);
+		assertEquals(p.getNodes().size(), 2);
+		assertEquals(p.getArcs().size(), 1);
+		assertEquals(p.getCost(), 1);
+		assertEquals(p.toString(), "[0->1]");
+	}
+	
+	@Test
+	public void testExtractNoPath() {
+		a.precompute();
+		a.computeShortestPath(0, 999);
+		Path p = a.extractPath(999);
+		assertEquals(p.getNodes().size(), 0);
+		assertEquals(p.getArcs().size(), 0);
+		assertEquals(p.getCost(), 0);
+		assertEquals(p.toString(), "[]");
+	}
+	
+	@Test
+	public void testExtractSoureSourcePath() {
+		a.precompute();
+		a.computeShortestPath(0, 0);
+		Path p = a.extractPath(0);
+		assertEquals(p.getNodes().size(), 1);
+		assertEquals(p.getArcs().size(), 0);
+		assertEquals(p.getCost(), 0);
+		assertEquals(p.toString(), "[0]");
 	}
 }

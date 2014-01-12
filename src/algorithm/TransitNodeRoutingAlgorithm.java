@@ -25,6 +25,11 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 	private HeuristicTypes heuristic;
 	private THashMap<Long, THashMap<Long, PPDist>> transitNodesDistances;
 	private THashMap<Long, THashMap<Long, PPDist>> accessNodes;
+	private TLongLongHashMap ppSource;
+	private TLongLongHashMap ppAccess;
+	private TLongLongHashMap ppTarget;
+	private DijkstraAlgorithm dijkstra;
+	private boolean usedDijkstra;
 
 	public TransitNodeRoutingAlgorithm(Graph graph) {
 		this(graph,HeuristicTypes.LATLON_DISTANCE);
@@ -71,7 +76,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 
 	@Override
 	public int computeShortestPath(long sourceId, long targetId) {
-		
+		usedDijkstra = false;
 		//if node is far use access nodes
 		if(isFar(sourceId, targetId, this.radiusNodes)) {
 			//get the access nodes nodes from the source
@@ -83,16 +88,24 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 			int minDist = Integer.MAX_VALUE;
 			this.minSourceAccessNode = NULL_NODE;
 			this.minTargetAccessNode = NULL_NODE;
+			this.ppSource = new TLongLongHashMap();
+			this.ppAccess = new TLongLongHashMap();
+			this.ppTarget = new TLongLongHashMap();
+			
 			for (Entry<Long, PPDist> x : sourceAccessNodesDistances.entrySet()) {
 				for (Entry<Long, PPDist> y : targetAccessNodesDistances.entrySet()) {
+					PPDist accessDist = transitNodesDistances.get(x.getKey()).get(y.getKey());
 					int distSX = x.getValue().dist;
-					int distXY = transitNodesDistances.get(x.getKey()).get(y.getKey()).dist;
+					int distXY = accessDist.dist;
 					int distYT = y.getValue().dist;
 					
 					int dist = distSX + distXY + distYT;
 					
 					if(dist < minDist) {
 						minDist = dist;
+						this.ppSource = x.getValue().previous;
+						this.ppAccess = accessDist.previous;
+						this.ppTarget = y.getValue().previous;
 						this.minSourceAccessNode = x.getKey();
 						this.minTargetAccessNode = y.getKey();
 						
@@ -107,8 +120,9 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 			return minDist;
 		}
 		else {
+			usedDijkstra = true;
 			//node is close, so just use a quick dijkstra
-			DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
+			this.dijkstra = new DijkstraAlgorithm(graph);
 			int dist = dijkstra.computeShortestPath(sourceId, targetId);
 			return dist;
 		}
@@ -196,6 +210,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		//Get the parent pointers of all the settled nodes from the source
 		TLongLongHashMap pp = this.ch.getParentPointersSource();
 		
+		System.out.println(pp);
 		//keep a checkmark set to keep up with nodes already visited
 		Set<Long> nodesCheckmark = new THashSet<Long>();
 		
@@ -221,6 +236,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 				if(firstAccessNodeInPath==NULL_NODE) {
 					LatLonPoint vPoint = this.graph.getLatLon(v);
 					int vDistance = computeDistance(nodePoint, vPoint);
+					System.out.println(v + " "+ vDistance);
 					maxRadius = Math.max(maxRadius, vDistance);
 				}
 				else {
@@ -257,18 +273,24 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 
 	@Override
 	public Path extractPath(long targetId) {
-//		//contruct path from source to the minimum common node [s->...->c]
-//		Path sourcePath = contructPath(this.previousSource, this.minCommonNode);
-//		
-//		//contruct path from target to the minimum common node [c->...->t]
-//		Path targetPath = contructPath(this.previousTarget, this.minCommonNode).reversePath();
-//		
-//		//connect the source path and target path
-//		sourcePath.connect(targetPath);
-//		
-//		//return the connected path
-//		return sourcePath;
-		return null;
+		if(!usedDijkstra) {
+			//contruct path from the source to the minimum source access node
+			Path sourcePath = contructPath(this.ppSource, this.minSourceAccessNode);
+			
+			//contruct path from the minimum source access node to the minimum target access node
+			Path accessPath = contructPath(this.ppAccess, this.minTargetAccessNode);
+			
+			//contruct path from the minimum target access node to the target
+			Path targetPath = contructPath(this.ppTarget, targetId);
+			
+			sourcePath.connect(accessPath);
+			sourcePath.connect(targetPath);
+			
+			return sourcePath;
+		}
+		else {
+			return dijkstra.extractPath(targetId);
+		}
 	}
 
 	@Override
