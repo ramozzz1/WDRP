@@ -136,6 +136,6 @@ public class WDRP {
   		//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,16));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,47.95,48.05,7.75,7.90));
-    	Experiment.doExperiment(g, algorithms, 20, false);
+    	Experiment.doExperiment(g, algorithms, 100, false);
     }   
 }

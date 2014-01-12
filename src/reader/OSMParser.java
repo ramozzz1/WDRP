@@ -21,9 +21,15 @@ public class OSMParser {
 	
 	private static Logger logger = Logger.getLogger(OSMParser.class);
 	private HashMap<String,Integer> speedTable;
+	private int maxNumNodes;
 	
 	public OSMParser() {
-		speedTable = new HashMap<String,Integer>();
+		this(Integer.MAX_VALUE);
+	}
+	
+	public OSMParser(int maxNumNodes) {
+		this.speedTable = new HashMap<String,Integer>();
+		this.maxNumNodes = maxNumNodes;
 		setDefaultSpeeds();
 	}
 	
@@ -65,10 +71,12 @@ public class OSMParser {
 	    		else if(streamReader.getEventType() == XMLStreamReader.END_ELEMENT) {
 	    			String ln = streamReader.getLocalName();
 	                if (ln.equals("node")) {
-	                	g.addNode(node.id,node.lat,node.lon);
-	                	
-	                	if(numNodes%1000000==0) System.out.println("#nodes processed: "+numNodes);
-	                	numNodes++;
+	                	if(numNodes <= maxNumNodes) {
+		                	g.addNode(node.id,node.lat,node.lon);
+		                	
+		                	if(numNodes%1000000==0) System.out.println("#nodes processed: "+numNodes);
+		                	numNodes++;
+	                	}
 	                }
 	                else if (ln.equals("way")) {
 	                	if(way.isHighway()) { //only highways
@@ -81,12 +89,14 @@ public class OSMParser {
 	                					long targetId = way.getNodesRef().get(i+1);
 	                					LatLonPoint sourcePoint = g.getLatLon(sourceId);
 		                				LatLonPoint targetPoint = g.getLatLon(targetId);
-		                				double distance = DistanceUtils.latlonDistance(sourcePoint.lat, sourcePoint.lon, targetPoint.lat, targetPoint.lon);
-		                				
-		                				g.addEdge(sourceId,targetId,(int)Math.ceil(distance/speed));
-			                			
-										if(numEdges%100000==0) System.out.println("#edges processed: "+numEdges);
-		        	                	numEdges++;
+		                				if(sourcePoint != null && targetPoint != null) {
+			                				double distance = DistanceUtils.latlonDistance(sourcePoint.lat, sourcePoint.lon, targetPoint.lat, targetPoint.lon);
+			                				
+			                				g.addEdge(sourceId,targetId,(int)Math.ceil(distance/speed));
+				                			
+											if(numEdges%100000==0) System.out.println("#edges processed: "+numEdges);
+			        	                	numEdges++;
+		                				}
 		                			}
 	                			}
 	                		//}

@@ -122,7 +122,7 @@ public class Graph {
 	 * @param arcFlag
 	 */
 	public void setArcFlagsForAllEdges(boolean arcFlag) {
-		Iterator<Tuple2<Long,Arc>> itr = this.adjacenyList.descendingIterator();
+		Iterator<Tuple2<Long,Arc>> itr = this.adjacenyList.iterator();
 		while(itr.hasNext()) {
 			Tuple2<Long,Arc> arc = itr.next();
 			setArcFlagForEdge(arc.a, arc.b, arcFlag);

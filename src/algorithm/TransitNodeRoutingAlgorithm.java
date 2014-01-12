@@ -47,10 +47,6 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		System.out.println("Computing the set of transit nodes using CH precomp");
 		this.transitNodes = computeTransitNodes(this.numTransitNodes);
 		
-		//compute the distances/paths between the transit nodes and store them
-		System.out.println("Computing the distances/paths between the transit nodes ("+this.transitNodes.size()+") and store them");
-		this.transitNodesDistances = computeAllToAllDistances(this.transitNodes, this.transitNodes);
-		
 		//for each node compute the set of access nodes with distances/paths and store them
 		System.out.println("Compute the access nodes");
 		int count = 0;
@@ -67,6 +63,10 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 			count++;
 			if(count%1000==0) System.out.println("#nodes processed: "+count);
 		}
+		
+		//compute the distances/paths between the transit nodes and store them
+		System.out.println("Computing the distances/paths between the transit nodes ("+this.transitNodes.size()+") and store them");
+		this.transitNodesDistances = computeAllToAllDistances(this.transitNodes, this.transitNodes);		
 	}
 
 	@Override
@@ -95,8 +95,10 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 						minDist = dist;
 						this.minSourceAccessNode = x.getKey();
 						this.minTargetAccessNode = y.getKey();
+						
+						this.visitedNodesMarks = new THashSet<Long>(sourceAccessNodesDistances.keySet());
+						this.visitedNodesMarks.addAll(targetAccessNodesDistances.keySet());
 					}
-					
 				}
 			}
 			
@@ -199,30 +201,32 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		
 		//for each settled node v, compute the first node x, which is in transit nodes set, on SP(u, v) 
 		for (Long v : this.ch.getVisitedNodes()) { 
-			long firstAccessNodeInPath = NULL_NODE;
-			
-			//add the first node which is in transit nodes set to the access nodes of this node
-			long currNode = v;
-			while(currNode != NULL_NODE && !nodesCheckmark.contains(currNode)) {
-				//add to checkmark set
-				nodesCheckmark.add(currNode);
+			if(!nodesCheckmark.contains(v)) {
+				long firstAccessNodeInPath = NULL_NODE;
 				
-				//check if node is transit node
-				if(tn.contains(currNode))
-					firstAccessNodeInPath = currNode;
+				//add the first node which is in transit nodes set to the access nodes of this node
+				long currNode = v;
+				while(currNode != NULL_NODE) {
+					//add to checkmark set
+					nodesCheckmark.add(currNode);
+					
+					//check if node is transit node
+					if(tn.contains(currNode))
+						firstAccessNodeInPath = currNode;
+					
+					currNode = pp.get(currNode);
+				}
 				
-				currNode = pp.get(currNode);
-			}
-			
-			//no access node added, this means no transit node used for reaching v 
-			if(firstAccessNodeInPath==NULL_NODE) {
-				LatLonPoint vPoint = this.graph.getLatLon(v);
-				int vDistance = computeDistance(nodePoint, vPoint);
-				maxRadius = Math.max(maxRadius, vDistance);
-			}
-			else {
-				//access node was found, add the first found in the SP
-				accessNodes.add(firstAccessNodeInPath);
+				//no access node added, this means no transit node used for reaching v 
+				if(firstAccessNodeInPath==NULL_NODE) {
+					LatLonPoint vPoint = this.graph.getLatLon(v);
+					int vDistance = computeDistance(nodePoint, vPoint);
+					maxRadius = Math.max(maxRadius, vDistance);
+				}
+				else {
+					//access node was found, add the first found in the SP
+					accessNodes.add(firstAccessNodeInPath);
+				}
 			}
 		}
 		
@@ -269,8 +273,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 
 	@Override
 	public Set<Long> getVisitedNodes() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.visitedNodesMarks;
 	}
 	
 	/**
