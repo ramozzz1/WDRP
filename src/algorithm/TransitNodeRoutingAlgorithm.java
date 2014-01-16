@@ -6,6 +6,7 @@ import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.set.hash.THashSet;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import model.Graph;
 import model.HeuristicTypes;
 import model.LatLonPoint;
 import model.Path;
+import storage.DBHashMap;
 import util.DistanceUtils;
 
 public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
@@ -23,8 +25,8 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 	private Long minSourceAccessNode;
 	private Long minTargetAccessNode;
 	private HeuristicTypes heuristic;
-	private THashMap<Long, THashMap<Long, PPDist>> transitNodesDistances;
-	private THashMap<Long, THashMap<Long, PPDist>> accessNodes;
+	private Map<Long, THashMap<Long, PPDist>> transitNodesDistances;
+	private Map<Long, THashMap<Long, PPDist>> accessNodes;
 
 	public TransitNodeRoutingAlgorithm(Graph graph) {
 		this(graph,HeuristicTypes.LATLON_DISTANCE);
@@ -36,8 +38,8 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		this.numTransitNodes = (int) Math.round(Math.sqrt(graph.nodes.size())); 
 		this.transitNodes = new THashSet<Long>();
 		this.radiusNodes = new TLongIntHashMap();
-		this.transitNodesDistances = new THashMap<Long, THashMap<Long, PPDist>>();
-		this.accessNodes = new THashMap<Long, THashMap<Long, PPDist>>();
+		this.transitNodesDistances = new DBHashMap<Long, THashMap<Long, PPDist>>();
+		this.accessNodes = new DBHashMap<Long, THashMap<Long, PPDist>>();
 		this.heuristic = heuristic;
 	}
 	
@@ -49,6 +51,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		
 		//for each node compute the set of access nodes with distances/paths and store them
 		System.out.println("Compute the access nodes");
+		int totalNumberAccessNodes = 0;
 		int count = 0;
 		for (Long n : graph.nodes.keySet()) {
 			//compute the access nodes nodes from this node
@@ -60,13 +63,18 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 			//store the access nodes for this node
 			accessNodes.put(n, accessNodesDistances);
 			
+			totalNumberAccessNodes += an.size();
 			count++;
-			if(count%1000==0) System.out.println("#nodes processed: "+count);
+			if(count%100==0) System.out.println("#nodes processed: "+count);
 		}
 		
 		//compute the distances/paths between the transit nodes and store them
 		System.out.println("Computing the distances/paths between the transit nodes ("+this.transitNodes.size()+") and store them");
-		this.transitNodesDistances = computeAllToAllDistances(this.transitNodes, this.transitNodes);		
+		this.transitNodesDistances = computeAllToAllDistances(this.transitNodes, this.transitNodes);
+		
+		System.out.println("Total #transit nodes: "+this.numTransitNodes);
+		System.out.println("Total #access nodes: "+totalNumberAccessNodes);
+		System.out.println("Avg #access nodes: "+totalNumberAccessNodes/graph.getNumNodes());
 	}
 
 	@Override
@@ -117,8 +125,10 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 	public THashMap<Long, PPDist> computeOneToAllDistances(long source, Set<Long> set) {
 		THashMap<Long, PPDist> oneToAllDistances = new THashMap<Long, PPDist>();
 		
+		this.ch.computeSPSource(source);
 		for (Long node : set) {
-			int dist = this.ch.computeShortestPath(source, node);
+			this.ch.computeSPTarget(node);
+			int dist = this.ch.computeMinDist();
 			TLongLongHashMap pp = this.ch.getParentPointers();
 			oneToAllDistances.put(node, new PPDist(pp, dist));
 		}
@@ -134,7 +144,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 			allToAllDistances.put(nodeA, distanceMap);
 			
 			count++;
-			System.out.println("#nodes processed: "+count);
+			System.out.println("#transit nodes processed: "+count);
 		}
 		
 		return allToAllDistances;
@@ -191,7 +201,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		int maxRadius = 0;
 		
 		//Compute one-to-all path from this node in the upward graph
-		this.ch.computeShortestPath(nodeId, -1);
+		this.ch.computeSPSource(nodeId);
 		
 		//Get the parent pointers of all the settled nodes from the source
 		TLongLongHashMap pp = this.ch.getParentPointersSource();
@@ -200,7 +210,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		Set<Long> nodesCheckmark = new THashSet<Long>();
 		
 		//for each settled node v, compute the first node x, which is in transit nodes set, on SP(u, v) 
-		for (Long v : this.ch.getVisitedNodes()) { 
+		for (Long v : this.ch.getVisitedNodesSource()) { 
 			if(!nodesCheckmark.contains(v)) {
 				long firstAccessNodeInPath = NULL_NODE;
 				

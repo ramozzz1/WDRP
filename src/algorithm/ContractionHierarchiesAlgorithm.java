@@ -265,24 +265,18 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	@Override
 	public int computeShortestPath(long sourceId, long targetId) {
 		//compute dijkstra one-to-all from source
-		DijkstraAlgorithm dijkstraSource = new DijkstraAlgorithm(this.graph);
-		dijkstraSource.considerArcFlags = true;
-		dijkstraSource.considerShortcuts = true;
-		dijkstraSource.computeShortestPath(sourceId, -1);
-		this.distSource = dijkstraSource.distance;
-		this.previousSource = dijkstraSource.previous;
-		this.visitedNodesSource = dijkstraSource.visitedNodesMarks;
+		computeSPSource(sourceId);
 		
 		//compute dijkstra one-to-all from target
-		DijkstraAlgorithm dijkstraTarget = new DijkstraAlgorithm(this.graph);
-		dijkstraTarget.considerArcFlags = true;
-		dijkstraTarget.considerShortcuts = true;
-		dijkstraTarget.computeShortestPath(targetId, -1);
-		this.distTarget = dijkstraTarget.distance;
-		this.previousTarget = dijkstraTarget.previous;
-		this.visitedNodesTarget = dijkstraTarget.visitedNodesMarks;
+		computeSPTarget(targetId);
 		
 		//get the minimum common node between the visited nodes of source and target
+		int min = computeMinDist();
+		
+		return min;
+	}
+
+	public int computeMinDist() {
 		int min = Integer.MAX_VALUE;
 		this.minCommonNode = NULL_NODE;
 		for (Entry<Long, Integer> n : distSource.entrySet()) {
@@ -298,8 +292,31 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		}
 		
 		if(min == Integer.MAX_VALUE) min = -1;
-		
 		return min;
+	}
+
+	public void computeSPTarget(long targetId) {
+		DijkstraAlgorithm dijkstraTarget = new DijkstraAlgorithm(this.graph);
+		dijkstraTarget.considerArcFlags = true;
+		dijkstraTarget.considerShortcuts = true;
+		dijkstraTarget.computeShortestPath(targetId, -1);
+		this.distTarget = dijkstraTarget.distance;
+		this.previousTarget = dijkstraTarget.previous;
+		this.visitedNodesTarget = dijkstraTarget.visitedNodesMarks;
+	}
+
+	public void computeSPSource(long sourceId) {
+		DijkstraAlgorithm dijkstraSource = new DijkstraAlgorithm(this.graph);
+		dijkstraSource.considerArcFlags = true;
+		dijkstraSource.considerShortcuts = true;
+		dijkstraSource.computeShortestPath(sourceId, -1);
+		this.distSource = dijkstraSource.distance;
+		this.previousSource = dijkstraSource.previous;
+		this.visitedNodesSource = dijkstraSource.visitedNodesMarks;
+	}
+	
+	public Set<Long> getVisitedNodesSource() {
+		return this.visitedNodesSource;
 	}
 	
 	@Override

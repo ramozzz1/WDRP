@@ -14,8 +14,10 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.Fun;
 import org.mapdb.Fun.Tuple2;
+import org.mapdb.Serializer;
 
 import util.DistanceUtils;
+import model.LatLonPointSerializer;
 
 public class Graph {
 	private DB db;
@@ -40,8 +42,11 @@ public class Graph {
 					.newFileDB(new File(fileName))
 					.transactionDisable()
 					.cacheHardRefEnable()
-					.asyncFlushDelay(500)
-					.randomAccessFileEnableKeepIndexMapped()
+					.syncOnCommitDisable()
+					.asyncWriteEnable()
+					.mmapFileEnableIfSupported()
+					.freeSpaceReclaimQ(0)
+					.fullChunkAllocationEnable()
 					.closeOnJvmShutdown()
 					.make();
 		}
@@ -49,9 +54,10 @@ public class Graph {
 			this.db = DBMaker.newTempFileDB().transactionDisable().make();
 		}
 		
-		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).keepCounter(true).makeOrGet();
-		this.adjacenyList = db.createTreeSet("adjacenyList").keepCounter(true).makeOrGet();
-		this.bounds = db.createTreeSet("bound").keepCounter(true).makeOrGet();
+		Serializer<LatLonPoint> serializer = new LatLonPointSerializer();
+		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).valueSerializer(serializer).counterEnable().makeOrGet();
+		this.adjacenyList = db.createTreeSet("adjacenyList").serializer(BTreeKeySerializer.TUPLE2).counterEnable().makeOrGet();
+		this.bounds = db.createTreeSet("bound").counterEnable().makeOrGet();
 		if(this.bounds.size() == 0) {
 			this.bounds.add(new Bounds());
 		}
@@ -155,7 +161,7 @@ public class Graph {
 	}
 
 	public Iterable<Arc> getNeighbors(long nodeId) {
-		return Bind.findVals2(this.adjacenyList, nodeId);
+		return Fun.filter(this.adjacenyList, nodeId);
 	}
 	
 	@SuppressWarnings("unused")

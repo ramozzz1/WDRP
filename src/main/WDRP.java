@@ -128,7 +128,8 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
-		Graph g = GraphUtils.convertOSMToGraph("saarland");	
+		Graph g = GraphUtils.convertOSMToGraph("saarland");
+		//Graph g = new Graph("resources/db/saarland.graph");
   		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	algorithms.add(new TransitNodeRoutingAlgorithm(g));
