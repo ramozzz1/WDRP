@@ -2,18 +2,18 @@ package algorithms;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import gnu.trove.map.hash.THashMap;
 
+import java.util.Map;
 import java.util.Set;
 
 import model.HeuristicTypes;
+import model.PPDist;
 import model.Path;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import algorithm.TransitNodeRoutingAlgorithm;
-import algorithm.TransitNodeRoutingAlgorithm.PPDist;
 
 public class TransitNodeRoutingAlgorithmTest extends SPTestBase {
 	
@@ -130,9 +130,9 @@ public class TransitNodeRoutingAlgorithmTest extends SPTestBase {
 		int num = 2;
 		Set<Long> tn = a.computeTransitNodes(num);
 		Set<Long> an = a.computeAccessNodes(0, tn);
-		THashMap<Long, PPDist> dist = a.computeOneToAllDistances(0, an);
+		Map<Long, PPDist> dist = a.computeOneToAllDistances(0, an);
 		assertEquals(dist.get(2L).dist, 2);
-		assertEquals(dist.get(2L).previous.toString(), "{2=1, 1=0, 0=-1}");
+		assertEquals(dist.get(2L).previous.toString(), "{0=-1, 1=0, 2=1}");
 	}
 	
 	@Test

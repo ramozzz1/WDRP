@@ -6,6 +6,7 @@ import gnu.trove.set.hash.THashSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import model.Arc;
 import model.Graph;
@@ -81,16 +82,15 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
 			System.out.println("Updating visisted arc flags");
 			
 			//check which arcs were visited and set their flags to true
-			super.previous.forEachEntry(new TLongLongProcedure() {
-				@Override
-				public boolean execute(long currNode, long prevNode) {
-					//get the reverse edge
-					Arc oldArc = graph.getEdge(currNode, prevNode);
-					if(oldArc!=null)
-						updateArcFlag(currNode, oldArc);
-					return true;
-				}
-			});
+			for (Entry<Long,Long> pair : super.previous.entrySet()) {
+				long currNode = pair.getKey();
+				long prevNode = pair.getValue();
+				
+				//get the reverse edge
+				Arc oldArc = graph.getEdge(currNode, prevNode);
+				if(oldArc!=null)
+					updateArcFlag(currNode, oldArc);
+			}	
 		}
 	}
 

@@ -6,7 +6,9 @@ import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.set.hash.THashSet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -27,8 +29,8 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	private int maxNumberContractions;
 	private int numberOfShortcuts;
 	private long minCommonNode;
-	private TLongLongHashMap previousSource;
-	private TLongLongHashMap previousTarget;
+	private Map<Long,Long> previousSource;
+	private Map<Long,Long> previousTarget;
 	private Set<Long> visitedNodesSource;
 	private Set<Long> visitedNodesTarget;
 	private List<Long> finalContractionOrder;
@@ -75,6 +77,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		constructUpwardsGraph(this.nodesHierachy);
 		
 		System.out.println("total #shortcust added: "+this.numberOfShortcuts);
+		graph.setCH(true);
 	}
 
 	/**
@@ -333,8 +336,8 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	/**
 	 * Get the united parent pointers (united on the minCommonNode)
 	 */
-	public TLongLongHashMap getParentPointers() {
-		TLongLongHashMap pp = new TLongLongHashMap();
+	public Map<Long, Long> getParentPointers() {
+		Map<Long,Long> pp = new HashMap<Long,Long>();
 		
 		if(this.minCommonNode != NULL_NODE) {
 			long currNode = this.minCommonNode;
@@ -359,7 +362,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	/**
 	 * Get parent pointers of source
 	 */
-	public TLongLongHashMap getParentPointersSource() {
+	public Map<Long,Long> getParentPointersSource() {
 		return this.previousSource;
 	}
 	

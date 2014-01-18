@@ -6,6 +6,7 @@ import gnu.trove.set.hash.THashSet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -17,7 +18,7 @@ import model.Path;
 
 public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	
-	public TLongLongHashMap previous;
+	public Map<Long,Long> previous;
 	public THashMap<Long, Integer> distance;
 	public boolean considerArcFlags;
 	public boolean considerShortcuts;
@@ -39,7 +40,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	@Override
 	public int computeShortestPath(long sourceId, long targetId) {
 		this.distance = new THashMap<Long, Integer>();
-		this.previous = new TLongLongHashMap();
+		this.previous = new THashMap<Long,Long>();
 		this.visitedNodesMarks = new THashSet<Long>();
 		
 		if(sourceId != NULL_NODE) {

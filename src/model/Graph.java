@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 
+import org.apache.commons.io.FilenameUtils;
+import org.mapdb.Atomic.Boolean;
 import org.mapdb.BTreeKeySerializer;
 import org.mapdb.BTreeMap;
-import org.mapdb.Bind;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.Fun;
@@ -17,7 +18,6 @@ import org.mapdb.Fun.Tuple2;
 import org.mapdb.Serializer;
 
 import util.DistanceUtils;
-import model.LatLonPointSerializer;
 
 public class Graph {
 	private DB db;
@@ -27,6 +27,8 @@ public class Graph {
 	public BTreeMap<Long,LatLonPoint> nodes;
 	public NavigableSet<Fun.Tuple2<Long,Arc>> adjacenyList;
 	private NavigableSet<Bounds> bounds;
+	private String name;
+	private boolean ch;
 	
 	public Graph() {
 		this("temp", true);
@@ -41,17 +43,14 @@ public class Graph {
 			this.db = DBMaker
 					.newFileDB(new File(fileName))
 					.transactionDisable()
-					.cacheHardRefEnable()
-					.syncOnCommitDisable()
 					.asyncWriteEnable()
-					.mmapFileEnableIfSupported()
-					.freeSpaceReclaimQ(0)
-					.fullChunkAllocationEnable()
 					.closeOnJvmShutdown()
 					.make();
+			
+			this.name = FilenameUtils.getBaseName(fileName);;
 		}
 		else {
-			this.db = DBMaker.newTempFileDB().transactionDisable().make();
+			this.db = DBMaker.newTempFileDB().transactionDisable().deleteFilesAfterClose().make();
 		}
 		
 		Serializer<LatLonPoint> serializer = new LatLonPointSerializer();
@@ -64,10 +63,16 @@ public class Graph {
 		
 		this.numNodes = this.nodes.size();
 		this.numEdges = this.adjacenyList.size();
+		
+		this.ch = db.getAtomicBoolean("ch").get();
 	}
 	
 	public void closeConnection() {
 		db.close();
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	public Node getNode(long nodeId) {
@@ -300,6 +305,14 @@ public class Graph {
 		closeConnection();
 	}
 	
+	public void setCH(boolean ch) {
+		db.getAtomicBoolean("ch").set(ch);
+	}
+	
+	public boolean isCH() {
+		return db.getAtomicBoolean("ch").get();
+	}
+	
 	@Override
 	public String toString() {
 		String s = "{"+getNumNodes()+", "+getNumEdges()+", ";
@@ -318,5 +331,9 @@ public class Graph {
 		s += arrayS+"]";
 		s += "}";
 		return s;
+	}
+
+	public boolean isTemp() {
+		return name == null || name.equals("");
 	}
 }

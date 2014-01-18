@@ -5,6 +5,7 @@ import gnu.trove.map.hash.TLongLongHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import model.Arc;
@@ -55,7 +56,7 @@ public abstract class AbstractRoutingAlgorithm {
 	 * @param convertShortcuts true if we need to convert shortcuts to real edges
 	 * @return
 	 */
-	public Path contructPath(TLongLongHashMap previous, long targetId, boolean convertShortcuts) {
+	public Path contructPath(Map<Long,Long> previous, long targetId, boolean convertShortcuts) {
 		Path p = new Path();
 		
 		long currNode = targetId;
@@ -75,7 +76,7 @@ public abstract class AbstractRoutingAlgorithm {
 	}
 	
 	//wrapper method
-	public Path contructPath(TLongLongHashMap previous, long targetId) {
+	public Path contructPath(Map<Long,Long> previous, long targetId) {
 		return contructPath(previous, targetId, true);
 	}
 	

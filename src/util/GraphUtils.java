@@ -21,7 +21,7 @@ public class GraphUtils {
 	public static Graph convertOSMToGraph (String fileName) {		
 		IOUtils.deleteFile("resources/db/"+fileName+".graph");
 		
-		OSMParser parser = new OSMParser();
+		OSMParser parser = new OSMParser(1000000);
 		Graph g = parser.osmToGraph("resources/osm/"+fileName+".osm");
 		GraphUtils.convertToLCC(g);
 		

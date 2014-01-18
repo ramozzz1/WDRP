@@ -8,7 +8,9 @@ import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import model.Arc;
@@ -337,7 +339,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
 	@Test
 	public void testConstructPathWithShortcuts() {
-		TLongLongHashMap previous = new TLongLongHashMap();
+		Map<Long,Long> previous = new HashMap<Long,Long>();
 		Graph g = new Graph();
 		g.addNode(0);
 		g.addNode(1);
@@ -353,10 +355,10 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		g.addEdge(3, 4, 0, true, -1);
 		g.addEdge(4, 5, 0, true, -1);
 		
-		previous.put(5,4);
-		previous.put(4,1);
-		previous.put(1,0);
-		previous.put(0,-1);
+		previous.put(5L,4L);
+		previous.put(4L,1L);
+		previous.put(1L,0L);
+		previous.put(0L,-1L);
 		
 		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
 		Path p = ch.contructPath(previous, 5);
@@ -365,7 +367,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
 	@Test
 	public void testConstructPathWithShortcuts1() {
-		TLongLongHashMap previous = new TLongLongHashMap();
+		Map<Long,Long> previous = new HashMap<Long,Long>();
 		Graph g = new Graph();
 		g.addNode(0);
 		g.addNode(1);
@@ -381,8 +383,8 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		g.addEdge(3, 4, 0, true, -1);
 		g.addEdge(4, 5, 0, true, -1);
 		
-		previous.put(3,1);
-		previous.put(1,-1);
+		previous.put(3L,1L);
+		previous.put(1L,-1L);
 		
 		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
 		Path p = ch.contructPath(previous, 3);
@@ -391,7 +393,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
 	@Test
 	public void testConstructPathWithShortcuts2() {
-		TLongLongHashMap previous = new TLongLongHashMap();
+		Map<Long,Long> previous = new HashMap<Long,Long>();
 		Graph g = new Graph();
 		g.addNode(0);
 		g.addNode(1);
@@ -407,8 +409,8 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		g.addEdge(3, 4, 0, true, -1);
 		g.addEdge(4, 5, 0, true, -1);
 		
-		previous.put(1,4);
-		previous.put(4,-1);
+		previous.put(1L,4L);
+		previous.put(4L,-1L);
 		
 		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
 		Path p = ch.contructPath(previous, 1);
@@ -417,7 +419,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
 	@Test
 	public void testConstructPathWithShortcuts3() {
-		TLongLongHashMap previous = new TLongLongHashMap();
+		Map<Long,Long> previous = new HashMap<Long,Long>();
 		Graph g = new Graph();
 		g.addNode(0);
 		g.addNode(1);
@@ -433,8 +435,8 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		g.addEdge(2, 4, 0, true, 3);
 		g.addEdge(3, 4, 0, true, -1);
 		
-		previous.put(4,0);
-		previous.put(0,-1);
+		previous.put(4L,0L);
+		previous.put(0L,-1L);
 		
 		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
 		Path p = ch.contructPath(previous, 4);

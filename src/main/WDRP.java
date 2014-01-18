@@ -1,13 +1,9 @@
 package main;
 
-import gnu.trove.map.hash.TLongIntHashMap;
-import gnu.trove.procedure.TIntProcedure;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import model.Graph;
 import model.Path;
@@ -18,11 +14,7 @@ import org.simpleframework.http.Response;
 import org.simpleframework.http.core.Container;
 
 import util.GraphUtils;
-import algorithm.ALTAlgorithm;
 import algorithm.AbstractRoutingAlgorithm;
-import algorithm.ArcFlagsAlgorithm;
-import algorithm.AstarAlgorithm;
-import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.DijkstraAlgorithm;
 import algorithm.TransitNodeRoutingAlgorithm;
 
@@ -128,8 +120,8 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
-		Graph g = GraphUtils.convertOSMToGraph("saarland");
-		//Graph g = new Graph("resources/db/saarland.graph");
+		//Graph g = GraphUtils.convertOSMToGraph("saarland");
+		Graph g = new Graph("resources/db/saarland.graph");
   		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
     	algorithms.add(new DijkstraAlgorithm(g));
     	algorithms.add(new TransitNodeRoutingAlgorithm(g));
@@ -138,5 +130,6 @@ public class WDRP {
     	//algorithms.add(new ALTAlgorithm(g,16));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,47.95,48.05,7.75,7.90));
     	Experiment.doExperiment(g, algorithms, 100, false);
+ 
     }   
 }

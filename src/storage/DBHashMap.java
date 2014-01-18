@@ -12,29 +12,49 @@ import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
-import algorithm.TransitNodeRoutingAlgorithm.PPDist;
-
 public class DBHashMap<K,V> implements Map<K, V> {
 
 	private DB db;
 	private BTreeMap<K, V> map;
 
 	public DBHashMap () {
-		this.db = DBMaker
+		this(true,"");
+	}
+	
+	public DBHashMap (String name) {
+		this(false, name);
+	}
+	
+	public DBHashMap(boolean temp, String name) {
+		String mapName = "";
+		if(temp||name.equals("")) {
+			this.db = DBMaker
 				.newTempFileDB()
 				.transactionDisable()
-				.cacheHardRefEnable()
-				.syncOnCommitDisable()
 				.asyncWriteEnable()
-				.mmapFileEnableIfSupported()
-				.freeSpaceReclaimQ(0)
-				.fullChunkAllocationEnable()
 				.deleteFilesAfterClose()
 				.closeOnJvmShutdown()
-				//.randomAccessFileEnableKeepIndexMapped()
                 .make();
+			
+			mapName = "map"+System.nanoTime();
+			
+			this.map = db.createTreeMap(mapName).keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).make();
+		}
+		else {
+			File file = new File("resources/alg/"+name+".alg");
+			this.db = DBMaker
+					.newFileDB(file)
+					.transactionDisable()
+					.asyncWriteEnable()
+					.closeOnJvmShutdown()
+	                .make();
+			
+			mapName = name;
+			
+			this.map = db.createTreeMap(mapName).keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).makeOrGet();
+		}
 		
-		this.map = db.createTreeMap("map"+System.nanoTime()).keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).make();
+		
 	}
 	
 	public DBHashMap(THashMap<K,V> m) {
