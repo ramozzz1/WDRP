@@ -38,7 +38,7 @@ public class DBHashMap<K,V> implements Map<K, V> {
 			
 			mapName = "map"+System.nanoTime();
 			
-			this.map = db.createTreeMap(mapName).keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).make();
+			this.map = db.createTreeMap(mapName).keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).counterEnable().make();
 		}
 		else {
 			File file = new File("resources/alg/"+name+".alg");
@@ -51,10 +51,8 @@ public class DBHashMap<K,V> implements Map<K, V> {
 			
 			mapName = name;
 			
-			this.map = db.createTreeMap(mapName).keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).makeOrGet();
+			this.map = db.createTreeMap(mapName).keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).counterEnable().makeOrGet();
 		}
-		
-		
 	}
 	
 	public DBHashMap(THashMap<K,V> m) {

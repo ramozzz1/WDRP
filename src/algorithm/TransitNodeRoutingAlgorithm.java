@@ -21,7 +21,7 @@ import util.DistanceUtils;
 public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 	public ContractionHierarchiesAlgorithm ch;
 	private Set<Long> transitNodes;
-	public TLongIntHashMap radiusNodes;
+	public DBHashMap<Long,Integer> radiusNodes;
 	private int numTransitNodes;
 	private Long minSourceAccessNode;
 	private Long minTargetAccessNode;
@@ -43,7 +43,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		this.ch = new ContractionHierarchiesAlgorithm(graph);
 		this.numTransitNodes = (int) Math.round(Math.sqrt(graph.nodes.size())); 
 		this.transitNodes = new THashSet<Long>();
-		this.radiusNodes = new TLongIntHashMap();
+		this.radiusNodes = new DBHashMap<Long,Integer>(graph.isTemp()?"":getName()+"/"+graph.getName()+"-"+"radiusNodes");
 		this.transitNodesDistances = new DBHashMap<Long, HashMap<Long, PPDist>>(graph.isTemp()?"":getName()+"/"+graph.getName()+"-"+"transitNodes");
 		this.accessNodes = new DBHashMap<Long, HashMap<Long, PPDist>>(graph.isTemp()?"":getName()+"/"+graph.getName()+"-"+"accessNodes");
 		this.heuristic = heuristic;
@@ -171,7 +171,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		return allToAllDistances;
 	}
 
-	public boolean isFar(long sourceId, long targetId, TLongIntHashMap radiusNodes) {
+	public boolean isFar(long sourceId, long targetId, Map<Long,Integer> radiusNodes) {
 		LatLonPoint sp = this.graph.getLatLon(sourceId);
 		LatLonPoint tp = this.graph.getLatLon(targetId);
 		int dist = computeDistance(sp,tp);

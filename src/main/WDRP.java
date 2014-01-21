@@ -15,8 +15,7 @@ import org.simpleframework.http.core.Container;
 
 import util.GraphUtils;
 import algorithm.AbstractRoutingAlgorithm;
-import algorithm.ContractionHierarchiesAlgorithm;
-import algorithm.DijkstraAlgorithm;
+import algorithm.TransitNodeRoutingAlgorithm;
 
 
 
@@ -111,7 +110,7 @@ public class WDRP {
 		/*int port = 8888;
 		
 		graph = new Graph("resources/db/saarland.graph");
-    	algorithm = new ContractionHierarchiesAlgorithm(graph);
+    	algorithm = new TransitNodeRoutingAlgorithm(graph);
     	
 		Container container = new WDRPHandler();
 		Server server = new ContainerServer(container);
@@ -120,16 +119,16 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
-		Graph g = GraphUtils.convertOSMToGraph("saarland");
-		//Graph g = new Graph("resources/db/saarland.graph");
+		Graph g = GraphUtils.convertOSMToGraph("baden-wuerttemberg");
+		//Graph g = new Graph("resources/db/baden-wuerttemberg.graph");
   		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
-    	algorithms.add(new DijkstraAlgorithm(g));
-    	//algorithms.add(new TransitNodeRoutingAlgorithm(g));
-    	algorithms.add(new ContractionHierarchiesAlgorithm(g));
+    	//algorithms.add(new DijkstraAlgorithm(g));
+    	algorithms.add(new TransitNodeRoutingAlgorithm(g));
+    	//algorithms.add(new ContractionHierarchiesAlgorithm(g));
   		//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,16));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,47.95,48.05,7.75,7.90));
     	Experiment.doExperiment(g, algorithms, 100, false);
- 
+    	
     }   
 }
