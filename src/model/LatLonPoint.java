@@ -1,11 +1,6 @@
 package model;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.io.Serializable;
-
-import org.mapdb.Serializer;
 
 @SuppressWarnings("serial")
 public class LatLonPoint implements Serializable {
@@ -29,6 +24,11 @@ public class LatLonPoint implements Serializable {
 	@Override
 	public int hashCode() {
 		return Double.valueOf(this.lat).hashCode() * Double.valueOf(this.lon).hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return "{lat="+lat+", lon="+lon+"}";
 	}
 	
 	@Override

@@ -1,8 +1,12 @@
 package util;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import main.Config;
 import model.Node;
@@ -39,5 +43,22 @@ public class IOUtils {
 	public static boolean deleteFile(String fileName) {
 		File file = new File(fileName);
 		return file.delete();
+	}
+	
+	/**
+	 * @param file
+	 * @param content
+	 */
+	public static void writeContentToFile(String fileName, String content) {
+		Writer writer = null;
+
+		try {
+		    writer = new BufferedWriter(new OutputStreamWriter(
+		          new FileOutputStream(fileName), "utf-8"));
+		    writer.write(content);
+		} catch (IOException ex) {
+			System.err.println("Problem with reading file:"+fileName);
+		} 
+		finally {try {writer.close();} catch (Exception ex) {}}
 	}
 }

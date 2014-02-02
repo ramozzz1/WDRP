@@ -59,4 +59,46 @@ public class CommonUtils {
 		while(temp.size()>0) list.add(temp.poll());
 		return list;
 	}
+
+	public static List<Long> itrToList(Iterable<Long> itr) {
+		List<Long> l = new ArrayList<>();
+		for (Long i : itr)
+		    l.add(i);
+		return l;
+	}
+
+	public static int convertTimeToSeconds(String a_time)
+    {
+        int secSinceMidnight = 0;
+        int hours, minutes, seconds;
+        String[] splitTime = a_time.split(":");
+
+        hours = Integer.parseInt(splitTime[0]);
+        minutes = Integer.parseInt(splitTime[1]);
+        seconds = Integer.parseInt(splitTime[2]);
+
+        secSinceMidnight = (3600 * hours) + (60 * minutes) + seconds;
+
+        return secSinceMidnight;
+    }
+
+	public static int calculateTimeDiff(String time1, String time2) {
+		int timeDiff = convertTimeToSeconds(time2) - convertTimeToSeconds(time1);
+		return timeDiff;
+	}
+
+	public static int generateRandomTime(String minTime, String maxTime) {
+		int t2 = convertTimeToSeconds(maxTime);
+		int t1 = convertTimeToSeconds(minTime);
+		Random r = new Random();
+		return r.nextInt((t2-t1)+1) + t1;
+	}
+
+	public static String convertSecondsToTime(int totalSecs) {
+		int hours = totalSecs / 3600;
+		int minutes = (totalSecs % 3600) / 60;
+		int seconds = totalSecs % 60;
+
+		return (hours<10?"0":"") + hours + ":" + (minutes<10?"0":"") + minutes + ":" +(seconds<10?"0":"")+ seconds;
+	}
 }

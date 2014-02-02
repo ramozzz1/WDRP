@@ -12,10 +12,12 @@ import java.util.TreeMap;
 
 import model.Graph;
 import model.NodePair;
+import util.CommonUtils;
 import util.GraphUtils;
 import util.IOUtils;
 import algorithm.AbstractRoutingAlgorithm;
 import algorithm.ArcFlagsAlgorithm;
+import algorithm.TimeExpandedAlgorithm;
 
 public class Experiment {
 	private static final String AVG_TRAVEL_TIME = "avg-travel-time(s)";
@@ -27,20 +29,26 @@ public class Experiment {
 	
 	//run SP on algorithms by selecting random nodes from graph and running them numberOfTimes
 	public static void doExperiment(Graph g, List<AbstractRoutingAlgorithm> algorithms, 
-			int numberOfTimes, boolean writePathsToFile) {
+			int numberOfTimes, boolean writePathsToFile, boolean timeDependent, String minTime, String maxTime) {
 		System.out.println("SELECTING "+numberOfTimes+" RANDOM NODE PAIRS");
-		
-		//select random node pairs from graph
 		List<NodePair> randomNodePairs = new ArrayList<NodePair>();
-		ArcFlagsAlgorithm a = getArcFlagAlgorithm(algorithms);
-		if(a!=null) {
-			//hack: if we have an arc flag algorithm we have to only get targets from nodes region
-			THashSet<Long> regionNodes =  a.computeNodesInRegion(a.latMin, a.latMax, a.lonMin, a.lonMax);
-			System.out.println(regionNodes.size());
-			randomNodePairs = GraphUtils.getRandomNodePairs(g.nodes, new ArrayList<Long>(regionNodes) ,numberOfTimes);
+		int randomDepartureTime = 0;
+		
+		if(!timeDependent) {
+			//select random node pairs from graph
+			ArcFlagsAlgorithm a = getArcFlagAlgorithm(algorithms);
+			if(a!=null) {
+				//hack: if we have an arc flag algorithm we have to only get targets from nodes region
+				THashSet<Long> regionNodes =  a.computeNodesInRegion(a.latMin, a.latMax, a.lonMin, a.lonMax);
+				System.out.println(regionNodes.size());
+				randomNodePairs = GraphUtils.getRandomNodePairs(g.nodes, new ArrayList<Long>(regionNodes) ,numberOfTimes);
+			}
+			else {
+				randomNodePairs = GraphUtils.getRandomNodePairs(g.nodes, numberOfTimes);
+			}
 		}
 		else {
-			randomNodePairs = GraphUtils.getRandomNodePairs(g.nodes, numberOfTimes);
+			randomNodePairs = GraphUtils.getRandomNodePairs(g.stations, numberOfTimes);
 		}
 		
 		for (AbstractRoutingAlgorithm alg : algorithms) {
@@ -73,13 +81,23 @@ public class Experiment {
 		int i = 0;
 		//for each node pair run the algorithms and save metrics
 		for (NodePair nodePair : randomNodePairs) {
-			System.out.println(i+ " " +nodePair);
+			if(timeDependent) {
+				randomDepartureTime = CommonUtils.generateRandomTime(minTime, maxTime);
+				System.out.println(i+ " " +nodePair + "@"+CommonUtils.convertSecondsToTime(randomDepartureTime));
+			}
+			else
+				System.out.println(i+ " " +nodePair);
+			
 			for (AbstractRoutingAlgorithm alg : algorithms) {
 				String name = alg.getName();
 				TreeMap<String,Integer> metrics = results.get(name);
 				System.out.println("Running SP for " + name);
 				long start = System.nanoTime();
-				int travelTime = alg.computeShortestPath(nodePair.getSource(), nodePair.getTarget());
+				int travelTime = -1;
+				if(timeDependent && (alg instanceof TimeExpandedAlgorithm))
+					travelTime = ((TimeExpandedAlgorithm)alg).computeShortestPath(nodePair.getSource(), nodePair.getTarget(), randomDepartureTime);
+				else
+					travelTime = alg.computeShortestPath(nodePair.getSource(), nodePair.getTarget());
 				long elapsed = (System.nanoTime() - start)/1000000;
 				
 				if(writePathsToFile)
@@ -95,7 +113,7 @@ public class Experiment {
 		System.out.println("----------DONE WITH COMPUTATIONS-----------");
 		System.out.println();
 	
-		System.out.println("#nodes:"+g.nodes.size()+" #edges(including shortcuts):"+g.adjacenyList.size()/2);
+		System.out.println("#nodes:"+g.nodes.size()+" #edges(including shortcuts):"+g.adjacenyList.size());
 		System.out.println("----------RESULTS "+ numberOfTimes + "X-----------");
 		//print the header for the result table
 		Collections.sort(METRICS);

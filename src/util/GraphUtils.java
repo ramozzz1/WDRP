@@ -13,10 +13,21 @@ import model.NodePair;
 
 import org.mapdb.BTreeMap;
 
+import reader.GTFSParser;
 import reader.OSMParser;
 import algorithm.DijkstraAlgorithm;
 
 public class GraphUtils {
+	
+	public static Graph convertGTFSToGraph (String dirName) {		
+		IOUtils.deleteFile("resources/db/"+dirName+".graph");
+		
+		GTFSParser parser = new GTFSParser("resources/gtfs/"+dirName, "wednesday");
+		Graph g = parser.gtfsToGraph();
+		//GraphUtils.convertToLCC(g);
+		
+		return g;
+	}
 	
 	public static Graph convertOSMToGraph (String fileName) {		
 		IOUtils.deleteFile("resources/db/"+fileName+".graph");
