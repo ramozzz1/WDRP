@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.NavigableSet;
 
 import org.apache.commons.io.FilenameUtils;
-import org.mapdb.Atomic.Boolean;
 import org.mapdb.BTreeKeySerializer;
 import org.mapdb.BTreeMap;
 import org.mapdb.DB;
@@ -18,17 +17,20 @@ import org.mapdb.Fun.Tuple2;
 import org.mapdb.Serializer;
 
 import util.DistanceUtils;
+import util.IOUtils;
 
 public class Graph {
 	private DB db;
 	private int numNodes;
 	private int numEdges;
+	private int numStations;
+	private String name;
 	
 	public BTreeMap<Long,LatLonPoint> nodes;
 	public NavigableSet<Fun.Tuple2<Long,Arc>> adjacenyList;
 	private NavigableSet<Bounds> bounds;
-	private String name;
-	private boolean ch;
+	public NavigableSet<Fun.Tuple2<Long,Long>> nodesPerStation;
+	public BTreeMap<Long,LatLonPoint> stations;
 	
 	public Graph() {
 		this("temp", true);
@@ -47,7 +49,7 @@ public class Graph {
 					.closeOnJvmShutdown()
 					.make();
 			
-			this.name = FilenameUtils.getBaseName(fileName);;
+			this.name = FilenameUtils.getBaseName(fileName);
 		}
 		else {
 			this.db = DBMaker.newTempFileDB().transactionDisable().deleteFilesAfterClose().make();
@@ -56,6 +58,8 @@ public class Graph {
 		Serializer<LatLonPoint> serializer = new LatLonPointSerializer();
 		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).valueSerializer(serializer).counterEnable().makeOrGet();
 		this.adjacenyList = db.createTreeSet("adjacenyList").serializer(BTreeKeySerializer.TUPLE2).counterEnable().makeOrGet();
+		this.stations = db.createTreeMap("stations").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).counterEnable().makeOrGet();
+		this.nodesPerStation = db.createTreeSet("nodesPerStation").serializer(BTreeKeySerializer.TUPLE2).counterEnable().makeOrGet();
 		this.bounds = db.createTreeSet("bound").counterEnable().makeOrGet();
 		if(this.bounds.size() == 0) {
 			this.bounds.add(new Bounds());
@@ -63,8 +67,7 @@ public class Graph {
 		
 		this.numNodes = this.nodes.size();
 		this.numEdges = this.adjacenyList.size();
-		
-		this.ch = db.getAtomicBoolean("ch").get();
+		this.numStations = this.stations.size();
 	}
 	
 	public void closeConnection() {
@@ -96,6 +99,16 @@ public class Graph {
 			}
 		}
 		return null;
+	}
+	
+	public void addStation(long stopId, double lat, double lon) {
+		this.stations.put(stopId, new LatLonPoint(lat, lon));
+		extendBounds(lat,lon);
+		this.numStations++;
+	}
+
+	public void addNodeToStation(long stationId, long nodeId) {
+		this.nodesPerStation.add(Fun.t2(stationId,nodeId));
 	}
 	
 	public void addNode(long nodeId) {
@@ -155,6 +168,10 @@ public class Graph {
 		
 		//add the new edge
 		addEdge(currNode, newArc);
+	}
+	
+	public int getNumStations() {
+		return this.numStations;
 	}
 	
 	public int getNumNodes() {
@@ -262,6 +279,10 @@ public class Graph {
 		}
 		return arcs;
 	}
+	
+	public Iterable<Long> getNodesOfStation(Long stationId) {
+		return Fun.filter(this.nodesPerStation, stationId);
+	}
 
 	public void removeNode(long nodeId) {
 		this.nodes.remove(nodeId);
@@ -300,9 +321,16 @@ public class Graph {
 	public void clear() {
 		this.nodes.clear();
 		this.adjacenyList.clear();
+		this.stations.clear();
+		this.nodesPerStation.clear();
+		this.bounds.clear();
+		
+		this.numStations = 0;
 		this.numEdges=0;
 		this.numNodes=0;
 		closeConnection();
+		IOUtils.deleteFile("resources/db/"+this.name+".graph");
+		IOUtils.deleteFile("resources/db/"+this.name+".graph.p");
 	}
 	
 	public void setCH(boolean ch) {
