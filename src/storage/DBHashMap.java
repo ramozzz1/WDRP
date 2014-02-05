@@ -31,6 +31,7 @@ public class DBHashMap<K,V> implements Map<K, V> {
 			this.db = DBMaker
 				.newTempFileDB()
 				.transactionDisable()
+				.cacheHardRefEnable()
 				.asyncWriteEnable()
 				.deleteFilesAfterClose()
 				.closeOnJvmShutdown()
@@ -44,6 +45,7 @@ public class DBHashMap<K,V> implements Map<K, V> {
 			File file = new File("resources/alg/"+name+".alg");
 			this.db = DBMaker
 					.newFileDB(file)
+					.cacheHardRefEnable()
 					.transactionDisable()
 					.asyncWriteEnable()
 					.closeOnJvmShutdown()
