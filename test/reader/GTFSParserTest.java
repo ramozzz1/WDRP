@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import model.Arc;
 import model.Node;
 import model.NodeType;
 
@@ -15,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mapdb.Fun.Tuple2;
 
 import util.CommonUtils;
 import util.IOUtils;
@@ -98,7 +100,7 @@ public class GTFSParserTest {
 		String stationId = "400089";
 		String time = "00:16:05";
 		NodeType type = NodeType.ARRIVAL;
-		long id = Node.generateId(type,stationId, time, "daksjhd");
+		long id = Node.generateId(type,stationId, time, "daksjhd",  true);
 		
 		assertEquals(time, Node.getTime(id));
 		assertEquals(stationId, Node.getStationId(id)+"");
@@ -216,6 +218,10 @@ public class GTFSParserTest {
 		parser.readStopTimes();
 		assertEquals(parser.getGraph().getNumNodes(), 21);
 		assertEquals(parser.getGraph().getNumEdges(), 20);
+		
+		for (Tuple2<Long, Arc> arc : parser.getGraph().adjacenyList) {
+			System.out.println(arc.a+"->"+arc.b);
+		}
 	}
 	
 	@Test

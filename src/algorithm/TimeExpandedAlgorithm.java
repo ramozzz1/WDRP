@@ -10,4 +10,7 @@ public interface TimeExpandedAlgorithm {
 	 * @return
 	 */
 	public int computeShortestPath(long sourceStationId, long targetStationId, int departureTime);
+
+	public int computeShortestPath(long sourceStationId, long targetStationId,
+			String departureTime);
 }

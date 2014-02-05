@@ -6,16 +6,28 @@ import model.Node;
 import model.NodeType;
 
 public class TimeExpandedDijkstraAlgorithm extends DijkstraAlgorithm implements TimeExpandedAlgorithm {
-
+	
 	public TimeExpandedDijkstraAlgorithm(Graph graph) {
 		super(graph);
 	}
 
 	@Override
 	public int computeShortestPath(long sourceStationId, long targetStationId,
+			String departureTime) {
+		return computeShortestPath(sourceStationId, targetStationId, CommonUtils.convertTimeToSeconds(departureTime));
+	}
+	
+	@Override
+	public int computeShortestPath(long sourceStationId, long targetStationId,
 			int departureTime) {
 		long sourceId = selectClosestSourceFromStation(sourceStationId, departureTime);
-		return super.computeShortestPath(sourceId, targetStationId);
+		
+		int cost = super.computeShortestPath(sourceId, targetStationId);
+		if(cost != -1) {
+			int initWaitingTime = CommonUtils.calculateTimeDiff(CommonUtils.convertSecondsToTime(departureTime), Node.getTime(sourceId));
+			return cost+initWaitingTime;
+		}
+		return cost;
 	}
 
 	/**
@@ -50,5 +62,10 @@ public class TimeExpandedDijkstraAlgorithm extends DijkstraAlgorithm implements 
 	@Override
 	protected boolean addionalStopCondition(long sourceId, long targetStationId) {
 		return Node.getStationId(sourceId) == targetStationId;
+	}
+	
+	@Override
+	public String getName() {
+		return "TE-Dijkstra";
 	}
 }

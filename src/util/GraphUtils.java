@@ -24,7 +24,6 @@ public class GraphUtils {
 		
 		GTFSParser parser = new GTFSParser("resources/gtfs/"+dirName, "wednesday");
 		Graph g = parser.gtfsToGraph();
-		//GraphUtils.convertToLCC(g);
 		
 		return g;
 	}

@@ -33,6 +33,7 @@ public class Experiment {
 		System.out.println("SELECTING "+numberOfTimes+" RANDOM NODE PAIRS");
 		List<NodePair> randomNodePairs = new ArrayList<NodePair>();
 		int randomDepartureTime = 0;
+		int numberOfValidPathsFound = 0;
 		
 		if(!timeDependent) {
 			//select random node pairs from graph
@@ -88,12 +89,12 @@ public class Experiment {
 			else
 				System.out.println(i+ " " +nodePair);
 			
+			int travelTime = -1;
 			for (AbstractRoutingAlgorithm alg : algorithms) {
 				String name = alg.getName();
 				TreeMap<String,Integer> metrics = results.get(name);
 				System.out.println("Running SP for " + name);
 				long start = System.nanoTime();
-				int travelTime = -1;
 				if(timeDependent && (alg instanceof TimeExpandedAlgorithm))
 					travelTime = ((TimeExpandedAlgorithm)alg).computeShortestPath(nodePair.getSource(), nodePair.getTarget(), randomDepartureTime);
 				else
@@ -104,10 +105,13 @@ public class Experiment {
 					IOUtils.writePathToFile(alg.getName(), alg.extractPath(nodePair.getTarget()),nodePair.getSource(), nodePair.getTarget());
 				
 				metrics.put(AVG_RUNNING_TIME, (int) (metrics.get(AVG_RUNNING_TIME)+elapsed));
-				metrics.put(AVG_TRAVEL_TIME, metrics.get(AVG_TRAVEL_TIME)+travelTime);
+				metrics.put(AVG_TRAVEL_TIME, metrics.get(AVG_TRAVEL_TIME)+(travelTime == -1?0:travelTime));
 				metrics.put(AVG_VISITED_NODES, metrics.get(AVG_VISITED_NODES)+alg.getVisitedNodes().size());
 				results.put(name, metrics);
 			}
+			
+			if(travelTime != -1) numberOfValidPathsFound++;
+			
 			i++;
 		}
 		System.out.println("----------DONE WITH COMPUTATIONS-----------");
@@ -115,6 +119,7 @@ public class Experiment {
 	
 		System.out.println("#nodes:"+g.nodes.size()+" #edges(including shortcuts):"+g.adjacenyList.size());
 		System.out.println("----------RESULTS "+ numberOfTimes + "X-----------");
+		System.out.println("Valid paths found:"+numberOfValidPathsFound+"/"+numberOfTimes);
 		//print the header for the result table
 		Collections.sort(METRICS);
 		System.out.printf("%-25s","Algorithm");
@@ -127,8 +132,12 @@ public class Experiment {
 			System.out.printf("%-25s",entry.getKey());
 			for (Entry<String, Integer> metric : entry.getValue().entrySet()) {
 				int value = metric.getValue();
-				if(!metric.getKey().equals(PRECOMPUTATION_TIME))
-					value = value/numberOfTimes;
+				if(!metric.getKey().equals(PRECOMPUTATION_TIME)) {
+					if(!metric.getKey().equals(AVG_RUNNING_TIME))
+						value = value/numberOfValidPathsFound;
+					else
+						value = value/numberOfTimes;						
+				}
 				System.out.printf(" %-20s",value);
 			}
 			

@@ -31,9 +31,10 @@ public class GTFSParser {
 	private Set<String> serviceIds;
 	private Set<String> tripIds;
 	private Graph graph;
-	private String dirName;
+	private String dirName;	
+	public boolean useTripId;
 	
-	public GTFSParser(String dirName, String day) {
+	public GTFSParser(String dirName, String day, boolean useTripId) {
 		System.out.println(FilenameUtils.getBaseName(dirName+".gtfs"));
 		this.graph = new Graph(Config.DBDIR+FilenameUtils.getBaseName(dirName+".gtfs")+"."+Config.EXTENSION);
 		System.out.println(this.graph.getNumStations());
@@ -41,8 +42,13 @@ public class GTFSParser {
 		this.serviceIds = new THashSet<String>(); 
 		this.tripIds = new THashSet<String>();
 		this.dirName = dirName;
+		this.useTripId = useTripId;
 		if(!day.equals(""))
 			this.daysToConsider.add(day);
+	}
+	
+	public GTFSParser(String dirName, String day) {
+		this(dirName, day, true);
 	}
 	
 	public GTFSParser(String dirName) {
@@ -193,18 +199,18 @@ public class GTFSParser {
         			if(count%10000==0) System.out.println("#stop times processed: " +count);
         			
             		//make departure node of this node
-            		long depNode = Node.generateId(NodeType.DEPARTURE, currStopId, currDepTime, currTripId);
+            		long depNode = Node.generateId(NodeType.DEPARTURE, currStopId, currDepTime, currTripId, useTripId);
             		this.graph.addNode(depNode);
             		this.graph.addNodeToStation(Long.parseLong(currStopId),depNode);
             		
             		//make arrival node of this node
-            		long arrNode = Node.generateId(NodeType.ARRIVAL, currStopId, currArrTime, currTripId);
+            		long arrNode = Node.generateId(NodeType.ARRIVAL, currStopId, currArrTime, currTripId, useTripId);
             		this.graph.addNode(arrNode);
             		this.graph.addNodeToStation(Long.parseLong(currStopId),arrNode);
             		
             		//make transit node of arrival node
             		String traTime = calculateTransitTime(currArrTime, 5);
-            		long traNode = Node.generateId(NodeType.TRANSIT, currStopId, traTime, currTripId);
+            		long traNode = Node.generateId(NodeType.TRANSIT, currStopId, traTime, currTripId, useTripId);
             		this.graph.addNode(traNode);
             		this.graph.addNodeToStation(Long.parseLong(currStopId), traNode);
             		

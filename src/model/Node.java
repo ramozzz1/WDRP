@@ -49,8 +49,8 @@ public class Node implements Serializable {
 	    return this.id == other.id;
 	}
 	
-	public static long generateId(NodeType nodeType, String stationId, String time, String tripId) {
-		return Long.parseLong(nodeType.Value()+time.replace(":", "")+(tripId.hashCode()+"").replace("-","").substring(0, 6)+stationId+"");
+	public static long generateId(NodeType nodeType, String stationId, String time, String tripId, boolean useTripId) {
+		return Long.parseLong(nodeType.Value()+time.replace(":", "")+(useTripId?(tripId.hashCode()+"").replace("-","").substring(0, 6):"")+stationId+"");
 	}
 
 	public static NodeType getNodeType(long nodeId) {
