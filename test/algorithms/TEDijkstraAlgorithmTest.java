@@ -1,17 +1,17 @@
 package algorithms;
 
-import static org.junit.Assert.*;
-import model.Graph;
+import static org.junit.Assert.assertEquals;
+import model.TNGraph;
 
 import org.junit.Test;
 
 import algorithm.TimeExpandedDijkstraAlgorithm;
 
-public class TestTEDijkstraAlgorithm {
+public class TEDijkstraAlgorithmTest {
 
 	@Test
 	public void testClostestNode() {
-		Graph graph = new Graph();
+		TNGraph graph = new TNGraph();
 		graph.addNodeToStation(0, 10000051111110L);
 		graph.addNodeToStation(0, 20050051111110L);
 		graph.addNodeToStation(0, 30000051111110L);

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import model.Graph;
+import model.TNGraph;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -24,7 +25,7 @@ public class TimeExpandedDijkstraAlgorithmTest {
 	private static String stops = dir+"/"+"stops.txt";
 	private static String stopTimes = dir+"/"+"stop_times.txt";
 	private static TimeExpandedDijkstraAlgorithm a;
-	private static Graph g;
+	private static TNGraph g;
 	
 	@BeforeClass
 	public static void setUp() {

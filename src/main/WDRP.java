@@ -15,7 +15,7 @@ import org.simpleframework.http.core.Container;
 
 import util.GraphUtils;
 import algorithm.AbstractRoutingAlgorithm;
-import algorithm.TimeExpandedDijkstraAlgorithm;
+import algorithm.DijkstraAlgorithm;
 
 
 
@@ -119,15 +119,16 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
+		Graph g = GraphUtils.convertOSMToGraph("saarland");
 		//Graph g = GraphUtils.convertGTFSToGraph("manhattan");
-		Graph g = new Graph("resources/db/manhattan.graph");
+		//Graph g = new Graph("resources/db/manhattan.graph");
   		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
-    	//algorithms.add(new DijkstraAlgorithm(g));
-    	algorithms.add(new TimeExpandedDijkstraAlgorithm(g));
+    	algorithms.add(new DijkstraAlgorithm(g));
+    	//algorithms.add(new TimeExpandedDijkstraAlgorithm(g));
     	//algorithms.add(new ContractionHierarchiesAlgorithm(g));
   		//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,16));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,47.95,48.05,7.75,7.90));
-    	Experiment.doExperiment(g, algorithms, 100, false, true, "06:00:00", "18:00:00");
+    	Experiment.doExperiment(g, algorithms, 100, false, false, "06:00:00", "18:00:00");
     }   
 }

@@ -4,10 +4,11 @@ import util.CommonUtils;
 import model.Graph;
 import model.Node;
 import model.NodeType;
+import model.TNGraph;
 
 public class TimeExpandedDijkstraAlgorithm extends DijkstraAlgorithm implements TimeExpandedAlgorithm {
 	
-	public TimeExpandedDijkstraAlgorithm(Graph graph) {
+	public TimeExpandedDijkstraAlgorithm(TNGraph graph) {
 		super(graph);
 	}
 
@@ -41,7 +42,7 @@ public class TimeExpandedDijkstraAlgorithm extends DijkstraAlgorithm implements 
 		
 		long minCost = Integer.MAX_VALUE;
 		long closestNode = NULL_NODE;
-		for (long node : this.graph.getNodesOfStation(stationId)) {
+		for (long node : ((TNGraph)this.graph).getNodesOfStation(stationId)) {
 			if(Node.getNodeType(node) == NodeType.DEPARTURE) {
 				int cost = CommonUtils.convertTimeToSeconds(Node.getTime(node)) - departureTime;
 				if(cost >= 0 && cost < minCost) {

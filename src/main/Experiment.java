@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import model.Graph;
 import model.NodePair;
+import model.TNGraph;
 import util.CommonUtils;
 import util.GraphUtils;
 import util.IOUtils;
@@ -49,7 +50,7 @@ public class Experiment {
 			}
 		}
 		else {
-			randomNodePairs = GraphUtils.getRandomNodePairs(g.stations, numberOfTimes);
+			randomNodePairs = GraphUtils.getRandomNodePairs(((TNGraph)g).getStations(), numberOfTimes);
 		}
 		
 		for (AbstractRoutingAlgorithm alg : algorithms) {

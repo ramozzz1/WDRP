@@ -17,6 +17,8 @@ import model.Arc;
 import model.Graph;
 import model.Node;
 import model.NodeType;
+import model.TDGraph;
+import model.TNGraph;
 
 import org.apache.commons.io.FilenameUtils;
 import org.supercsv.io.CsvMapReader;
@@ -30,13 +32,13 @@ public class GTFSParser {
 	private List<String> daysToConsider;
 	private Set<String> serviceIds;
 	private Set<String> tripIds;
-	private Graph graph;
+	private TNGraph graph;
 	private String dirName;	
 	public boolean useTripId;
 	
 	public GTFSParser(String dirName, String day, boolean useTripId) {
 		System.out.println(FilenameUtils.getBaseName(dirName+".gtfs"));
-		this.graph = new Graph(Config.DBDIR+FilenameUtils.getBaseName(dirName+".gtfs")+"."+Config.EXTENSION);
+		this.graph = new TNGraph(Config.DBDIR+FilenameUtils.getBaseName(dirName+".gtfs")+"."+Config.EXTENSION);
 		System.out.println(this.graph.getNumStations());
 		this.daysToConsider = new ArrayList<String>();
 		this.serviceIds = new THashSet<String>(); 
@@ -67,11 +69,11 @@ public class GTFSParser {
 		return serviceIds;
 	}
 
-	public Graph getGraph() {
+	public TNGraph getGraph() {
 		return graph;
 	}
 	
-	public void setGraph(Graph graph) {
+	public void setGraph(TNGraph graph) {
 		this.graph = graph;
 	}
 	
@@ -79,7 +81,7 @@ public class GTFSParser {
 		return tripIds;
 	}
 
-	public Graph gtfsToGraph() {
+	public TNGraph gtfsToGraph() {
 		System.out.println("Started parsing gtfs: "+dirName);
 		long start = System.currentTimeMillis();
 		

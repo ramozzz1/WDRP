@@ -10,6 +10,7 @@ import java.util.Set;
 import model.Graph;
 import model.LatLonPoint;
 import model.NodePair;
+import model.TNGraph;
 
 import org.mapdb.BTreeMap;
 
@@ -19,11 +20,11 @@ import algorithm.DijkstraAlgorithm;
 
 public class GraphUtils {
 	
-	public static Graph convertGTFSToGraph (String dirName) {		
+	public static TNGraph convertGTFSToGraph (String dirName) {		
 		IOUtils.deleteFile("resources/db/"+dirName+".graph");
 		
 		GTFSParser parser = new GTFSParser("resources/gtfs/"+dirName, "wednesday");
-		Graph g = parser.gtfsToGraph();
+		TNGraph g = parser.gtfsToGraph();
 		
 		return g;
 	}

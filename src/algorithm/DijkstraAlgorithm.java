@@ -23,6 +23,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	public boolean considerShortcuts;
 	public int costUpperbound;
 	public int maxNumSettledNodes;
+	protected int startCost;
 	
 	public DijkstraAlgorithm(Graph graph) {
 		super(graph);
@@ -30,11 +31,11 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	}
 	
 	protected void setDefaultSettings() {
-		
 		this.considerArcFlags=false;
 		this.considerShortcuts = false;
 		this.costUpperbound=Integer.MAX_VALUE;
 		this.maxNumSettledNodes=Integer.MAX_VALUE;
+		this.startCost = 0;
 	}
 	
 	@Override
@@ -44,11 +45,11 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		this.visitedNodesMarks = new THashSet<Long>();
 		
 		if(sourceId != NULL_NODE) {
-			distance.put(sourceId, 0);
+			distance.put(sourceId, this.startCost);
 			previous.put(sourceId, NULL_NODE);
 			
 			Queue<NodeEntry> queue = new PriorityQueue<NodeEntry>();
-			queue.add(new NodeEntry(sourceId, 0));
+			queue.add(new NodeEntry(sourceId, this.startCost));
 			while(!queue.isEmpty()) {
 				NodeEntry u = queue.poll();
 				long minNodeId = u.getNodeId();
@@ -71,16 +72,13 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 				
 				for (Arc e : graph.getNeighbors(minNodeId)) {
 					if(considerEdge(e)) {
-						//System.out.println(u.getNodeId()+" NEIGHBOR:"+e.getHeadNode() +" COST "+e.getCost());
-						
 						Object distN = distance.get(e.getHeadNode());
-						int dist = distU + e.getCost();
+						int dist = getEdgeCost(e, distU);
 						if(distN==null || dist < (int)distN) {
 							distance.put(e.getHeadNode(), dist);
 							previous.put(e.getHeadNode(), minNodeId);
 							h = getHeuristicValue(e.getHeadNode(),targetId);
 							queue.add(new NodeEntry(e.getHeadNode(), dist+h));
-							//System.out.println(u.getNodeId()+" UPDATE "+e.getHeadNode()+" WITH "+(dist+h));
 						}
 					}
 				}
@@ -90,6 +88,10 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		return -1;
 	}
 	
+	protected int getEdgeCost(Arc e, int dist) {
+		return e.getCost() + dist;
+	}
+
 	protected boolean addionalStopCondition(long sourceId, long targetId) {
 		return false;
 	}

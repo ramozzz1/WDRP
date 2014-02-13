@@ -30,6 +30,9 @@ public class Arc implements Serializable, Comparable<Arc> {
 		this.shortcutNode = -1;
 	}
 
+	public Arc() {
+	}
+
 	public long getHeadNode() {
 		return headNode;
 	}
