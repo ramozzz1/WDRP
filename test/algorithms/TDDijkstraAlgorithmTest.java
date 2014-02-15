@@ -18,6 +18,9 @@ public class TDDijkstraAlgorithmTest {
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
+		g.addNode(3);
+		g.addNode(4);
+		g.addNode(5);
 		
 		int[] e1 = {4,5,9,4};
 		g.addEdge(0, 1, e1);
@@ -27,6 +30,18 @@ public class TDDijkstraAlgorithmTest {
 		
 		int[] e3 = {3,7,5,8};
 		g.addEdge(1, 2, e3);
+		
+		int[] e4 = {6,7,6,6};
+		g.addEdge(2, 3, e4);
+		
+		int[] e5 = {3,10,3,3};
+		g.addEdge(3, 4, e5);
+		
+		int[] e6 = {5,7,5,9};
+		g.addEdge(3, 5, e6);
+		
+		int[] e7 = {3,3,3,3};
+		g.addEdge(4, 5, e7);
 	}
 	
 	@Test
@@ -91,7 +106,7 @@ public class TDDijkstraAlgorithmTest {
 	public void computeSPSourceTargetInvalidDepartureTime() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
 		int travelTime = a.computeShortestPath(0,1,100);
-		assertEquals(travelTime,-2);
+		assertEquals(travelTime,-1);
 	}
 	
 	@Test
@@ -120,5 +135,40 @@ public class TDDijkstraAlgorithmTest {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
 		int travelTime = a.computeShortestPath(0,2,4);
 		assertEquals(travelTime,8);
+	}
+	
+	@Test
+	public void computeSPSourceTargetValidDepartureTime5() {
+		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
+		int travelTime = a.computeShortestPath(0,5,0);
+		assertEquals(travelTime,19);
+	}
+	
+	@Test
+	public void computeSPSourceTargetValidDepartureTime6() {
+		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
+		int travelTime = a.computeShortestPath(0,5,1);
+		assertEquals(travelTime,21);
+	}
+	
+	@Test
+	public void computeSPSourceTargetValidDepartureTime7() {
+		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
+		int travelTime = a.computeShortestPath(0,5,2);
+		assertEquals(travelTime,20);
+	}
+	
+	@Test
+	public void computeSPSourceTargetValidDepartureTime8() {
+		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
+		int travelTime = a.computeShortestPath(0,5,3);
+		assertEquals(travelTime,23);
+	}
+	
+	@Test
+	public void computeSPSourceTargetValidDepartureTime9() {
+		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
+		int travelTime = a.computeShortestPath(0,5,5);
+		assertEquals(travelTime,-1);
 	}
 }

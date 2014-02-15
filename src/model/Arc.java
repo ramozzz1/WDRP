@@ -7,6 +7,7 @@ public class Arc implements Serializable, Comparable<Arc> {
 	private long headNode;
 	private int cost;
 	private boolean arcFlag;
+	private boolean[] arcFlags;
 	private long shortcutNode;
 	
 	public Arc(Arc arc) {
@@ -45,8 +46,16 @@ public class Arc implements Serializable, Comparable<Arc> {
 		this.arcFlag = arcFlag;	
 	}
 	
+	public void setArcFlag(boolean arcFlag, int r) {
+		this.arcFlags[r] = arcFlag;	
+	}
+	
 	public boolean isArcFlag() {
 		return this.arcFlag;	
+	}
+	
+	public boolean isArcFlag(int r) {
+		return this.arcFlags[r];	
 	}
 	
 	public boolean isShortcut() { 

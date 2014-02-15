@@ -18,11 +18,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm implements TimeDepend
 		super.startCost = departureTime;
 		
 		int arrivalTime = super.computeShortestPath(source, target);
-		if(arrivalTime >= Integer.MAX_VALUE) {
-			//the time to travel from s to t was not within the time interval of the the arcs, so no path possible
-			return -2;
-		}
-		else if(arrivalTime > 0 ) {
+		if(arrivalTime > 0 ) {
 			//return the travel time
 			return arrivalTime - departureTime;
 		}
