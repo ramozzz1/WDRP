@@ -40,7 +40,8 @@ public class Graph {
 	public Graph(String fileName, boolean temp) {
 		if(!temp) {
 			this.db = DBMaker
-					.newFileDB(new File(fileName))
+					//.newFileDB(new File(fileName))
+					.newMemoryDB()
 					.transactionDisable()
 					.asyncWriteEnable()
 					.closeOnJvmShutdown()

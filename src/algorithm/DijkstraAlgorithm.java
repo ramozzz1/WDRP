@@ -53,7 +53,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 			while(!queue.isEmpty()) {
 				NodeEntry u = queue.poll();
 				long minNodeId = u.getNodeId();
-				System.out.println("MIN NODE:"+minNodeId +", "+ u.getDistance());
+				//System.out.println("MIN NODE:"+minNodeId +", "+ u.getDistance());
 				visitedNodesMarks.add(minNodeId);
 				
 				if(u.getDistance() >= Integer.MAX_VALUE)
@@ -77,7 +77,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 					if(considerEdge(e)) {
 						Object distN = distance.get(e.getHeadNode());
 						int dist = getEdgeCost(e, distU);
-						System.out.println("N: "+e.getHeadNode()+", "+dist);
+						//System.out.println("N: "+e.getHeadNode()+", "+dist);
 						if(distN==null || dist < (int)distN) {
 							distance.put(e.getHeadNode(), dist);
 							previous.put(e.getHeadNode(), minNodeId);
