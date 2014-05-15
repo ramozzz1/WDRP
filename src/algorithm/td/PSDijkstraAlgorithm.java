@@ -3,6 +3,7 @@ package algorithm.td;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +27,26 @@ public class PSDijkstraAlgorithm extends DijkstraAlgorithm  {
 		super(graph);
 	}
 	
-	public int[] computeTravelTimes(long source, long target) {
-		return computeTravelTimes(source, target, 0, 20);
+	public int computeBestDepartureTime(long source, long target) {
+		int[] travelTimes = computeTravelTimes(source, target);
+		
+		int bestDepartureTime = ArrayUtils.getMinIndex(travelTimes);
+		
+		return bestDepartureTime;
 	}
 	
 	public int[] computeTravelTimes(long source, long target, int minDepartureTime, int maxDepartureTime) {
+		int travelTimes[] = computeTravelTimes(source, target);
+		
+		return Arrays.copyOfRange(travelTimes, minDepartureTime, maxDepartureTime);
+	}
+	
+	public int[] computeTravelTimes(long source, long target) {
 		this.f = new THashMap<Long, List<Integer>>();
 		this.p = new THashMap<Long, Set<Long>>();
 		
 		if(source != NULL_NODE) {
-			f.put(source, ArrayUtils.extrapolateArray(new int[]{0}, maxDepartureTime-minDepartureTime));
+			f.put(source, ArrayUtils.extrapolateArray(new int[]{0}, 20));
 			p.put(source, null);
 			
 			Queue<NodeEntry> queue = new PriorityQueue<NodeEntry>();
@@ -59,7 +70,7 @@ public class PSDijkstraAlgorithm extends DijkstraAlgorithm  {
 				for (Arc e : graph.getNeighbors(minNodeId)) {
 					TDArc v = (TDArc)e;
 					
-					List<Integer> ttfUV = ArrayUtils.extrapolateArray(v.getCosts(), 5).subList(minDepartureTime, maxDepartureTime);
+					List<Integer> ttfUV = ArrayUtils.extrapolateArray(v.getCosts(), 5);
 					List<Integer> gNew = ttfU==null ? ttfUV : ArrayUtils.linkLists(ttfU, ttfUV);
 					System.out.println("NEIGHBOR ("+minNodeId+","+v.getHeadNode()+") :"+ttfUV.toString());
 					System.out.println("GNEW ("+minNodeId+","+v.getHeadNode()+") :"+gNew.toString());

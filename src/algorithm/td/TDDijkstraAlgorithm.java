@@ -48,10 +48,14 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm implements TimeDepend
 		return travelTimes;
 	}
 	
+	public int[] computeTravelTimes(long source, long target) {
+		return computeTravelTimes(source, target, 0, 20);
+	}
+	
 	@Override
 	public int[] computeTravelTimes(long source, long target,
 			int minDepartureTime, int maxDepartureTime) {
-		int[] travelTimes = new int[(maxDepartureTime-minDepartureTime)+1];
+		int[] travelTimes = new int[maxDepartureTime-minDepartureTime];
 		
 		for(int i=0; i < travelTimes.length;i=i+1)
 			travelTimes[i] = this.computeMinimumTravelTime(source, target, i+minDepartureTime);
@@ -68,6 +72,10 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm implements TimeDepend
 		int minimumTravelTime = ArrayUtils.getMinValue(travelTimes);
 		
 		return minimumTravelTime;
+	}
+	
+	public int computeBestDepartureTime(long source, long target) {
+		return computeBestDepartureTime(source, target, 0, 20);
 	}
 	
 	@Override
