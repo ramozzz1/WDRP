@@ -15,6 +15,7 @@ import java.util.Queue;
 import model.Arc;
 import model.Graph;
 import model.Path;
+import model.QEntry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,7 +23,6 @@ import org.junit.Test;
 
 import util.CommonUtils;
 import algorithm.ContractionHierarchiesAlgorithm;
-import algorithm.ContractionHierarchiesAlgorithm.QEntry;
 
 public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
