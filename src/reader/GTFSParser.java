@@ -14,10 +14,8 @@ import java.util.Set;
 
 import main.Config;
 import model.Arc;
-import model.Graph;
 import model.Node;
 import model.NodeType;
-import model.TDGraph;
 import model.TNGraph;
 
 import org.apache.commons.io.FilenameUtils;

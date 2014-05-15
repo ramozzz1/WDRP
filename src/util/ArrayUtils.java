@@ -1,0 +1,143 @@
+package util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayUtils {
+	public static int getMinValue(List<Integer> list){  
+		int currentValue = Integer.MAX_VALUE;
+		for (int j=0; j < list.size(); j++) {
+			int val = list.get(j);
+			if (val < currentValue && val >= 0) {
+				currentValue = val;
+			}
+		}
+		return currentValue;
+	}
+	
+	public static int getMinIndex(int[] array){  
+		int currentValue = Integer.MAX_VALUE;
+		int smallestIndex = -1;
+		for (int j=0; j < array.length; j++) {
+			if (array[j] < currentValue && array[j] >= 0) {
+				currentValue = array[j];
+				smallestIndex = j;
+			}
+		}
+		return smallestIndex;  
+	}
+
+	public static int getMinValue(int[] array) {
+		int currentValue = Integer.MAX_VALUE;
+		for (int j=0; j < array.length; j++) {
+			if (array[j] < currentValue && array[j] >= 0) {
+				currentValue = array[j];
+			}
+		}
+		return currentValue;
+	}
+	
+	public static int[] toIntArray(List<Integer> integerList) {  
+        int[] intArray = new int[integerList.size()];  
+        for (int i = 0; i < integerList.size(); i++) {  
+            intArray[i] = integerList.get(i);  
+        }  
+        return intArray;  
+    } 
+	
+	public static List<Integer> toList(int[] ints) {  
+		List<Integer> intList = new ArrayList<Integer>();
+	    for (int index = 0; index < ints.length; index++)
+	    {
+	        intList.add(ints[index]);
+	    }
+	    
+	    return intList;
+    }
+
+	public static List<Integer> minList(List<Integer> listA, List<Integer> listB) {		
+		int maxSize = Math.max(listA.size(),listB.size());
+		List<Integer> minList = new ArrayList<Integer>(maxSize);
+		for (int i = 0; i < maxSize; i++) {
+			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
+			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			
+			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
+			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
+			
+			int minValue = Math.min(valueA, valueB);
+			
+			if(minValue==Integer.MAX_VALUE) minValue = -1;
+			
+			minList.add(minValue);
+        }  
+		
+		return minList;
+	}
+
+	public static boolean listLargerOrEqual(List<Integer> listA,
+			List<Integer> listB) {
+		assert listA.size() == listB.size() : "lists should be equal size";
+		
+		int maxSize = Math.max(listA.size(),listB.size());
+		for (int i = 0; i < maxSize; i++) {
+			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
+			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			
+			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
+			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
+			
+			if(!(valueA >= valueB)) return false;
+        }  
+		
+		return true;
+	}
+
+	public static boolean listSmaller(List<Integer> listA,
+			List<Integer> listB) {
+		assert listA.size() == listB.size() : "lists should be equal size";
+		
+		int maxSize = Math.max(listA.size(),listB.size());
+		for (int i = 0; i < maxSize; i++) {
+			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
+			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			
+			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
+			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
+			
+			if(!(valueA < valueB)) return false;
+        }  
+		
+		return true;
+	}
+	
+	public static List<Integer> extrapolateArray(int[] array, int interval) {
+		int newSize = array.length * interval;
+		List<Integer> list = new ArrayList<Integer>(newSize);
+		for (int i = 0; i < newSize; i++) {
+			int index = i / interval;
+			list.add(array[index]);
+        }  
+		
+		return list;
+	}
+
+	public static List<Integer> linkLists(List<Integer> f, List<Integer> g) {
+		int maxSize = Math.max(g.size(),f.size());
+		List<Integer> linkList = new ArrayList<Integer>(maxSize);
+		for (int i = 0; i < maxSize; i++) {
+			int travelTimeUW = -1;
+			
+			int travelTimeUV = f.get(i);
+			if(travelTimeUV >= 0) {
+				int arrivalTimeV = i+travelTimeUV;
+				if(arrivalTimeV < g.size())
+					travelTimeUW = travelTimeUV + g.get(arrivalTimeV);
+			}
+			
+			linkList.add(travelTimeUW);
+        }
+		
+		return linkList;
+	}
+}

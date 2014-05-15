@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 
-import model.Graph;
 import model.TNGraph;
 
 import org.apache.commons.io.FileUtils;
