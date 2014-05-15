@@ -100,7 +100,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 		return false;
 	}
 
-	private boolean considerEdge(Arc e) {
+	protected boolean considerEdge(Arc e) {
 		if(!this.considerArcFlags || (this.considerArcFlags && e.isArcFlag())) {
 			if(this.considerShortcuts || !e.isShortcut())
 				return true;
