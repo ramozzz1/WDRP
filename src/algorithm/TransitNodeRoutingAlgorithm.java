@@ -1,7 +1,6 @@
 package algorithm;
 
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.set.hash.THashSet;
 
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import model.Arc;
 import model.Graph;
 import model.HeuristicTypes;
 import model.LatLonPoint;
@@ -18,7 +18,7 @@ import model.Path;
 import storage.DBHashMap;
 import util.DistanceUtils;
 
-public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
+public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 	public ContractionHierarchiesAlgorithm ch;
 	private Set<Long> transitNodes;
 	public DBHashMap<Long,Integer> radiusNodes;
@@ -31,14 +31,14 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 	private Map<Long,Long> ppSource;
 	private Map<Long,Long> ppAccess;
 	private Map<Long,Long> ppTarget;
-	private DijkstraAlgorithm dijkstra;
+	private DijkstraAlgorithm<Arc> dijkstra;
 	private boolean usedDijkstra;
 
-	public TransitNodeRoutingAlgorithm(Graph graph) {
+	public TransitNodeRoutingAlgorithm(Graph<Arc> graph) {
 		this(graph,HeuristicTypes.LATLON_DISTANCE);
 	}
 	
-	public TransitNodeRoutingAlgorithm(Graph graph, HeuristicTypes heuristic) {
+	public TransitNodeRoutingAlgorithm(Graph<Arc> graph, HeuristicTypes heuristic) {
 		super(graph);
 		this.ch = new ContractionHierarchiesAlgorithm(graph);
 		this.numTransitNodes = (int) Math.round(Math.sqrt(graph.nodes.size())); 
@@ -137,7 +137,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm {
 		else {
 			usedDijkstra = true;
 			//node is close, so just use a quick dijkstra
-			this.dijkstra = new DijkstraAlgorithm(graph);
+			this.dijkstra = new DijkstraAlgorithm<Arc>(graph);
 			int dist = dijkstra.computeShortestPath(sourceId, targetId);
 			return dist;
 		}

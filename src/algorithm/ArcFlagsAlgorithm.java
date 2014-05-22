@@ -13,7 +13,7 @@ import model.LatLonPoint;
 
 import org.mapdb.Fun.Tuple2;
 
-public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
+public class ArcFlagsAlgorithm extends DijkstraAlgorithm<Arc> {
 
 	public double latMin;
 	public double latMax;
@@ -22,7 +22,7 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm {
 	public THashSet<Long> nodesInRegion;
 	private int numberOfArcFlags;
 	
-	public ArcFlagsAlgorithm(Graph graph, double latMin, double latMax, double lonMin, double lonMax) {
+	public ArcFlagsAlgorithm(Graph<Arc> graph, double latMin, double latMax, double lonMin, double lonMax) {
 		super(graph);
 		setRegion(latMin, latMax, lonMin, lonMax);
 		numberOfArcFlags=0;

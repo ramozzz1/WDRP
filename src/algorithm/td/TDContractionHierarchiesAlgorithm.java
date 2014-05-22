@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import model.Arc;
 import model.QEntry;
 import model.TDArc;
 import model.TDGraph;
@@ -16,19 +15,19 @@ import org.mapdb.Fun.Tuple2;
 import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
-public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm  {
+public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc>  {
 
 	private int numberOfShortcuts;
 	private PSDijkstraAlgorithm psDijkstra;
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
 	
-	public TDContractionHierarchiesAlgorithm(TDGraph g) {
-		super(g);
+	public TDContractionHierarchiesAlgorithm(TDGraph graph) {
+		super(graph);
 		this.contractionOrder = new PriorityQueue<QEntry>();
 		this.nodesHierachy = new TLongIntHashMap();
 		this.numberOfShortcuts = 0;
-		this.psDijkstra = new PSDijkstraAlgorithm(g);
+		this.psDijkstra = new PSDijkstraAlgorithm(graph);
 	}
 
 	@Override
@@ -179,12 +178,9 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm  {
 		psDijkstra.considerArcFlags = true;
 		psDijkstra.considerShortcuts = true;
 		
-		List<Arc> neighbors = graph.getNeighborsNotDisabled(v);
-		for (Arc inArc : neighbors) {
-			for (Arc outArc : neighbors) {
-				TDArc tdInArc = (TDArc)inArc;
-				TDArc tdOutArc = (TDArc)outArc;
-				
+		List<TDArc> neighbors = graph.getNeighborsNotDisabled(v);
+		for (TDArc tdInArc : neighbors) {
+			for (TDArc tdOutArc : neighbors) {
 				long u = tdInArc.getHeadNode();
 				long w = tdOutArc.getHeadNode();
 				
@@ -213,7 +209,7 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm  {
 	 */
 	public void constructUpwardsGraph(TLongIntHashMap hierarchy) {
 		int count = 0;
-		for (Tuple2<Long, Arc> arc : graph.adjacenyList) {
+		for (Tuple2<Long, TDArc> arc : graph.adjacenyList) {
 			long u = arc.a;
 			long v = arc.b.getHeadNode();
 			

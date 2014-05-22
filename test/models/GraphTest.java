@@ -2,6 +2,7 @@ package models;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import main.Config;
+import model.Arc;
 import model.Graph;
 import model.Node;
 
@@ -14,13 +15,13 @@ public class GraphTest {
 	
 	@Test
 	public void testEmptyGraph(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		assertEquals("{0, 0, []}", g.toString());
 	}
 	
 	@Test
 	public void testAddVertex(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -29,7 +30,7 @@ public class GraphTest {
 	
 	@Test
 	public void testAddEdge(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		int n0 = 0;
 		int n1 = 1;
 		int n2 = 2;
@@ -52,7 +53,7 @@ public class GraphTest {
 	
 	@Test
 	public void testRemoveNode(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		int n0 = 0;
 		int n1 = 1;
 
@@ -69,7 +70,7 @@ public class GraphTest {
 	
 	@Test
 	public void testRemoveEdge(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		int n0 = 0;
 		int n1 = 1;
 
@@ -87,7 +88,7 @@ public class GraphTest {
 	
 	@Test
 	public void testAddDoubleNode(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		int n0 = 0;
 		int n1 = 0;
 
@@ -98,7 +99,7 @@ public class GraphTest {
 	
 	@Test
 	public void testBounds(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0,0,0);
 		g.addNode(1,0,1);
 		g.addNode(2,1,1);
@@ -111,7 +112,7 @@ public class GraphTest {
 	
 	@Test
 	public void testEnableDisableNode(){
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		int n0 = 0;
 		int n1 = 1;
 		int n2 = 2;
@@ -160,7 +161,7 @@ public class GraphTest {
 	@Test
 	public void testReadSmallOSMFileS(){
 		OSMParser parser = new OSMParser();
-		Graph g = parser.osmToGraph(SMALL_OSM_FILE);
+		Graph<Arc> g = parser.osmToGraph(SMALL_OSM_FILE);
 		assertEquals("{4, 4, [(2464420207,2464420260,2), (2464420260,2464420207,2), (2464420281,2464420271,3), (2464420271,2464420281,3)]}", g.toString());
 	}
 }

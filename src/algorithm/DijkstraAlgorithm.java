@@ -15,7 +15,7 @@ import model.Graph;
 import model.NodeEntry;
 import model.Path;
 
-public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
+public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K> {
 	
 	public Map<Long,Long> previous;
 	public THashMap<Long, Integer> distance;
@@ -25,7 +25,7 @@ public class DijkstraAlgorithm extends AbstractRoutingAlgorithm {
 	public int maxNumSettledNodes;
 	protected int startCost;
 	
-	public DijkstraAlgorithm(Graph graph) {
+	public DijkstraAlgorithm(Graph<K> graph) {
 		super(graph);
 		setDefaultSettings();
 	}

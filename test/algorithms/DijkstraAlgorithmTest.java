@@ -1,5 +1,6 @@
 package algorithms;
 import static org.junit.Assert.assertEquals;
+import model.Arc;
 import model.Path;
 
 import org.junit.Before;
@@ -10,11 +11,11 @@ import algorithm.DijkstraAlgorithm;
 
 public class DijkstraAlgorithmTest extends SPTestBase {
 	
-	private DijkstraAlgorithm d;
+	private DijkstraAlgorithm<Arc> d;
 	
 	@Before
 	public void setUpALT() {
-		d = new DijkstraAlgorithm(g);
+		d = new DijkstraAlgorithm<Arc>(g);
 	}
 	
 	@Test

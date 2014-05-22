@@ -6,7 +6,7 @@ import org.mapdb.BTreeKeySerializer;
 import org.mapdb.BTreeMap;
 import org.mapdb.Fun;
 
-public class TNGraph extends Graph {
+public class TNGraph extends Graph<Arc> {
 	
 	public NavigableSet<Fun.Tuple2<Long,Long>> nodesPerStation;
 	public BTreeMap<Long,LatLonPoint> stations;

@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class Arc implements Serializable, Comparable<Arc> {
-	private long headNode;
-	private int cost;
-	private boolean arcFlag;
-	private boolean[] arcFlags;
-	private long shortcutNode;
+	protected long headNode;
+	protected int cost;
+	protected boolean arcFlag;
+	protected boolean[] arcFlags;
+	protected long shortcutNode;
 	
 	public Arc(Arc arc) {
 		this.headNode = arc.headNode;
@@ -64,6 +64,10 @@ public class Arc implements Serializable, Comparable<Arc> {
 	
 	public long getShortcutNode() { 
 		return this.shortcutNode;
+	}
+	
+	public Arc copy() {
+		return new Arc(this.headNode, this.cost, this.arcFlag, this.shortcutNode);
 	}
 	
 	public Arc reverseEdge(long v) {

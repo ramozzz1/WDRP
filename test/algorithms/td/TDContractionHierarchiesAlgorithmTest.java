@@ -24,8 +24,6 @@ import util.CommonUtils;
 import algorithm.ContractionHierarchiesAlgorithm;
 import algorithm.td.TDContractionHierarchiesAlgorithm;
 
-import com.google.common.collect.Lists;
-
 public class TDContractionHierarchiesAlgorithmTest extends TDTestBase {
 	
 	private TDContractionHierarchiesAlgorithm d;
@@ -37,22 +35,6 @@ public class TDContractionHierarchiesAlgorithmTest extends TDTestBase {
 		createCustomGraph();
 		a = new TDContractionHierarchiesAlgorithm(customGraph);
 		d = new TDContractionHierarchiesAlgorithm(g);
-	}
-	
-	@Test
-	public void testDisableNode() {
-		List<Arc> outgoingArcs =  Lists.newArrayList(customGraph.getNeighborsNotDisabled(1));
-		assertEquals(outgoingArcs.size(), 5);
-		
-		customGraph.disableNode(2);
-		
-		outgoingArcs =  Lists.newArrayList(customGraph.getNeighborsNotDisabled(1));
-		assertEquals(outgoingArcs.size(), 4);
-		
-		customGraph.disableNode(0);
-		
-		outgoingArcs =  Lists.newArrayList(customGraph.getNeighborsNotDisabled(1));
-		assertEquals(outgoingArcs.size(), 3);
 	}
 	
 	@Test
@@ -346,7 +328,7 @@ public class TDContractionHierarchiesAlgorithmTest extends TDTestBase {
 	@Test
 	public void testConstructPathWithShortcuts() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -374,7 +356,7 @@ public class TDContractionHierarchiesAlgorithmTest extends TDTestBase {
 	@Test
 	public void testConstructPathWithShortcuts1() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -400,7 +382,7 @@ public class TDContractionHierarchiesAlgorithmTest extends TDTestBase {
 	@Test
 	public void testConstructPathWithShortcuts2() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -426,7 +408,7 @@ public class TDContractionHierarchiesAlgorithmTest extends TDTestBase {
 	@Test
 	public void testConstructPathWithShortcuts3() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);

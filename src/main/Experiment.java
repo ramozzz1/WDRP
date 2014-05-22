@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import model.Arc;
 import model.Graph;
 import model.NodePair;
 import model.TNGraph;
@@ -29,7 +30,7 @@ public class Experiment {
 	private static final List<String> METRICS = Arrays.asList(PRECOMPUTATION_TIME,AVG_RUNNING_TIME,AVG_TRAVEL_TIME,AVG_VISITED_NODES);
 	
 	//run SP on algorithms by selecting random nodes from graph and running them numberOfTimes
-	public static void doExperiment(Graph g, List<AbstractRoutingAlgorithm> algorithms, 
+	public static void doExperiment(Graph<Arc> g, List<AbstractRoutingAlgorithm<Arc>> algorithms, 
 			int numberOfTimes, boolean writePathsToFile, boolean timeDependent, String minTime, String maxTime) {
 		System.out.println("SELECTING "+numberOfTimes+" RANDOM NODE PAIRS");
 		List<NodePair> randomNodePairs = new ArrayList<NodePair>();
@@ -53,7 +54,7 @@ public class Experiment {
 			randomNodePairs = GraphUtils.getRandomNodePairs(((TNGraph)g).getStations(), numberOfTimes);
 		}
 		
-		for (AbstractRoutingAlgorithm alg : algorithms) {
+		for (AbstractRoutingAlgorithm<Arc> alg : algorithms) {
 			TreeMap<String, Integer> metrics = new TreeMap<String, Integer>();
 			for (String metric : METRICS)
 				metrics.put(metric, 0);
@@ -63,7 +64,7 @@ public class Experiment {
 		System.out.println("----------STARTING PRECOMPUTATIONS-----------");
 		
 		//do precomputation
-		for (AbstractRoutingAlgorithm alg : algorithms) {
+		for (AbstractRoutingAlgorithm<Arc> alg : algorithms) {
 			String name = alg.getName();
 			TreeMap<String, Integer> metrics = results.get(name); 
 			System.out.println("Precomputing for "+name);
@@ -91,7 +92,7 @@ public class Experiment {
 				System.out.println(i+ " " +nodePair);
 			
 			int travelTime = -1;
-			for (AbstractRoutingAlgorithm alg : algorithms) {
+			for (AbstractRoutingAlgorithm<Arc> alg : algorithms) {
 				String name = alg.getName();
 				TreeMap<String,Integer> metrics = results.get(name);
 				System.out.println("Running SP for " + name);
@@ -147,8 +148,8 @@ public class Experiment {
 	}
 
 	private static ArcFlagsAlgorithm getArcFlagAlgorithm(
-			List<AbstractRoutingAlgorithm> algorithms) {
-		for (AbstractRoutingAlgorithm abstractRoutingAlgorithm : algorithms) {
+			List<AbstractRoutingAlgorithm<Arc>> algorithms) {
+		for (AbstractRoutingAlgorithm<Arc> abstractRoutingAlgorithm : algorithms) {
 			if(abstractRoutingAlgorithm instanceof ArcFlagsAlgorithm)
 				return (ArcFlagsAlgorithm)abstractRoutingAlgorithm;
 		}

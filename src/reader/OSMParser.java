@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import main.Config;
+import model.Arc;
 import model.Graph;
 import model.LatLonPoint;
 
@@ -33,9 +34,9 @@ public class OSMParser {
 		setDefaultSpeeds();
 	}
 	
-	public Graph osmToGraph(String path) {
+	public Graph<Arc> osmToGraph(String path) {
 		System.out.println("Started parsing osm: "+path);
-		Graph g = null;
+		Graph<Arc> g = null;
 		int numNodes=0;
 		int numEdges=0;
 		long start = System.currentTimeMillis();
@@ -44,7 +45,7 @@ public class OSMParser {
         	XMLStreamReader streamReader = factory.createXMLStreamReader(
         			new FileReader(path));
         	
-        	g = new Graph(Config.DBDIR+FilenameUtils.getBaseName(path)+"."+Config.EXTENSION);
+        	g = new Graph<Arc>(Config.DBDIR+FilenameUtils.getBaseName(path)+"."+Config.EXTENSION);
     		OSMNode node = null;
     		OSMWay way = null;
     		

@@ -5,24 +5,25 @@ import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Arc;
 import model.Graph;
 import storage.DBHashMap;
 import storage.DBLongIntHashMap;
 import util.CommonUtils;
 
-public class ALTAlgorithm extends DijkstraAlgorithm {
+public class ALTAlgorithm extends DijkstraAlgorithm<Arc> {
 
 	private List<Long> landMarks;
 	private THashMap<Long,DBHashMap<Long,Integer>> landMarkDistances;
 	private int numLandmarks;
 	
-	public ALTAlgorithm(Graph graph) {
+	public ALTAlgorithm(Graph<Arc> graph) {
 		super(graph);
 		this.landMarks = new ArrayList<Long>();
 		this.numLandmarks = 0;
 	}
 
-	public ALTAlgorithm(Graph graph, int numLandmarks) {
+	public ALTAlgorithm(Graph<Arc> graph, int numLandmarks) {
 		super(graph);
 		assert numLandmarks <= graph.getNumNodes() : "#landmark nodes has to be <= to #nodes in the graph";
 		this.landMarks = new ArrayList<Long>();

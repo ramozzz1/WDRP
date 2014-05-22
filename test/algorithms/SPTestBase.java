@@ -1,4 +1,5 @@
 package algorithms;
+import model.Arc;
 import model.Graph;
 
 import org.junit.After;
@@ -6,11 +7,11 @@ import org.junit.Before;
 
 
 public class SPTestBase {
-	protected Graph g;
+	protected Graph<Arc> g;
 	
 	@Before
 	public void setUpGraph() {
-		g = new Graph();
+		g = new Graph<Arc>();
 		g.addNode(0,0,0);
 		g.addNode(1,0,1);
 		g.addNode(2,1,1);

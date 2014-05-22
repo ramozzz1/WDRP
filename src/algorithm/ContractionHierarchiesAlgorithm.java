@@ -22,7 +22,7 @@ import org.mapdb.Fun.Tuple2;
 
 import util.CommonUtils;
 
-public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
+public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
 	private UpdateHeuristicTypes heuristicType;
@@ -36,17 +36,17 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 	private List<Long> finalContractionOrder;
 	private THashMap<Long, Integer> distSource;
 	private THashMap<Long, Integer> distTarget;
-	private DijkstraAlgorithm dijkstra;
+	private DijkstraAlgorithm<Arc> dijkstra;
 	
-	public ContractionHierarchiesAlgorithm(Graph graph) {
+	public ContractionHierarchiesAlgorithm(Graph<Arc> graph) {
 		this(graph,Integer.MAX_VALUE, UpdateHeuristicTypes.LAZY);
 	}
 	
-	public ContractionHierarchiesAlgorithm(Graph graph, UpdateHeuristicTypes heuristicType) {
+	public ContractionHierarchiesAlgorithm(Graph<Arc> graph, UpdateHeuristicTypes heuristicType) {
 		this(graph,Integer.MAX_VALUE, heuristicType);
 	}
 	
-	public ContractionHierarchiesAlgorithm(Graph graph, int maxNumberContractions, UpdateHeuristicTypes heuristicType) {
+	public ContractionHierarchiesAlgorithm(Graph<Arc> graph, int maxNumberContractions, UpdateHeuristicTypes heuristicType) {
 		super(graph);
 		this.contractionOrder = new PriorityQueue<QEntry>();
 		this.nodesHierachy = new TLongIntHashMap();
@@ -54,7 +54,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm {
 		this.maxNumberContractions = maxNumberContractions;
 		this.heuristicType = heuristicType;
 		this.numberOfShortcuts = 0;
-		this.dijkstra = new DijkstraAlgorithm(this.graph);
+		this.dijkstra = new DijkstraAlgorithm<Arc>(this.graph);
 	}
 
 	@Override

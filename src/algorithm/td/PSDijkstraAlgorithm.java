@@ -12,18 +12,18 @@ import java.util.Queue;
 import java.util.Set;
 
 import model.Arc;
+import model.Graph;
 import model.NodeEntry;
 import model.TDArc;
-import model.TDGraph;
 import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
-public class PSDijkstraAlgorithm extends DijkstraAlgorithm  {
+public class PSDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 
 	public Map<Long, Set<Long>> p;
 	public THashMap<Long, List<Integer>> f;
 	
-	public PSDijkstraAlgorithm(TDGraph graph) {
+	public PSDijkstraAlgorithm(Graph<TDArc> graph) {
 		super(graph);
 	}
 	

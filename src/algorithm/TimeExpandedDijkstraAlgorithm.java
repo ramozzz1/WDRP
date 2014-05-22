@@ -1,12 +1,12 @@
 package algorithm;
 
-import util.CommonUtils;
-import model.Graph;
+import model.Arc;
 import model.Node;
 import model.NodeType;
 import model.TNGraph;
+import util.CommonUtils;
 
-public class TimeExpandedDijkstraAlgorithm extends DijkstraAlgorithm implements TimeExpandedAlgorithm {
+public class TimeExpandedDijkstraAlgorithm extends DijkstraAlgorithm<Arc> implements TimeExpandedAlgorithm {
 	
 	public TimeExpandedDijkstraAlgorithm(TNGraph graph) {
 		super(graph);

@@ -12,12 +12,12 @@ import model.Arc;
 import model.Graph;
 import model.Path;
 
-public abstract class AbstractRoutingAlgorithm {
-	public Graph graph;
+public abstract class AbstractRoutingAlgorithm<K extends Arc> {
+	public Graph<K> graph;
 	public Set<Long> visitedNodesMarks;
 	protected static final long NULL_NODE = -1L;
 	
-	public AbstractRoutingAlgorithm(Graph graph) {
+	public AbstractRoutingAlgorithm(Graph<K> graph) {
 		this.graph = graph;
 	}
 	

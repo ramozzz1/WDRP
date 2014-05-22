@@ -6,7 +6,7 @@ import model.TDGraph;
 import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
-public class TDDijkstraAlgorithm extends DijkstraAlgorithm implements TimeDependentAlgorithm {
+public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements TimeDependentAlgorithm {
 
 	public TDDijkstraAlgorithm(TDGraph graph) {
 		super(graph);

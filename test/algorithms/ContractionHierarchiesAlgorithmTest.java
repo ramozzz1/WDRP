@@ -28,7 +28,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	
 	private ContractionHierarchiesAlgorithm d;
 	private ContractionHierarchiesAlgorithm a;
-	private Graph customGraph;
+	private Graph<Arc> customGraph;
 	
 	@Before
 	public void setUpCH() {
@@ -339,7 +339,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	@Test
 	public void testConstructPathWithShortcuts() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -367,7 +367,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	@Test
 	public void testConstructPathWithShortcuts1() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -393,7 +393,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	@Test
 	public void testConstructPathWithShortcuts2() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -419,7 +419,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	@Test
 	public void testConstructPathWithShortcuts3() {
 		Map<Long,Long> previous = new HashMap<Long,Long>();
-		Graph g = new Graph();
+		Graph<Arc> g = new Graph<Arc>();
 		g.addNode(0);
 		g.addNode(1);
 		g.addNode(2);
@@ -443,7 +443,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	}
 
 	private void createCustomGraph() {
-		customGraph = new Graph();
+		customGraph = new Graph<Arc>();
 		customGraph.addNode(0);
 		customGraph.addNode(1);
 		customGraph.addNode(2);

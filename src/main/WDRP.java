@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Arc;
 import model.Graph;
 import model.Path;
 
@@ -16,13 +17,12 @@ import org.simpleframework.http.core.Container;
 import util.GraphUtils;
 import algorithm.AbstractRoutingAlgorithm;
 import algorithm.ContractionHierarchiesAlgorithm;
-import algorithm.DijkstraAlgorithm;
 
 
 
 public class WDRP {
-	private static Graph graph;
-	private static AbstractRoutingAlgorithm algorithm;
+	private static Graph<Arc> graph;
+	private static AbstractRoutingAlgorithm<Arc> algorithm;
 	String regionBoxSaarland = "49.20,49.25,6.95,7.05";
 	String regionBoxBW = "47.95,48.05,7.75,7.90";
 	
@@ -120,10 +120,10 @@ public class WDRP {
 		
   		connection.connect(address);*/
 		
-		Graph g = GraphUtils.convertOSMToGraph("saarland");
+		Graph<Arc> g = GraphUtils.convertOSMToGraph("saarland");
 		//Graph g = GraphUtils.convertGTFSToGraph("manhattan");
 		//Graph g = new Graph("resources/db/manhattan.graph");
-  		List<AbstractRoutingAlgorithm> algorithms = new ArrayList<AbstractRoutingAlgorithm>();
+  		List<AbstractRoutingAlgorithm<Arc>> algorithms = new ArrayList<AbstractRoutingAlgorithm<Arc>>();
     	//algorithms.add(new DijkstraAlgorithm(g));
     	//algorithms.add(new TimeExpandedDijkstraAlgorithm(g));
     	algorithms.add(new ContractionHierarchiesAlgorithm(g));

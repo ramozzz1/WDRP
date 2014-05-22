@@ -1,20 +1,21 @@
 package algorithm;
 
+import model.Arc;
 import model.Graph;
 import model.HeuristicTypes;
 import model.LatLonPoint;
 import util.DistanceUtils;
 
-public class AstarAlgorithm extends DijkstraAlgorithm {
+public class AstarAlgorithm extends DijkstraAlgorithm<Arc> {
 	private HeuristicTypes heuristicType;
 	private LatLonPoint targetPoint;
 	
-	public AstarAlgorithm(Graph graph) {
+	public AstarAlgorithm(Graph<Arc> graph) {
 		super(graph);
 		this.heuristicType = HeuristicTypes.LATLON_DISTANCE;
 	}
 	
-	public AstarAlgorithm(Graph graph, HeuristicTypes heuristicType) {
+	public AstarAlgorithm(Graph<Arc> graph, HeuristicTypes heuristicType) {
 		super(graph);
 		this.heuristicType = heuristicType;
 	}

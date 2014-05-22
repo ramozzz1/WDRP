@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import model.Arc;
 import model.Graph;
 import model.LatLonPoint;
 import model.NodePair;
@@ -29,18 +30,18 @@ public class GraphUtils {
 		return g;
 	}
 	
-	public static Graph convertOSMToGraph (String fileName) {		
+	public static Graph<Arc> convertOSMToGraph (String fileName) {		
 		IOUtils.deleteFile("resources/db/"+fileName+".graph");
 		
 		OSMParser parser = new OSMParser();
-		Graph g = parser.osmToGraph("resources/osm/"+fileName+".osm");
+		Graph<Arc> g = parser.osmToGraph("resources/osm/"+fileName+".osm");
 		GraphUtils.convertToLCC(g);
 		
 		return g;
 	}
 	
 	//convert graph to largest connected component
-	public static void convertToLCC(Graph g) {
+	public static void convertToLCC(Graph<Arc> g) {
 		System.out.println("Converting Graph to LCC Graph");
 		Set<Long> visitedNodes = new THashSet<Long>();
     	Set<Long> maxVisitedNodes = new THashSet<Long>();
@@ -48,7 +49,7 @@ public class GraphUtils {
 		for (Long id : g.nodes.keySet()) {
 			if(count%100000==0) System.out.println("#nodes processed: "+count);
 			if (!visitedNodes.contains(id)) {
-				DijkstraAlgorithm d = new DijkstraAlgorithm(g);
+				DijkstraAlgorithm<Arc> d = new DijkstraAlgorithm<Arc>(g);
 				d.computeShortestPath(id, -1);
 				if(d.getVisitedNodes().size() >  maxVisitedNodes.size())
 					maxVisitedNodes = d.getVisitedNodes();

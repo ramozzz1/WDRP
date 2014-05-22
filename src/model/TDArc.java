@@ -27,6 +27,16 @@ public class TDArc extends Arc{
 		this.costs = costs;
 	}
 
+	@Override
+	public TDArc copy() {
+		return new TDArc(this.headNode, this.costs, this.arcFlag, this.shortcutNode);
+	}
+	
+	@Override
+	public Arc reverseEdge(long v) {
+		return new TDArc(v, costs, arcFlag, shortcutNode);
+	}
+	
 	/**
 	 * Get cost at specific time point 
 	 * @param time

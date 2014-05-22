@@ -18,14 +18,14 @@ import org.mapdb.Serializer;
 import util.DistanceUtils;
 import util.IOUtils;
 
-public class Graph {
+public class Graph<K extends Arc> {
 	protected DB db;
 	private int numNodes;
 	private int numEdges;
 	private String name;
 	
 	public BTreeMap<Long,LatLonPoint> nodes;
-	public NavigableSet<Fun.Tuple2<Long, Arc>> adjacenyList;
+	public NavigableSet<Fun.Tuple2<Long, K>> adjacenyList;
 	private NavigableSet<Bounds> bounds;
 	
 	public Graph() {
@@ -116,11 +116,11 @@ public class Graph {
 	}
 	
 	public void addEdge(long sourceId, long targetId, int cost, boolean arcFlag, long shortcutNode) {
-		addEdge(sourceId,new Arc(targetId,cost,arcFlag,shortcutNode));
-		addEdge(targetId,new Arc(sourceId,cost,arcFlag,shortcutNode));
+		addEdge(sourceId,(K) new Arc(targetId,cost,arcFlag,shortcutNode));
+		addEdge(targetId,(K) new Arc(sourceId,cost,arcFlag,shortcutNode));
 	}
 	
-	public void addEdge(long sourceId, Arc a) {
+	public void addEdge(long sourceId, K a) {
 		this.adjacenyList.add(Fun.t2(sourceId,a));
 		this.numEdges++;
 	}
@@ -130,9 +130,9 @@ public class Graph {
 	 * @param arcFlag
 	 */
 	public void setArcFlagsForAllEdges(boolean arcFlag) {
-		Iterator<Tuple2<Long,Arc>> itr = this.adjacenyList.iterator();
+		Iterator<Tuple2<Long,K>> itr = this.adjacenyList.iterator();
 		while(itr.hasNext()) {
-			Tuple2<Long,Arc> arc = itr.next();
+			Tuple2<Long,K> arc = itr.next();
 			setArcFlagForEdge(arc.a, arc.b, arcFlag);
 		}
 	}
@@ -142,9 +142,9 @@ public class Graph {
 	 * @param oldArc
 	 * @param arcFlag
 	 */
-	public void setArcFlagForEdge(long currNode, Arc oldArc, boolean arcFlag) {
+	public void setArcFlagForEdge(long currNode, K oldArc, boolean arcFlag) {
 		//make copy of arc
-		Arc newArc = new Arc(oldArc);
+		K newArc = (K) oldArc.copy();
 		newArc.setArcFlag(arcFlag);
 		
 		//remove the edge
@@ -162,7 +162,7 @@ public class Graph {
 		return this.numEdges;
 	}
 
-	public Iterable<Arc> getNeighbors(long nodeId) {
+	public Iterable<K> getNeighbors(long nodeId) {
 		return Fun.filter(this.adjacenyList, nodeId);
 	}
 	
@@ -203,8 +203,8 @@ public class Graph {
 	 * @param n
 	 */
 	public void disableNode(long n) {
-		for (Arc a : getNeighbors(n)) {
-			setArcFlagForEdge(a.getHeadNode(),a.reverseEdge(n), false);
+		for (K a : getNeighbors(n)) {
+			setArcFlagForEdge(a.getHeadNode(),(K) a.reverseEdge(n), false);
 		}
 	}
 	
@@ -214,8 +214,8 @@ public class Graph {
 	 * @param n the node id
 	 */
 	public void enableNode(long n) {
-		for (Arc a : getNeighbors(n)) {
-			setArcFlagForEdge(a.getHeadNode(),a.reverseEdge(n), true);
+		for (K a : getNeighbors(n)) {
+			setArcFlagForEdge(a.getHeadNode(),(K) a.reverseEdge(n), true);
 		}
 	}
 	
@@ -224,9 +224,9 @@ public class Graph {
 	 * @param n the node id
 	 * @return
 	 */
-	public List<Arc> getNeighborsNotDisabled(long n) {
-		List<Arc> nonDisabledArcs = new ArrayList<Arc>(); 
-		for (Arc a : getNeighbors(n)) {
+	public List<K> getNeighborsNotDisabled(long n) {
+		List<K> nonDisabledArcs = new ArrayList<K>(); 
+		for (K a : getNeighbors(n)) {
 			if(a.isArcFlag())
 				nonDisabledArcs.add(a);
 		}
@@ -253,7 +253,7 @@ public class Graph {
 	 */
 	public List<Arc> getArcsNotDisabled() {
 		List<Arc> arcs = new ArrayList<Arc>();
-		for (Tuple2<Long,Arc> arc : this.adjacenyList) {
+		for (Tuple2<Long,K> arc : this.adjacenyList) {
 			if(arc.b.isArcFlag())
 				arcs.add(arc.b);
 		}
@@ -322,9 +322,9 @@ public class Graph {
 		s += "[";
 		
 		String arrayS = "";
-		Iterator<Tuple2<Long,Arc>> itr = this.adjacenyList.descendingIterator();
+		Iterator<Tuple2<Long,K>> itr = this.adjacenyList.descendingIterator();
 		while(itr.hasNext()) {
-			Tuple2<Long,Arc> element = itr.next();
+			Tuple2<Long,K> element = itr.next();
 			arrayS += "("+element.a+","+element.b.getHeadNode()+","+element.b.getCost()+"), ";
 	      }
 		
