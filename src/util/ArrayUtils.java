@@ -75,6 +75,24 @@ public class ArrayUtils {
 		return minList;
 	}
 
+	public static boolean listLarger(List<Integer> listA,
+			List<Integer> listB) {
+		assert listA.size() == listB.size() : "lists should be equal size";
+		
+		int maxSize = Math.max(listA.size(),listB.size());
+		for (int i = 0; i < maxSize; i++) {
+			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
+			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			
+			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
+			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
+			
+			if(!(valueA > valueB)) return false;
+        }  
+		
+		return true;
+	}
+	
 	public static boolean listLargerOrEqual(List<Integer> listA,
 			List<Integer> listB) {
 		assert listA.size() == listB.size() : "lists should be equal size";

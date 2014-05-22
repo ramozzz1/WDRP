@@ -8,16 +8,18 @@ import java.util.Queue;
 
 import model.Arc;
 import model.QEntry;
+import model.TDArc;
 import model.TDGraph;
 
 import org.mapdb.Fun.Tuple2;
 
+import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
 public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm  {
 
 	private int numberOfShortcuts;
-	private PSDijkstraAlgorithm dijkstra;
+	private PSDijkstraAlgorithm psDijkstra;
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
 	
@@ -26,7 +28,7 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm  {
 		this.contractionOrder = new PriorityQueue<QEntry>();
 		this.nodesHierachy = new TLongIntHashMap();
 		this.numberOfShortcuts = 0;
-		this.dijkstra = new PSDijkstraAlgorithm(g);
+		this.psDijkstra = new PSDijkstraAlgorithm(g);
 	}
 
 	@Override
@@ -52,6 +54,10 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm  {
 		
 		System.out.println("total #shortcust added: "+this.numberOfShortcuts);
 		graph.setCH(true);
+	}
+	
+	public int getNumberOfShortcuts() {
+		return this.numberOfShortcuts;
 	}
 	
 	/**
@@ -170,29 +176,30 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm  {
 	public int computeShortcuts(long v, boolean addShortcut) {
 		int shortcuts = 0;
 		
-		dijkstra.considerArcFlags = true;
-		dijkstra.considerShortcuts = true;
+		psDijkstra.considerArcFlags = true;
+		psDijkstra.considerShortcuts = true;
 		
 		List<Arc> neighbors = graph.getNeighborsNotDisabled(v);
 		for (Arc inArc : neighbors) {
 			for (Arc outArc : neighbors) {
-				long u = inArc.getHeadNode();
-				long w = outArc.getHeadNode();
+				TDArc tdInArc = (TDArc)inArc;
+				TDArc tdOutArc = (TDArc)outArc;
+				
+				long u = tdInArc.getHeadNode();
+				long w = tdOutArc.getHeadNode();
 				
 				if(u != w) {
-					//store the cost of visiting the node through node v
-					int directCost = inArc.getCost() + outArc.getCost();
-					//calculate the sp from node u to w while ignoring v
-					dijkstra.costUpperbound = directCost;
-					int spCost = dijkstra.computeShortestPath(u, w);
-					//System.out.println("("+u+","+w+") " + spCost + " " +directCost);
-					if(spCost == -1 || spCost > directCost) { 
-						/*no sp could be found or sp found which is longer than the direct one (i.e. the real sp)
-						  so we have to add a shortcut*/
+					//store the cost of visiting the node through node v for every departure time
+					List<Integer> directCosts = ArrayUtils.linkLists(ArrayUtils.extrapolateArray(tdInArc.getCosts(), 5), ArrayUtils.extrapolateArray(tdOutArc.getCosts(), 5));;
+					
+					//compute the costs from u to w without v in the graph
+					List<Integer> disabledCosts = ArrayUtils.toList(psDijkstra.computeTravelTimes(u, w));
+					
+					if(disabledCosts == null || ArrayUtils.listLarger(disabledCosts, directCosts)) { 
+						/*no path could be found for any departure time or there was at least one departure time for which the was larger*/
 						if(addShortcut)
-							graph.addEdge(u, new Arc(w, directCost, true, v));						
+							graph.addEdge(u, new TDArc(w, ArrayUtils.toIntArray(directCosts), true, v));						
 						shortcuts++;
-						//System.out.println("ADDED: ("+u+","+w+")");
 					}
 				}
 			}

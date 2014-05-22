@@ -22,6 +22,11 @@ public class TDArc extends Arc{
 		this.costs = costs;
 	}
 
+	public TDArc(long targetId, int[] costs, boolean arcFlag, long shortcutNode) {
+		super(targetId,0,arcFlag,shortcutNode);
+		this.costs = costs;
+	}
+
 	/**
 	 * Get cost at specific time point 
 	 * @param time

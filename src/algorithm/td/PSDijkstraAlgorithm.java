@@ -69,35 +69,36 @@ public class PSDijkstraAlgorithm extends DijkstraAlgorithm  {
 				
 				for (Arc e : graph.getNeighbors(minNodeId)) {
 					TDArc v = (TDArc)e;
-					
-					List<Integer> ttfUV = ArrayUtils.extrapolateArray(v.getCosts(), 5);
-					List<Integer> gNew = ttfU==null ? ttfUV : ArrayUtils.linkLists(ttfU, ttfUV);
-					System.out.println("NEIGHBOR ("+minNodeId+","+v.getHeadNode()+") :"+ttfUV.toString());
-					System.out.println("GNEW ("+minNodeId+","+v.getHeadNode()+") :"+gNew.toString());
-					List<Integer> ttfV = f.get(v.getHeadNode());
-					if(ttfV != null) System.out.println(v.getHeadNode()+": "+ttfV.toString());
-					if(ttfV==null || !(ArrayUtils.listLargerOrEqual(gNew,ttfV))) {
-						
-						if(ttfV==null || ArrayUtils.listSmaller(gNew,ttfV)) p.put(v.getHeadNode(), null);
+					if(considerEdge(e)) {
+						List<Integer> ttfUV = ArrayUtils.extrapolateArray(v.getCosts(), 5);
+						List<Integer> gNew = ttfU==null ? ttfUV : ArrayUtils.linkLists(ttfU, ttfUV);
+						System.out.println("NEIGHBOR ("+minNodeId+","+v.getHeadNode()+") :"+ttfUV.toString());
+						System.out.println("GNEW ("+minNodeId+","+v.getHeadNode()+") :"+gNew.toString());
+						List<Integer> ttfV = f.get(v.getHeadNode());
+						if(ttfV != null) System.out.println(v.getHeadNode()+": "+ttfV.toString());
+						if(ttfV==null || !(ArrayUtils.listLargerOrEqual(gNew,ttfV))) {
 							
-						List<Integer> minTTF = null;
-						if(ttfV==null) 
-							minTTF = gNew;
-						else 
-							minTTF = ArrayUtils.minList(gNew, ttfV);
-						
-						System.out.println("MINTTF: "+v.getHeadNode()+" :"+minTTF.toString());
-						f.put(v.getHeadNode(), minTTF);
-						
-						Set<Long> predV = p.get(v.getHeadNode());
-						if(predV==null) predV = new THashSet<Long>();
-						predV.add(minNodeId);
-						
-						p.put(v.getHeadNode(), predV);
-						
-						int minValue = ArrayUtils.getMinValue(minTTF);
-						System.out.println(v.getHeadNode() +" minVal: "+ minValue);
-						queue.add(new NodeEntry(v.getHeadNode(), minValue));
+							if(ttfV==null || ArrayUtils.listSmaller(gNew,ttfV)) p.put(v.getHeadNode(), null);
+								
+							List<Integer> minTTF = null;
+							if(ttfV==null) 
+								minTTF = gNew;
+							else 
+								minTTF = ArrayUtils.minList(gNew, ttfV);
+							
+							System.out.println("MINTTF: "+v.getHeadNode()+" :"+minTTF.toString());
+							f.put(v.getHeadNode(), minTTF);
+							
+							Set<Long> predV = p.get(v.getHeadNode());
+							if(predV==null) predV = new THashSet<Long>();
+							predV.add(minNodeId);
+							
+							p.put(v.getHeadNode(), predV);
+							
+							int minValue = ArrayUtils.getMinValue(minTTF);
+							System.out.println(v.getHeadNode() +" minVal: "+ minValue);
+							queue.add(new NodeEntry(v.getHeadNode(), minValue));
+						}
 					}
 				}
 			}
