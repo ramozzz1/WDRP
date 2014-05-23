@@ -185,13 +185,23 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 				long w = tdOutArc.getHeadNode();
 				
 				if(u != w) {
+					
+					System.out.println("****CHECKING IF SHORTCUT NEEDED BETWEEN "+u+" and "+w);
+					
 					//store the cost of visiting the node through node v for every departure time
-					List<Integer> directCosts = ArrayUtils.linkLists(ArrayUtils.extrapolateArray(tdInArc.getCosts(), 5), ArrayUtils.extrapolateArray(tdOutArc.getCosts(), 5));;
+					List<Integer> directCosts = ArrayUtils.linkLists(
+							tdInArc.getCosts(), 
+							tdOutArc.getCosts()
+							);
 					
 					//compute the costs from u to w without v in the graph
 					List<Integer> disabledCosts = ArrayUtils.toList(psDijkstra.computeTravelTimes(u, w));
 					
+					System.out.println("****DIRECT COSTS "+directCosts);
+					System.out.println("****DISABLED COSTS "+disabledCosts);
+					
 					if(disabledCosts == null || ArrayUtils.listLarger(disabledCosts, directCosts)) { 
+						System.out.println("****ADDED SHORTCUT BETWEEN "+u+" and "+w);
 						/*no path could be found for any departure time or there was at least one departure time for which the was larger*/
 						if(addShortcut)
 							graph.addEdge(u, new TDArc(w, ArrayUtils.toIntArray(directCosts), true, v));						
@@ -221,5 +231,9 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 			count++;
 			if(count%100000==0) System.out.println("#arcs processed: " + count);
 		}
+	}
+	
+	public int[] computeTravelTimes(long source, long target, int departureTime) {
+		return null;
 	}
 }

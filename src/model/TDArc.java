@@ -17,13 +17,13 @@ public class TDArc extends Arc{
 	}
 	
 	public TDArc(int targetId, int[] costs) {
-		super(targetId, 0);
+		super(targetId, costs[0]);
 		
 		this.costs = costs;
 	}
 
 	public TDArc(long targetId, int[] costs, boolean arcFlag, long shortcutNode) {
-		super(targetId,0,arcFlag,shortcutNode);
+		super(targetId,costs[0],arcFlag,shortcutNode);
 		this.costs = costs;
 	}
 

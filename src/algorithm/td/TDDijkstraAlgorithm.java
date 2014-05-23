@@ -90,20 +90,16 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	}
 	
 	@Override
-	public int getEdgeCost(Arc a, int departureTime) {
-		TDArc tdArc = (TDArc)a;
+	public int getEdgeCost(TDArc a, int arrivalTime) {
 		
-		//convert the departure time from Arc a to corresponding time
-		int timeInterval = (int)(Math.ceil((departureTime+1)/5.0d)-1);
-		
-		//check if time interval is within the bounds of this edge
-		if(timeInterval >= tdArc.costs.length) {
-			//the time interval is not within the bounds of this edge (so edge is not reachable)
+		//check if arrival time is within the possible arrival times of the arc
+		if(arrivalTime >= a.costs.length) {
+			//the time interval is not within the bounds of this arc (so arc is not reachable)
 			return Integer.MAX_VALUE;
 		}
 		else {
 			//time interval is within the bounds, now calculate the calculate the arrival time at the head of the edge
-			return tdArc.getCostForTime(timeInterval) + departureTime;
+			return a.getCostForTime(arrivalTime) + arrivalTime;
 		}
 	}
 }

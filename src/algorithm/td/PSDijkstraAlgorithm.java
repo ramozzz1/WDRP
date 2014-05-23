@@ -67,15 +67,17 @@ public class PSDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				if(ttfU != null && Collections.max(ttfU) < u.getDistance())
 					continue;
 				
-				for (Arc e : graph.getNeighbors(minNodeId)) {
-					TDArc v = (TDArc)e;
-					if(considerEdge(e)) {
-						List<Integer> ttfUV = ArrayUtils.extrapolateArray(v.getCosts(), 5);
+				for (TDArc v : graph.getNeighbors(minNodeId)) {
+					if(considerEdge(v)) {
+						System.out.println("****CONSIDERING EDGE " +minNodeId+"->"+v.getHeadNode());
+						
+						List<Integer> ttfUV = ArrayUtils.toList(v.getCosts());
+						System.out.println("****MIN-COST "+minNodeId+": "+ttfU);
+						System.out.println("****V-COST "+v.getHeadNode()+": "+ttfUV);
 						List<Integer> gNew = ttfU==null ? ttfUV : ArrayUtils.linkLists(ttfU, ttfUV);
-						System.out.println("NEIGHBOR ("+minNodeId+","+v.getHeadNode()+") :"+ttfUV.toString());
-						System.out.println("GNEW ("+minNodeId+","+v.getHeadNode()+") :"+gNew.toString());
+						System.out.println("GNEW ("+minNodeId+","+v.getHeadNode()+") : "+gNew);
 						List<Integer> ttfV = f.get(v.getHeadNode());
-						if(ttfV != null) System.out.println(v.getHeadNode()+": "+ttfV.toString());
+						//if(ttfV != null) System.out.println(v.getHeadNode()+": "+ttfV.toString());
 						if(ttfV==null || !(ArrayUtils.listLargerOrEqual(gNew,ttfV))) {
 							
 							if(ttfV==null || ArrayUtils.listSmaller(gNew,ttfV)) p.put(v.getHeadNode(), null);
@@ -86,7 +88,7 @@ public class PSDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 							else 
 								minTTF = ArrayUtils.minList(gNew, ttfV);
 							
-							System.out.println("MINTTF: "+v.getHeadNode()+" :"+minTTF.toString());
+							//System.out.println("MINTTF: "+v.getHeadNode()+" :"+minTTF.toString());
 							f.put(v.getHeadNode(), minTTF);
 							
 							Set<Long> predV = p.get(v.getHeadNode());
@@ -96,7 +98,7 @@ public class PSDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 							p.put(v.getHeadNode(), predV);
 							
 							int minValue = ArrayUtils.getMinValue(minTTF);
-							System.out.println(v.getHeadNode() +" minVal: "+ minValue);
+							//System.out.println(v.getHeadNode() +" minVal: "+ minValue);
 							queue.add(new NodeEntry(v.getHeadNode(), minValue));
 						}
 					}

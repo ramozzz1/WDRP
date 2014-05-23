@@ -86,8 +86,8 @@ public class Graph<K extends Arc> {
 	 * @param targetId
 	 * @return the edge (sourceId,targetId) if present else returns null 
 	 */
-	public Arc getEdge(long sourceId, long targetId) {
-		for (Arc a : getNeighbors(sourceId)) {
+	public K getEdge(long sourceId, long targetId) {
+		for (K a : getNeighbors(sourceId)) {
 			if(a.getHeadNode() == targetId) {
 				return a;
 			}

@@ -38,6 +38,8 @@ public class ArrayUtils {
 	}
 	
 	public static int[] toIntArray(List<Integer> integerList) {  
+		if(integerList == null) return null;
+		
         int[] intArray = new int[integerList.size()];  
         for (int i = 0; i < integerList.size(); i++) {  
             intArray[i] = integerList.get(i);  
@@ -46,6 +48,8 @@ public class ArrayUtils {
     } 
 	
 	public static List<Integer> toList(int[] ints) {  
+		if(ints == null) return null;
+		
 		List<Integer> intList = new ArrayList<Integer>();
 	    for (int index = 0; index < ints.length; index++)
 	    {
@@ -87,7 +91,7 @@ public class ArrayUtils {
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
 			
-			if(!(valueA > valueB)) return false;
+			if(!(valueA > valueB) && valueA!=Integer.MAX_VALUE && valueB!=Integer.MAX_VALUE) return false;
         }  
 		
 		return true;
@@ -139,9 +143,20 @@ public class ArrayUtils {
 		
 		return list;
 	}
+	
+	public static int[] extrapolateArrayToArray(int[] array, int interval) {
+		int newSize = array.length * interval;
+		int[] newArray = new int[newSize];
+		for (int i = 0; i < newSize; i++) {
+			int index = i / interval;
+			newArray[i] = array[index];
+        }  
+		
+		return newArray;
+	}
 
 	public static List<Integer> linkLists(List<Integer> f, List<Integer> g) {
-		int maxSize = Math.max(g.size(),f.size());
+		int maxSize = Math.max(g.size(),f.size());	
 		List<Integer> linkList = new ArrayList<Integer>(maxSize);
 		for (int i = 0; i < maxSize; i++) {
 			int travelTimeUW = -1;
@@ -149,13 +164,37 @@ public class ArrayUtils {
 			int travelTimeUV = f.get(i);
 			if(travelTimeUV >= 0) {
 				int arrivalTimeV = i+travelTimeUV;
-				if(arrivalTimeV < g.size())
-					travelTimeUW = travelTimeUV + g.get(arrivalTimeV);
+				
+				if(arrivalTimeV < g.size()) {
+					int travelTimeForArrivalAtG = g.get(arrivalTimeV);
+					if(travelTimeForArrivalAtG >=0)
+						travelTimeUW = travelTimeUV + travelTimeForArrivalAtG;
+				}
 			}
 			
 			linkList.add(travelTimeUW);
         }
 		
 		return linkList;
+	}
+
+	public static List<Integer> linkLists(int[] a, int[] b) {
+		return linkLists(toList(a), toList(b));
+	}
+
+	public static List<Integer> extrapolateArray(List<Integer> array,
+			int interval) {
+		return extrapolateArray(toIntArray(array),interval);
+	}
+
+	public static int[] interpolateArray(List<Integer> array, int interval) {
+		int newSize = array.size() / interval;
+		int[] list = new int[newSize];
+		for (int i = 0; i < newSize; i++) {
+			int index = i * interval;
+			list[i] = array.get(index);
+        }  
+		
+		return list;
 	}
 }

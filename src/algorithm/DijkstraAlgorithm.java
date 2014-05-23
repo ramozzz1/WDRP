@@ -73,7 +73,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 				if(distU+h < u.getDistance())
 					continue;
 				
-				for (Arc e : graph.getNeighbors(minNodeId)) {
+				for (K e : graph.getNeighbors(minNodeId)) {
 					if(considerEdge(e)) {
 						Object distN = distance.get(e.getHeadNode());
 						int dist = getEdgeCost(e, distU);
@@ -92,7 +92,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 		return -1;
 	}
 	
-	protected int getEdgeCost(Arc e, int dist) {
+	protected int getEdgeCost(K e, int dist) {
 		return e.getCost() + dist;
 	}
 
@@ -100,7 +100,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 		return false;
 	}
 
-	protected boolean considerEdge(Arc e) {
+	protected boolean considerEdge(K e) {
 		if(!this.considerArcFlags || (this.considerArcFlags && e.isArcFlag())) {
 			if(this.considerShortcuts || !e.isShortcut())
 				return true;

@@ -4,6 +4,8 @@ import model.TDGraph;
 
 import org.junit.BeforeClass;
 
+import util.ArrayUtils;
+
 public class TDTestBase {
 	public static TDGraph g;
 	
@@ -18,25 +20,25 @@ public class TDTestBase {
 		g.addNode(4);
 		g.addNode(5);
 		
-		int[] e1 = {4,5,9,4};
+		int[] e1 = ArrayUtils.extrapolateArrayToArray(new int[]{4,5,9,4},5);
 		g.addEdge(0, 1, e1);
 		
-		int[] e2 = {8,10,11,8};
+		int[] e2 = ArrayUtils.extrapolateArrayToArray(new int[]{8,10,11,8},5);
 		g.addEdge(0, 2, e2);
 		
-		int[] e3 = {3,7,5,8};
+		int[] e3 = ArrayUtils.extrapolateArrayToArray(new int[]{3,7,5,8},5);
 		g.addEdge(1, 2, e3);
 		
-		int[] e4 = {6,7,6,6};
+		int[] e4 = ArrayUtils.extrapolateArrayToArray(new int[]{6,7,6,6},5);
 		g.addEdge(2, 3, e4);
 		
-		int[] e5 = {3,10,3,3};
+		int[] e5 = ArrayUtils.extrapolateArrayToArray(new int[]{3,10,3,3},5);
 		g.addEdge(3, 4, e5);
 		
-		int[] e6 = {5,7,5,9};
+		int[] e6 = ArrayUtils.extrapolateArrayToArray(new int[]{5,7,5,9},5);
 		g.addEdge(3, 5, e6);
 		
-		int[] e7 = {3,3,3,3};
+		int[] e7 = ArrayUtils.extrapolateArrayToArray(new int[]{3,3,3,3},5);
 		g.addEdge(4, 5, e7);
 	}
 }
