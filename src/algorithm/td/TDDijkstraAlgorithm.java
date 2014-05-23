@@ -1,5 +1,7 @@
 package algorithm.td;
 
+import org.mapdb.Fun.Tuple2;
+
 import model.Arc;
 import model.TDArc;
 import model.TDGraph;
@@ -101,5 +103,14 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 			//time interval is within the bounds, now calculate the calculate the arrival time at the head of the edge
 			return a.getCostForTime(arrivalTime) + arrivalTime;
 		}
+	}
+
+	public Tuple2<Integer, Integer> computeTravelTimesInterval(long source, long target) {
+		int[] travelTimes = computeTravelTimes(source, target);
+		
+		return new Tuple2<Integer, Integer>(
+				ArrayUtils.getMinValue(travelTimes), 
+				ArrayUtils.getMaxValue(travelTimes)
+				);
 	}
 }

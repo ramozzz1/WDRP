@@ -37,6 +37,15 @@ public class ArrayUtils {
 		return currentValue;
 	}
 	
+	public static int getMaxValue(int[] array) {
+		int currentValue = Integer.MIN_VALUE;
+		for (int j=0; j < array.length; j++) {
+			if (array[j] > currentValue)
+				currentValue = array[j];
+		}
+		return currentValue;
+	}
+	
 	public static int[] toIntArray(List<Integer> integerList) {  
 		if(integerList == null) return null;
 		
