@@ -7,18 +7,18 @@ import java.util.Arrays;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import algorithm.td.PSDijkstraAlgorithm;
+import algorithm.td.PQDijkstraAlgorithm;
 import algorithm.td.TDDijkstraAlgorithm;
 
-public class PSDijkstraAlgorithmTest extends TDTestBase {
+public class PQDijkstraAlgorithmTest extends TDTestBase {
 	
 	public static TDDijkstraAlgorithm tdA;
-	public static PSDijkstraAlgorithm psA;
+	public static PQDijkstraAlgorithm psA;
 	
 	@BeforeClass
 	public static void setupAlgorithms() {
 		tdA = new TDDijkstraAlgorithm(g);
-		psA = new PSDijkstraAlgorithm(g);
+		psA = new PQDijkstraAlgorithm(g);
 	}
 	
 	@Test

@@ -11,19 +11,18 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
-import model.Arc;
 import model.Graph;
 import model.NodeEntry;
 import model.TDArc;
 import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
-public class PSDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
+public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 
 	public Map<Long, Set<Long>> p;
 	public THashMap<Long, List<Integer>> f;
 	
-	public PSDijkstraAlgorithm(Graph<TDArc> graph) {
+	public PQDijkstraAlgorithm(Graph<TDArc> graph) {
 		super(graph);
 	}
 	

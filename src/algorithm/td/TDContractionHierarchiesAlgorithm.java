@@ -18,7 +18,7 @@ import algorithm.DijkstraAlgorithm;
 public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc>  {
 
 	private int numberOfShortcuts;
-	private PSDijkstraAlgorithm psDijkstra;
+	private PQDijkstraAlgorithm psDijkstra;
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
 	
@@ -27,7 +27,7 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 		this.contractionOrder = new PriorityQueue<QEntry>();
 		this.nodesHierachy = new TLongIntHashMap();
 		this.numberOfShortcuts = 0;
-		this.psDijkstra = new PSDijkstraAlgorithm(graph);
+		this.psDijkstra = new PQDijkstraAlgorithm(graph);
 	}
 
 	@Override
