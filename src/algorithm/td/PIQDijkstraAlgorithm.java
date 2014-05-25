@@ -41,26 +41,26 @@ public class PIQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> {
 				long minNodeId = u.getNodeId();
 				
 				System.out.println("****MIN: "+minNodeId);
-				Tuple2<Integer, Integer> targetTTF = f.get(target);
-				if(targetTTF != null && u.getDistance() > targetTTF.b)
-					return targetTTF;
+				Tuple2<Integer, Integer> targetInterval = f.get(target);
+				if(targetInterval!= null && u.getDistance() > targetInterval.b)
+					return targetInterval;
 				
-				if(targetTTF != null && u.getDistance() >= Integer.MAX_VALUE)
-					return targetTTF;
+				if(u.getDistance() >= Integer.MAX_VALUE)
+					return targetInterval;
 				
-				Tuple2<Integer, Integer> ttfU = f.get(minNodeId);
-				if(ttfU.a < u.getDistance())
+				Tuple2<Integer, Integer> intervalU = f.get(minNodeId);
+				if( intervalU.a < u.getDistance())
 					continue;
 				
 				for (TDArc v : graph.getNeighbors(minNodeId)) {
 					if(considerEdge(v)) {
-						System.out.println("****CONSIDERING EDGE " +minNodeId+"->"+v.getHeadNode());
+						System.out.println("----CONSIDERING EDGE " +minNodeId+"->"+v.getHeadNode());
 						
-						int qNew = ttfU.a + ArrayUtils.getMinValue(v.getCosts());
-						int rNew = ttfU.b + ArrayUtils.getMaxValue(v.getCosts());
+						int qNew = intervalU.a + ArrayUtils.getMinValue(v.getCosts());
+						int rNew = intervalU.b + ArrayUtils.getMaxValue(v.getCosts());
 						
-						System.out.println("****qNew " +qNew);
-						System.out.println("****rNew " +rNew);
+						System.out.println("qNew " +qNew);
+						System.out.println("rNew " +rNew);
 						
 						Tuple2<Integer, Integer> intervalV = f.get(v.getHeadNode());
 						if(intervalV==null) intervalV = new Tuple2<Integer, Integer>(Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -79,6 +79,7 @@ public class PIQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> {
 								Math.min(qNew, intervalV.a),
 								Math.min(rNew, intervalV.b)
 								);
+						System.out.println("UPDATED NODE "+v.getHeadNode()+" TO "+newInterval);
 						
 						f.put(v.getHeadNode(), newInterval);
 						

@@ -1,6 +1,6 @@
 package algorithms.td;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,62 +19,66 @@ public class PIQDijkstraAlgorithmTest extends TDTestBase {
 		piqA = new PIQDijkstraAlgorithm(g);
 	}
 	
+	private boolean intevalLargerOrEqual(Tuple2<Integer, Integer> intA, Tuple2<Integer, Integer> intB) {
+		return intA.a <= intB.a && intA.b >= intB.b;
+	}
+	
 	@Test
-	public void computeTravelTimesIntervalSourceSourceAllDepartureTimes() {
+	public void computeTravelTimesIntervalSourceSource() {
 		Tuple2<Integer, Integer> intervalTD = tdA.computeTravelTimesInterval(0,0);
 		Tuple2<Integer, Integer> intervalPIQ = piqA.computeTravelTimesInterval(0,0);
 		
-		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 	}
 	
 	@Test
-	public void computeTravelTimesIntervalSourceNeighbourAllDepartureTimes() {
-//		Tuple2<Integer, Integer> intervalTD = tdA.computeTravelTimesInterval(0,1);
-//		Tuple2<Integer, Integer> intervalPIQ = piqA.computeTravelTimesInterval(0,1);
+	public void computeTravelTimesIntervalSourceNeighbour() {
+		Tuple2<Integer, Integer> intervalTD = tdA.computeTravelTimesInterval(0,1);
+		Tuple2<Integer, Integer> intervalPIQ = piqA.computeTravelTimesInterval(0,1);
 		
-//		assertEquals(intervalPIQ.toString(), intervalTD.toString());
-//		
-//		intervalTD = tdA.computeTravelTimesInterval(0,2);
-//		intervalPIQ = piqA.computeTravelTimesInterval(0,2);
-//		
-//		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 		
-		Tuple2<Integer, Integer> intervalTD = tdA.computeTravelTimesInterval(2,0);
-		Tuple2<Integer, Integer> intervalPIQ = piqA.computeTravelTimesInterval(2,0);
+		intervalTD = tdA.computeTravelTimesInterval(0,2);
+		intervalPIQ = piqA.computeTravelTimesInterval(0,2);
 		
-		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 		
-//		intervalTD = tdA.computeTravelTimesInterval(4,5);
-//		intervalPIQ = piqA.computeTravelTimesInterval(4,5);
-//		
-//		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		intervalTD = tdA.computeTravelTimesInterval(2,0);
+		intervalPIQ = piqA.computeTravelTimesInterval(2,0);
+		
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
+		
+		intervalTD = tdA.computeTravelTimesInterval(4,5);
+		intervalPIQ = piqA.computeTravelTimesInterval(4,5);
+		
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 	}
 	
 	@Test
-	public void computeTravelTimesIntervalSourceTargetAllDepartureTimes() {
+	public void computeTravelTimesIntervalSourceTarget() {
 		Tuple2<Integer, Integer> intervalTD = tdA.computeTravelTimesInterval(0,3);
 		Tuple2<Integer, Integer> intervalPIQ = piqA.computeTravelTimesInterval(0,3);
 		
-		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 		
 		intervalTD = tdA.computeTravelTimesInterval(0,4);
 		intervalPIQ = piqA.computeTravelTimesInterval(0,4);
 		
-		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 
 		intervalTD = tdA.computeTravelTimesInterval(0,5);
 		intervalPIQ = piqA.computeTravelTimesInterval(0,5);
 		
-		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 		
 		intervalTD = tdA.computeTravelTimesInterval(3,5);
 		intervalPIQ = piqA.computeTravelTimesInterval(3,5);
 		
-		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 		
 		intervalTD = tdA.computeTravelTimesInterval(1,5);
 		intervalPIQ = piqA.computeTravelTimesInterval(1,5);
 		
-		assertEquals(intervalPIQ.toString(), intervalTD.toString());
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 	}
 }
