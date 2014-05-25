@@ -54,7 +54,7 @@ public class ALTAlgorithm extends DijkstraAlgorithm<Arc> {
 			count++;
 			System.out.println("Landmark #"+count+": "+landmarkId);
 			super.computeShortestPath(landmarkId, -1);
-			ld.put(landmarkId, new DBLongIntHashMap(super.distance));
+			ld.put(landmarkId, new DBLongIntHashMap(super.f));
 		}
 		return ld;
 	}

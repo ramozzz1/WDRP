@@ -1,10 +1,10 @@
 package algorithm.td;
 
-import org.mapdb.Fun.Tuple2;
-
-import model.Arc;
 import model.TDArc;
 import model.TDGraph;
+
+import org.mapdb.Fun.Tuple2;
+
 import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
@@ -12,6 +12,10 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 
 	public TDDijkstraAlgorithm(TDGraph graph) {
 		super(graph);
+	}
+
+	public TDDijkstraAlgorithm(TDGraph graph, boolean considerArcFlags, boolean considerShortcuts) {
+		super(graph, considerArcFlags, considerShortcuts);
 	}
 
 	@Override

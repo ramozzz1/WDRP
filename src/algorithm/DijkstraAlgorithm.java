@@ -18,16 +18,23 @@ import model.Path;
 public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K> {
 	
 	public Map<Long,Long> previous;
-	public THashMap<Long, Integer> distance;
+	public THashMap<Long, Integer> f;
+	public Queue<NodeEntry> queue;
 	public boolean considerArcFlags;
 	public boolean considerShortcuts;
 	public int costUpperbound;
 	public int maxNumSettledNodes;
-	protected int startCost;
+	public int startCost;
 	
 	public DijkstraAlgorithm(Graph<K> graph) {
 		super(graph);
 		setDefaultSettings();
+	}
+	
+	public DijkstraAlgorithm(Graph<K> graph, boolean considerArcFlags, boolean considerShortcuts) {
+		this(graph);
+		this.considerArcFlags=considerArcFlags;
+		this.considerShortcuts = considerShortcuts;
 	}
 	
 	protected void setDefaultSettings() {
@@ -38,18 +45,25 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 		this.startCost = 0;
 	}
 	
-	@Override
-	public int computeShortestPath(long sourceId, long targetId) {
-		this.distance = new THashMap<Long, Integer>();
+	public void init(long source) {
+		this.f = new THashMap<Long, Integer>();
 		this.previous = new THashMap<Long,Long>();
 		this.visitedNodesMarks = new THashSet<Long>();
+		this.queue = new PriorityQueue<NodeEntry>();
 		
-		if(sourceId != NULL_NODE) {
-			distance.put(sourceId, this.startCost);
-			previous.put(sourceId, NULL_NODE);
+		if(source != NULL_NODE) {
+			f.put(source, this.startCost);
+			previous.put(source, NULL_NODE);
+			queue.add(new NodeEntry(source, this.startCost));
+		}
+	}
+	
+	@Override
+	public int computeShortestPath(long source, long target) {
+		if(source != NULL_NODE) {
 			
-			Queue<NodeEntry> queue = new PriorityQueue<NodeEntry>();
-			queue.add(new NodeEntry(sourceId, this.startCost));
+			init(source);
+			
 			while(!queue.isEmpty()) {
 				NodeEntry u = queue.poll();
 				long minNodeId = u.getNodeId();
@@ -59,8 +73,8 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 				if(u.getDistance() >= Integer.MAX_VALUE)
 					return -1;
 				
-				if(minNodeId == targetId || addionalStopCondition(minNodeId,targetId))
-					return distance.get(minNodeId);
+				if(minNodeId == target || addionalStopCondition(minNodeId,target))
+					return f.get(minNodeId);
 					
 				if(u.getDistance() > costUpperbound)
 					return -1;
@@ -68,28 +82,30 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 				if(visitedNodesMarks.size() > maxNumSettledNodes)
 					return -1;
 				
-				int h = getHeuristicValue(minNodeId,targetId);
-				int distU = distance.get(minNodeId);
+				int h = getHeuristicValue(minNodeId,target);
+				int distU = f.get(minNodeId);
 				if(distU+h < u.getDistance())
 					continue;
 				
-				for (K e : graph.getNeighbors(minNodeId)) {
-					if(considerEdge(e)) {
-						Object distN = distance.get(e.getHeadNode());
-						int dist = getEdgeCost(e, distU);
-						//System.out.println("N: "+e.getHeadNode()+", "+dist);
-						if(distN==null || dist < (int)distN) {
-							distance.put(e.getHeadNode(), dist);
-							previous.put(e.getHeadNode(), minNodeId);
-							h = getHeuristicValue(e.getHeadNode(),targetId);
-							queue.add(new NodeEntry(e.getHeadNode(), dist+h));
-						}
-					}
+				for (K arc : graph.getNeighbors(minNodeId)) {
+					if(considerArc(arc))
+						relax(target, minNodeId, distU, arc);
 				}
 			}
 		}
 		
 		return -1;
+	}
+
+	public void relax(long target, long u, int distU, K arc) {
+		Object distN = f.get(arc.getHeadNode());
+		int dist = getEdgeCost(arc, distU);
+		if(distN==null || dist < (int)distN) {
+			f.put(arc.getHeadNode(), dist);
+			previous.put(arc.getHeadNode(), u);
+			int h = getHeuristicValue(arc.getHeadNode(),target);
+			queue.add(new NodeEntry(arc.getHeadNode(), dist+h));
+		}
 	}
 	
 	protected int getEdgeCost(K e, int dist) {
@@ -100,7 +116,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 		return false;
 	}
 
-	protected boolean considerEdge(K e) {
+	protected boolean considerArc(K e) {
 		if(!this.considerArcFlags || (this.considerArcFlags && e.isArcFlag())) {
 			if(this.considerShortcuts || !e.isShortcut())
 				return true;

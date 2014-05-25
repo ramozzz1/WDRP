@@ -14,6 +14,7 @@ import java.util.Set;
 import model.Graph;
 import model.NodeEntry;
 import model.TDArc;
+import model.TDGraph;
 import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
@@ -26,6 +27,11 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		super(graph);
 	}
 	
+	public PQDijkstraAlgorithm(TDGraph graph, boolean considerArcFlags,
+			boolean considerShortcuts) {
+		super(graph, considerArcFlags, considerShortcuts);
+	}
+
 	public int computeBestDepartureTime(long source, long target) {
 		int[] travelTimes = computeTravelTimes(source, target);
 		
@@ -67,7 +73,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 					continue;
 				
 				for (TDArc v : graph.getNeighbors(minNodeId)) {
-					if(considerEdge(v)) {
+					if(considerArc(v)) {
 						System.out.println("****CONSIDERING EDGE " +minNodeId+"->"+v.getHeadNode());
 						
 						List<Integer> ttfUV = ArrayUtils.toList(v.getCosts());

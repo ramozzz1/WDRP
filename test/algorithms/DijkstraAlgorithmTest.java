@@ -58,14 +58,14 @@ public class DijkstraAlgorithmTest extends SPTestBase {
 	public void testAllShortestPath1(){
 		int dist = d.computeShortestPath(0, -1);
 		assertEquals(dist,-1);
-		assertEquals(d.distance.toString(),"{5=4, 4=4, 3=3, 2=2, 1=1, 0=0}");
+		assertEquals(d.f.toString(),"{5=4, 4=4, 3=3, 2=2, 1=1, 0=0}");
 	}
 	
 	@Test
 	public void testAllShortestPath2(){
 		int dist = d.computeShortestPath(2, -1);
 		assertEquals(dist,-1);
-		assertEquals(d.distance.toString(),"{5=2, 4=5, 3=1, 2=0, 1=1, 0=2}");
+		assertEquals(d.f.toString(),"{5=2, 4=5, 3=1, 2=0, 1=1, 0=2}");
 	}
 	
 	@Test

@@ -5,7 +5,9 @@ import gnu.trove.map.hash.TLongIntHashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
+import model.NodeEntry;
 import model.QEntry;
 import model.TDArc;
 import model.TDGraph;
@@ -19,15 +21,27 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 
 	private int numberOfShortcuts;
 	private PQDijkstraAlgorithm psDijkstra;
+	private TDDijkstraAlgorithm tdDijkstra;
+	private TDDijkstraAlgorithm downwardTDDijkstra;
+	private PIQDijkstraAlgorithm piqDijkstra;
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
+	private Set<Long> candidates;
 	
 	public TDContractionHierarchiesAlgorithm(TDGraph graph) {
 		super(graph);
+		
+		this.considerArcFlags = true;
+		this.considerShortcuts = true;
+		
 		this.contractionOrder = new PriorityQueue<QEntry>();
 		this.nodesHierachy = new TLongIntHashMap();
 		this.numberOfShortcuts = 0;
-		this.psDijkstra = new PQDijkstraAlgorithm(graph);
+		
+		this.psDijkstra = new PQDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
+		this.tdDijkstra = new TDDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
+		this.downwardTDDijkstra = new TDDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
+		this.piqDijkstra = new PIQDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
 	}
 
 	@Override
@@ -175,9 +189,6 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 	public int computeShortcuts(long v, boolean addShortcut) {
 		int shortcuts = 0;
 		
-		psDijkstra.considerArcFlags = true;
-		psDijkstra.considerShortcuts = true;
-		
 		List<TDArc> neighbors = graph.getNeighborsNotDisabled(v);
 		for (TDArc tdInArc : neighbors) {
 			for (TDArc tdOutArc : neighbors) {
@@ -233,7 +244,89 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 		}
 	}
 	
-	public int[] computeTravelTimes(long source, long target, int departureTime) {
-		return null;
+	public int computeEarliestArrivalTime(long source, long target, int departureTime) {
+		if(source != NULL_NODE) {
+			int B = Integer.MAX_VALUE; //upperbound
+			
+			tdDijkstra.init(source);
+			piqDijkstra.init(source);
+			
+			tdDijkstra.startCost = departureTime;
+			
+			Queue<NodeEntry> queueS = tdDijkstra.queue;
+			Queue<NodeEntry> queueT = piqDijkstra.queue;
+			
+			NodeEntry minU =queueS.poll();
+			NodeEntry minIntervalU = queueT.poll();
+			
+			int iterations = 0;
+			
+			while((!queueS.isEmpty() || !queueT.isEmpty()) 
+					&& (Math.min(minU.getDistance(), minIntervalU.getDistance()) <= B)) {
+				boolean reverseDirection = (iterations%1 == 0) && !queueT.isEmpty();
+				
+				NodeEntry u = reverseDirection ? minU : minIntervalU;
+				
+				int costU = tdDijkstra.f.get(u.getNodeId());
+				Tuple2<Integer, Integer> costIntervalU = piqDijkstra.f.get(u.getNodeId());
+				
+				if(B < Integer.MAX_VALUE 
+						&& (costU + costIntervalU.a <= B))
+					candidates.add(u.getNodeId());
+				
+				B = Math.min(B, costU + costIntervalU.b);
+				
+				for (TDArc arc : graph.getNeighbors(u.getNodeId())) {
+					if(considerArc(arc)) {
+						if (reverseDirection)
+							piqDijkstra.relax(u.getNodeId(), costIntervalU, arc);
+						else
+							tdDijkstra.relax(target, u.getNodeId(), costU, arc);
+					}
+				}
+					
+				iterations++;
+			}
+			
+			return downwardSearch(B, target);
+		}
+		
+		return -1;
+	}
+
+	public int downwardSearch(int B, long target) {
+		int eaTime = -1;
+		
+		downwardTDDijkstra.init(NULL_NODE);
+		downwardTDDijkstra.previous = tdDijkstra.previous;
+		
+		for (Long u : candidates) {
+			int costU = tdDijkstra.f.get(u);
+			Tuple2<Integer, Integer> costIntervalU = piqDijkstra.f.get(u);
+			
+			if(B < Integer.MAX_VALUE && (costU+costIntervalU.a)<=B) {
+				downwardTDDijkstra.f.put(u, costU);
+				downwardTDDijkstra.queue.add(new NodeEntry(u, costU));
+			}
+		}
+		
+		while(!downwardTDDijkstra.queue.isEmpty()) {
+			NodeEntry u = downwardTDDijkstra.queue.poll();
+			
+			if(u.getNodeId() == target)
+				return downwardTDDijkstra.f.get(target);
+			
+			Set<Long> p = piqDijkstra.p.get(u.getNodeId());
+			
+			for (Long v : p) {
+				for (TDArc arc : graph.getNeighbors(v)) {
+					if(considerArc(arc))
+						downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
+				}
+			}
+			
+		}
+		
+		return eaTime;
 	}
 }

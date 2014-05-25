@@ -304,7 +304,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm<Ar
 		dijkstra.considerArcFlags = true;
 		dijkstra.considerShortcuts = true;
 		dijkstra.computeShortestPath(targetId, -1);
-		this.distTarget = dijkstra.distance;
+		this.distTarget = dijkstra.f;
 		this.previousTarget = dijkstra.previous;
 		this.visitedNodesTarget = dijkstra.visitedNodesMarks;
 	}
@@ -313,7 +313,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm<Ar
 		dijkstra.considerArcFlags = true;
 		dijkstra.considerShortcuts = true;
 		dijkstra.computeShortestPath(sourceId, -1);
-		this.distSource = dijkstra.distance;
+		this.distSource = dijkstra.f;
 		this.previousSource = dijkstra.previous;
 		this.visitedNodesSource = dijkstra.visitedNodesMarks;
 	}

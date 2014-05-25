@@ -21,20 +21,20 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 		this.graph = graph;
 	}
 	
-	public abstract int computeShortestPath(long sourceId, long targetId);
+	public abstract int computeShortestPath(long source, long target);
 
 	public abstract void precompute();
 	
 	public abstract String getName();
 
-	public abstract Path extractPath(long targetId);
+	public abstract Path extractPath(long target);
 
 	public abstract Set<Long> getVisitedNodes();
 	
-	public List<Long> getNodesOnPath(TLongLongHashMap previous, long targetId) {
+	public List<Long> getNodesOnPath(TLongLongHashMap previous, long target) {
 		List<Long> nodes = new ArrayList<Long>();
 		
-		long currNode = targetId;
+		long currNode = target;
 		if(previous.containsKey(currNode)) {
 			do {				
 				long prevNode = previous.get(currNode);
@@ -52,14 +52,14 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 	 * Construct path from nodeId to the first element of previous (i.e) the one that was inserted the first (source)
 	 * Note: shortcut edges are transformed into "real" edges if convertShortcut is set to true
 	 * @param previous
-	 * @param targetId
+	 * @param target
 	 * @param convertShortcuts true if we need to convert shortcuts to real edges
 	 * @return
 	 */
-	public Path contructPath(Map<Long,Long> previous, long targetId, boolean convertShortcuts) {
+	public Path contructPath(Map<Long,Long> previous, long target, boolean convertShortcuts) {
 		Path p = new Path();
 		
-		long currNode = targetId;
+		long currNode = target;
 		if(previous.containsKey(currNode)) {
 			do {				
 				long prevNode = previous.get(currNode);
@@ -76,8 +76,8 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 	}
 	
 	//wrapper method
-	public Path contructPath(Map<Long,Long> previous, long targetId) {
-		return contructPath(previous, targetId, true);
+	public Path contructPath(Map<Long,Long> previous, long target) {
+		return contructPath(previous, target, true);
 	}
 	
 	private void convertShortcutArcToPath(Arc a,long fromNode, long toNode, Path p) {
