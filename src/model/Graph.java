@@ -86,7 +86,7 @@ public class Graph<K extends Arc> {
 	 * @param targetId
 	 * @return the edge (sourceId,targetId) if present else returns null 
 	 */
-	public K getEdge(long sourceId, long targetId) {
+	public K getArc(long sourceId, long targetId) {
 		for (K a : getNeighbors(sourceId)) {
 			if(a.getHeadNode() == targetId) {
 				return a;
@@ -293,7 +293,7 @@ public class Graph<K extends Arc> {
 	 * @param targetId
 	 */
 	public void removeEdge(long sourceId, long targetId) {
-		removeEdge(sourceId, getEdge(sourceId, targetId));
+		removeEdge(sourceId, getArc(sourceId, targetId));
 	}
 	
 	public void clear() {

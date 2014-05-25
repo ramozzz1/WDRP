@@ -319,10 +319,9 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 			Set<Long> p = piqDijkstra.p.get(u.getNodeId());
 			
 			for (Long v : p) {
-				for (TDArc arc : graph.getNeighbors(v)) {
-					if(considerArc(arc))
-						downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
-				}
+				TDArc arc = graph.getArc(u.getNodeId(), v);
+				if(considerArc(arc))
+					downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
 			}
 			
 		}

@@ -28,11 +28,11 @@ public class TDGraphTest {
 		int[] e3 = {2,1,2,1};
 		g.addEdge(1, 2, e3);
 		
-		TDArc a = (TDArc)g.getEdge(0, 1);
+		TDArc a = (TDArc)g.getArc(0, 1);
 		assertEquals(Arrays.toString(a.getCosts()),"[1, 1, 1, 1]");
-		TDArc b = (TDArc)g.getEdge(0, 2);
+		TDArc b = (TDArc)g.getArc(0, 2);
 		assertEquals(Arrays.toString(b.getCosts()),"[1, 2, 1, 2]");
-		TDArc c = (TDArc)g.getEdge(1, 2);
+		TDArc c = (TDArc)g.getArc(1, 2);
 		assertEquals(Arrays.toString(c.getCosts()),"[2, 1, 2, 1]");
 	}
 	
@@ -46,7 +46,7 @@ public class TDGraphTest {
 		int[] e1 = {1,5,10,6};
 		g.addEdge(0, 1, e1);
 		
-		TDArc a = (TDArc)g.getEdge(0, 1);
+		TDArc a = (TDArc)g.getArc(0, 1);
 		assertEquals(a.getCostForTime(0), 1);
 		assertEquals(a.getCostForTime(1), 5);
 		assertEquals(a.getCostForTime(2), 10);

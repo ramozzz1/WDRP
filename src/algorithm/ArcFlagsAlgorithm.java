@@ -86,7 +86,7 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm<Arc> {
 				long prevNode = pair.getValue();
 				
 				//get the reverse edge
-				Arc oldArc = graph.getEdge(currNode, prevNode);
+				Arc oldArc = graph.getArc(currNode, prevNode);
 				if(oldArc!=null)
 					updateArcFlag(currNode, oldArc);
 			}	

@@ -63,7 +63,7 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 		if(previous.containsKey(currNode)) {
 			do {				
 				long prevNode = previous.get(currNode);
-				Arc a = graph.getEdge(prevNode, currNode);
+				Arc a = graph.getArc(prevNode, currNode);
 				if(convertShortcuts && (a != null && a.isShortcut()))
 					convertShortcutArcToPath(a, prevNode, currNode, p);
 				else
@@ -85,7 +85,7 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 			long shortcutNode = a.getShortcutNode();
 			
 			//replace the shortcut by adding edge from the shortcut node to the current node
-			Arc arcSHFrom = graph.getEdge(shortcutNode, toNode);
+			Arc arcSHFrom = graph.getArc(shortcutNode, toNode);
 			if(!arcSHFrom.isShortcut())
 				p.addNode(graph.getNode(shortcutNode), arcSHFrom);
 			else {
@@ -93,7 +93,7 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 			}
 			
 			//replace the shortcut by adding edge from the previous node to the shortcut node
-			Arc arcSHTo = graph.getEdge(fromNode, shortcutNode);
+			Arc arcSHTo = graph.getArc(fromNode, shortcutNode);
 			if(!arcSHTo.isShortcut())
 				p.addNode(graph.getNode(fromNode), arcSHTo);
 			else {

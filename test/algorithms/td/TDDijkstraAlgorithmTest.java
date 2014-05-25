@@ -14,34 +14,34 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 	public void testTDEdgeCost() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
 		
-		int cost = a.getEdgeCost(g.getEdge(0, 1), 0);
+		int cost = a.getEdgeCost(g.getArc(0, 1), 0);
 		assertEquals(cost, 4);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 1);
+		cost = a.getEdgeCost(g.getArc(0, 1), 1);
 		assertEquals(cost, 5);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 2);
+		cost = a.getEdgeCost(g.getArc(0, 1), 2);
 		assertEquals(cost, 6);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 3);
+		cost = a.getEdgeCost(g.getArc(0, 1), 3);
 		assertEquals(cost, 7);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 4);
+		cost = a.getEdgeCost(g.getArc(0, 1), 4);
 		assertEquals(cost, 8);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 5);
+		cost = a.getEdgeCost(g.getArc(0, 1), 5);
 		assertEquals(cost, 5+5);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 6);
+		cost = a.getEdgeCost(g.getArc(0, 1), 6);
 		assertEquals(cost, 5+6);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 10);
+		cost = a.getEdgeCost(g.getArc(0, 1), 10);
 		assertEquals(cost, 10+9);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 19);
+		cost = a.getEdgeCost(g.getArc(0, 1), 19);
 		assertEquals(cost, 19+4);
 		
-		cost = a.getEdgeCost(g.getEdge(0, 1), 20);
+		cost = a.getEdgeCost(g.getArc(0, 1), 20);
 		assertEquals(cost, Integer.MAX_VALUE);
 	}
 	

@@ -198,10 +198,10 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		int sh = a.contractSingleNode(1);
 		
 		assertEquals(sh, 4);
-		Arc a1 = customGraph.getEdge(0, 2);
+		Arc a1 = customGraph.getArc(0, 2);
 		assertNotNull(a1);
 		assertEquals(a1.getCost(), 2);
-		Arc a2 = customGraph.getEdge(2, 3);
+		Arc a2 = customGraph.getArc(2, 3);
 		assertNotNull(a2);
 		assertEquals(a2.getCost(), 3);
 	}
