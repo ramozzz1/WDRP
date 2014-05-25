@@ -249,7 +249,7 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 			int B = Integer.MAX_VALUE; //upperbound
 			
 			tdDijkstra.init(source);
-			piqDijkstra.init(source);
+			piqDijkstra.init(target);
 			
 			tdDijkstra.startCost = departureTime;
 			
@@ -267,8 +267,18 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 				
 				NodeEntry u = reverseDirection ? minU : minIntervalU;
 				
-				int costU = tdDijkstra.f.get(u.getNodeId());
+				Object retrievedCostU = tdDijkstra.f.get(u.getNodeId());
+				int costU = Integer.MAX_VALUE;
+				if(retrievedCostU != null) costU = (int) retrievedCostU;
+				
 				Tuple2<Integer, Integer> costIntervalU = piqDijkstra.f.get(u.getNodeId());
+				if(costIntervalU == null) costIntervalU = new Tuple2<Integer, Integer>(Integer.MAX_VALUE, Integer.MAX_VALUE);
+						
+				//fix for double entries in the queues
+				if(reverseDirection && costIntervalU.a < u.getDistance())
+					continue;
+				if(!reverseDirection && costU < u.getDistance())
+					continue;
 				
 				if(B < Integer.MAX_VALUE 
 						&& (costU + costIntervalU.a <= B))
