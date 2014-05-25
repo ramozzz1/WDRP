@@ -263,7 +263,10 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 			
 			while((!queueS.isEmpty() || !queueT.isEmpty()) 
 					&& (Math.min(minU.getDistance(), minIntervalU.getDistance()) <= B)) {
-				boolean reverseDirection = (iterations%1 == 0) && !queueT.isEmpty();
+				boolean reverseDirection = (iterations%1 == 1);
+				if((reverseDirection && queueT.isEmpty())
+						|| (!reverseDirection && queueS.isEmpty()))
+					reverseDirection = !reverseDirection;
 				
 				NodeEntry u = reverseDirection ? minU : minIntervalU;
 				
