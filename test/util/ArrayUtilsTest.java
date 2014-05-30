@@ -1,6 +1,6 @@
 package util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,9 +134,58 @@ public class ArrayUtilsTest {
 		listC.add(7);
 		listC.add(13);
 		listC.add(7);
-		
+
 		List<Integer> linkList = ArrayUtils.linkLists(listA, listB);
 		
-		assertEquals("[7, 7, -1]", Arrays.toString(linkList.toArray()));
+		assertEquals("[7, 6, -1]", Arrays.toString(linkList.toArray()));
 	}
+	
+	@Test
+	public void testLargerArray() {
+		List<Integer> listA = new ArrayList<Integer>(Arrays.asList(2));
+		List<Integer> listB = new ArrayList<Integer>(Arrays.asList(3));
+		
+		assertTrue(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(2));
+		listB = new ArrayList<Integer>(Arrays.asList(2));
+		
+		assertFalse(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(2,2));
+		listB = new ArrayList<Integer>(Arrays.asList(2,2));
+		
+		assertFalse(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(2,4));
+		listB = new ArrayList<Integer>(Arrays.asList(2,1));
+		
+		assertFalse(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(2,4,5));
+		listB = new ArrayList<Integer>(Arrays.asList(2,5,4));
+		
+		assertFalse(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(2,4,5));
+		listB = new ArrayList<Integer>(Arrays.asList(2,4,5));
+		
+		assertFalse(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(2,4,5));
+		listB = new ArrayList<Integer>(Arrays.asList(2,4,6));
+		
+		assertTrue(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(2,4,5,9));
+		listB = new ArrayList<Integer>(Arrays.asList(2,4,6,5));
+		
+		assertFalse(ArrayUtils.listLarger(listB, listA));
+		
+		listA = new ArrayList<Integer>(Arrays.asList(4,4,4,-1));
+		listB = new ArrayList<Integer>(Arrays.asList(4,4,-1,-1));
+		
+		assertTrue(ArrayUtils.listLarger(listB, listA));
+	}
+	
 }

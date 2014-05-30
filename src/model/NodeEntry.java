@@ -27,4 +27,9 @@ public class NodeEntry implements Comparable<NodeEntry>
 	public int compareTo(NodeEntry o) {
 		return Integer.compare(this.distance, o.getDistance());
 	}
+	
+	@Override
+	public String toString() {
+		return "nodeId: "+nodeId+", cost: "+distance;
+	}
 }

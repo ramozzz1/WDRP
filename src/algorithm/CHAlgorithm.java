@@ -22,7 +22,7 @@ import org.mapdb.Fun.Tuple2;
 
 import util.CommonUtils;
 
-public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm<Arc> {
+public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
 	private UpdateHeuristicTypes heuristicType;
@@ -38,15 +38,15 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm<Ar
 	private THashMap<Long, Integer> distTarget;
 	private DijkstraAlgorithm<Arc> dijkstra;
 	
-	public ContractionHierarchiesAlgorithm(Graph<Arc> graph) {
+	public CHAlgorithm(Graph<Arc> graph) {
 		this(graph,Integer.MAX_VALUE, UpdateHeuristicTypes.LAZY);
 	}
 	
-	public ContractionHierarchiesAlgorithm(Graph<Arc> graph, UpdateHeuristicTypes heuristicType) {
+	public CHAlgorithm(Graph<Arc> graph, UpdateHeuristicTypes heuristicType) {
 		this(graph,Integer.MAX_VALUE, heuristicType);
 	}
 	
-	public ContractionHierarchiesAlgorithm(Graph<Arc> graph, int maxNumberContractions, UpdateHeuristicTypes heuristicType) {
+	public CHAlgorithm(Graph<Arc> graph, int maxNumberContractions, UpdateHeuristicTypes heuristicType) {
 		super(graph);
 		this.contractionOrder = new PriorityQueue<QEntry>();
 		this.nodesHierachy = new TLongIntHashMap();
@@ -120,6 +120,7 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm<Ar
 			finalContractionOrder.add(node);
 			
 			//contract node
+			System.out.println("CONTRACTING NODE: "+node);
 			int shortcuts = contractSingleNode(node);
 			
 			//update the node ordering
@@ -252,14 +253,14 @@ public class ContractionHierarchiesAlgorithm extends AbstractRoutingAlgorithm<Ar
 					//calculate the sp from node u to w while ignoring v
 					dijkstra.costUpperbound = directCost;
 					int spCost = dijkstra.computeShortestPath(u, w);
-					//System.out.println("("+u+","+w+") " + spCost + " " +directCost);
+					System.out.println("("+u+","+w+") " + spCost + " " +directCost);
 					if(spCost == -1 || spCost > directCost) { 
 						/*no sp could be found or sp found which is longer than the direct one (i.e. the real sp)
 						  so we have to add a shortcut*/
 						if(addShortcut)
 							graph.addEdge(u, new Arc(w, directCost, true, v));						
 						shortcuts++;
-						//System.out.println("ADDED: ("+u+","+w+")");
+						System.out.println("ADDED: ("+u+","+w+")");
 					}
 				}
 			}

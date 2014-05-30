@@ -92,6 +92,8 @@ public class ArrayUtils {
 			List<Integer> listB) {
 		assert listA.size() == listB.size() : "lists should be equal size";
 		
+		boolean larger = true;
+		boolean equal = true;
 		int maxSize = Math.max(listA.size(),listB.size());
 		for (int i = 0; i < maxSize; i++) {
 			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
@@ -100,10 +102,33 @@ public class ArrayUtils {
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
 			
-			if(!(valueA > valueB) && valueA!=Integer.MAX_VALUE && valueB!=Integer.MAX_VALUE) return false;
+			if(valueB > valueA) return false;
+			equal = equal && valueB == valueA;
+			//if(!(valueA > valueB) && valueA!=Integer.MAX_VALUE && valueB!=Integer.MAX_VALUE) return false;
         }  
 		
-		return true;
+		return larger && !equal;
+	}
+	
+	public static boolean listEqual(List<Integer> listA,
+			List<Integer> listB) {
+		assert listA.size() == listB.size() : "lists should be equal size";
+		
+		boolean larger = true;
+		int maxSize = Math.max(listA.size(),listB.size());
+		for (int i = 0; i < maxSize; i++) {
+			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
+			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			
+			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
+			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
+			
+			if(valueB != valueA) return false;
+			
+			//if(!(valueA > valueB) && valueA!=Integer.MAX_VALUE && valueB!=Integer.MAX_VALUE) return false;
+        }  
+		
+		return larger;
 	}
 	
 	public static boolean listLargerOrEqual(List<Integer> listA,

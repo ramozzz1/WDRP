@@ -19,7 +19,7 @@ import storage.DBHashMap;
 import util.DistanceUtils;
 
 public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm<Arc> {
-	public ContractionHierarchiesAlgorithm ch;
+	public CHAlgorithm ch;
 	private Set<Long> transitNodes;
 	public DBHashMap<Long,Integer> radiusNodes;
 	private int numTransitNodes;
@@ -40,7 +40,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 	
 	public TransitNodeRoutingAlgorithm(Graph<Arc> graph, HeuristicTypes heuristic) {
 		super(graph);
-		this.ch = new ContractionHierarchiesAlgorithm(graph);
+		this.ch = new CHAlgorithm(graph);
 		this.numTransitNodes = (int) Math.round(Math.sqrt(graph.nodes.size())); 
 		this.transitNodes = new THashSet<Long>();
 		this.radiusNodes = new DBHashMap<Long,Integer>(graph.isTemp()?"":getName()+"/"+graph.getName()+"-"+"radiusNodes");

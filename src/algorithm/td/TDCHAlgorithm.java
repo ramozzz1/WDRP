@@ -1,6 +1,7 @@
 package algorithm.td;
 
 import gnu.trove.map.hash.TLongIntHashMap;
+import gnu.trove.set.hash.THashSet;
 
 import java.util.List;
 import java.util.PriorityQueue;
@@ -17,7 +18,7 @@ import org.mapdb.Fun.Tuple2;
 import util.ArrayUtils;
 import algorithm.DijkstraAlgorithm;
 
-public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc>  {
+public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 
 	private int numberOfShortcuts;
 	private PQDijkstraAlgorithm psDijkstra;
@@ -28,7 +29,7 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 	private TLongIntHashMap nodesHierachy;
 	private Set<Long> candidates;
 	
-	public TDContractionHierarchiesAlgorithm(TDGraph graph) {
+	public TDCHAlgorithm(TDGraph graph) {
 		super(graph);
 		
 		this.considerArcFlags = true;
@@ -103,6 +104,7 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 			hierarchy.put(node, i);
 			
 			//contract node
+			System.out.println("CONTRACTING NODE: "+node);
 			int shortcuts = contractSingleNode(node);
 			
 			//update the node ordering
@@ -213,7 +215,8 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 					
 					if(disabledCosts == null || ArrayUtils.listLarger(disabledCosts, directCosts)) { 
 						System.out.println("****ADDED SHORTCUT BETWEEN "+u+" and "+w);
-						/*no path could be found for any departure time or there was at least one departure time for which the was larger*/
+						/*no path could be found for any departure time 
+						 *   or there was at least one departure time for which the  was larger*/
 						if(addShortcut)
 							graph.addEdge(u, new TDArc(w, ArrayUtils.toIntArray(directCosts), true, v));						
 						shortcuts++;
@@ -247,28 +250,30 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 	public int computeEarliestArrivalTime(long source, long target, int departureTime) {
 		if(source != NULL_NODE) {
 			int B = Integer.MAX_VALUE; //upperbound
+			candidates = new THashSet<Long>();
+			
+			tdDijkstra.startCost = departureTime;
 			
 			tdDijkstra.init(source);
 			piqDijkstra.init(target);
 			
-			tdDijkstra.startCost = departureTime;
 			
 			Queue<NodeEntry> queueS = tdDijkstra.queue;
 			Queue<NodeEntry> queueT = piqDijkstra.queue;
 			
-			NodeEntry minU =queueS.poll();
-			NodeEntry minIntervalU = queueT.poll();
-			
+			System.out.println("TDDIJKSTRA QUEUE " + queueS);
 			int iterations = 0;
-			
+		
 			while((!queueS.isEmpty() || !queueT.isEmpty()) 
-					&& (Math.min(minU.getDistance(), minIntervalU.getDistance()) <= B)) {
-				boolean reverseDirection = (iterations%1 == 1);
+					&& (Math.min(!queueS.isEmpty( )? queueS.peek().getDistance():Integer.MAX_VALUE, !queueT.isEmpty( )? queueT.peek().getDistance():Integer.MAX_VALUE) <= B)) {
+				
+				System.out.println("ITERATION " + iterations);
+				boolean reverseDirection = (iterations%2 == 1);
 				if((reverseDirection && queueT.isEmpty())
 						|| (!reverseDirection && queueS.isEmpty()))
 					reverseDirection = !reverseDirection;
 				
-				NodeEntry u = reverseDirection ? minU : minIntervalU;
+				NodeEntry u = reverseDirection ? queueT.poll() : queueS.poll();
 				
 				Object retrievedCostU = tdDijkstra.f.get(u.getNodeId());
 				int costU = Integer.MAX_VALUE;
@@ -283,13 +288,18 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 				if(!reverseDirection && costU < u.getDistance())
 					continue;
 				
+				System.out.println("MIN " + u.getNodeId() + " -> costs: "+costU + "," +costIntervalU.a + " B: " + B);
+				
 				if(B < Integer.MAX_VALUE 
-						&& (costU + costIntervalU.a <= B))
+						&& ((long)costU + (long)costIntervalU.a <= B))
 					candidates.add(u.getNodeId());
 				
-				B = Math.min(B, costU + costIntervalU.b);
+				B = (int) Math.min(B, (long)costU + (long)costIntervalU.b);
+				
+				System.out.println("MIN B: "  + B);
 				
 				for (TDArc arc : graph.getNeighbors(u.getNodeId())) {
+					System.out.println("ARC "+u.getNodeId() +"," + arc.getHeadNode() + " " +ArrayUtils.toList(arc.getCosts()));
 					if(considerArc(arc)) {
 						if (reverseDirection)
 							piqDijkstra.relax(u.getNodeId(), costIntervalU, arc);
@@ -298,8 +308,15 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 					}
 				}
 					
+				System.out.println("FW QUEUE " + queueS);
+				System.out.println("BW QUEUE " + queueT);
+				
 				iterations++;
 			}
+			
+			System.out.println("FW SEARCH " + tdDijkstra.f);
+			System.out.println("BW SEARCH " + piqDijkstra.f);
+			System.out.println("CANDIDATES " + candidates);
 			
 			return downwardSearch(B, target);
 		}
@@ -316,6 +333,7 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 		for (Long u : candidates) {
 			int costU = tdDijkstra.f.get(u);
 			Tuple2<Integer, Integer> costIntervalU = piqDijkstra.f.get(u);
+			if(costIntervalU == null) costIntervalU = new Tuple2<Integer, Integer>(Integer.MAX_VALUE, Integer.MAX_VALUE);
 			
 			if(B < Integer.MAX_VALUE && (costU+costIntervalU.a)<=B) {
 				downwardTDDijkstra.f.put(u, costU);
@@ -323,18 +341,26 @@ public class TDContractionHierarchiesAlgorithm extends DijkstraAlgorithm<TDArc> 
 			}
 		}
 		
+		System.out.println("DOWNWARD DIJKSTRA: "+downwardTDDijkstra.queue);
+		
 		while(!downwardTDDijkstra.queue.isEmpty()) {
 			NodeEntry u = downwardTDDijkstra.queue.poll();
-			
+			System.out.println("DOWNWARD DIJKSTRA MIN "+u.getNodeId());
 			if(u.getNodeId() == target)
 				return downwardTDDijkstra.f.get(target);
 			
+			int costU = downwardTDDijkstra.f.get(u.getNodeId());
+			if(costU < u.getDistance())
+				continue;
+			
 			Set<Long> p = piqDijkstra.p.get(u.getNodeId());
 			
-			for (Long v : p) {
-				TDArc arc = graph.getArc(u.getNodeId(), v);
-				if(considerArc(arc))
-					downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
+			if(p != null) {
+				for (Long v : p) {
+					TDArc arc = graph.getArc(u.getNodeId(), v);
+					if(!considerArc(arc))
+						downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
+				}
 			}
 			
 		}

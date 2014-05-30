@@ -16,7 +16,7 @@ import org.simpleframework.http.core.Container;
 
 import util.GraphUtils;
 import algorithm.AbstractRoutingAlgorithm;
-import algorithm.ContractionHierarchiesAlgorithm;
+import algorithm.CHAlgorithm;
 
 
 
@@ -126,7 +126,7 @@ public class WDRP {
   		List<AbstractRoutingAlgorithm<Arc>> algorithms = new ArrayList<AbstractRoutingAlgorithm<Arc>>();
     	//algorithms.add(new DijkstraAlgorithm(g));
     	//algorithms.add(new TimeExpandedDijkstraAlgorithm(g));
-    	algorithms.add(new ContractionHierarchiesAlgorithm(g));
+    	algorithms.add(new CHAlgorithm(g));
   		//algorithms.add(new AstarAlgorithm(g));
     	//algorithms.add(new ALTAlgorithm(g,16));    	
     	//algorithms.add(new ArcFlagsAlgorithm(g,47.95,48.05,7.75,7.90));

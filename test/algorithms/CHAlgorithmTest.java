@@ -22,19 +22,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import util.CommonUtils;
-import algorithm.ContractionHierarchiesAlgorithm;
+import algorithm.CHAlgorithm;
 
-public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
+public class CHAlgorithmTest extends SPTestBase {
 	
-	private ContractionHierarchiesAlgorithm d;
-	private ContractionHierarchiesAlgorithm a;
+	private CHAlgorithm d;
+	private CHAlgorithm a;
 	private Graph<Arc> customGraph;
 	
 	@Before
 	public void setUpCH() {
 		createCustomGraph();
-		a = new ContractionHierarchiesAlgorithm(customGraph);
-		d = new ContractionHierarchiesAlgorithm(g);
+		a = new CHAlgorithm(customGraph);
+		d = new CHAlgorithm(g);
 	}
 	
 	@Test
@@ -250,6 +250,13 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 	}
 	
 	@Test
+	public void testShortestPathSourceSourceCustomGraph() {
+		a.precompute();
+		int dist = a.computeShortestPath(0, 0);
+		assertEquals(dist,0);
+	}
+	
+	@Test
 	public void testShortestPathSourceSource() {
 		d.precompute();
 		int dist = d.computeShortestPath(0, 0);
@@ -359,7 +366,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		previous.put(1L,0L);
 		previous.put(0L,-1L);
 		
-		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		CHAlgorithm ch = new CHAlgorithm(g);
 		Path p = ch.contructPath(previous, 5);
 		assertEquals(p.toString(), "[0->1->2->3->4->5]");
 	}
@@ -385,7 +392,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		previous.put(3L,1L);
 		previous.put(1L,-1L);
 		
-		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		CHAlgorithm ch = new CHAlgorithm(g);
 		Path p = ch.contructPath(previous, 3);
 		assertEquals(p.toString(), "[1->2->3]");
 	}
@@ -411,7 +418,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		previous.put(1L,4L);
 		previous.put(4L,-1L);
 		
-		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		CHAlgorithm ch = new CHAlgorithm(g);
 		Path p = ch.contructPath(previous, 1);
 		assertEquals(p.toString(), "[4->3->2->1]");
 	}
@@ -437,7 +444,7 @@ public class ContractionHierarchiesAlgorithmTest extends SPTestBase {
 		previous.put(4L,0L);
 		previous.put(0L,-1L);
 		
-		ContractionHierarchiesAlgorithm ch = new ContractionHierarchiesAlgorithm(g);
+		CHAlgorithm ch = new CHAlgorithm(g);
 		Path p = ch.contructPath(previous, 4);
 		assertEquals(p.toString(), "[0->1->2->3->4]");
 	}

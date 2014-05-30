@@ -60,7 +60,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				NodeEntry u = queue.poll();
 				long minNodeId = u.getNodeId();
 				
-				System.out.println("MIN: "+minNodeId);
+				//System.out.println("MIN: "+minNodeId);
 				List<Integer> targetTTF = f.get(target);
 				if(targetTTF != null && u.getDistance() > Collections.max(targetTTF))
 					return ArrayUtils.toIntArray(targetTTF);
@@ -74,13 +74,13 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				
 				for (TDArc v : graph.getNeighbors(minNodeId)) {
 					if(considerArc(v)) {
-						System.out.println("****CONSIDERING EDGE " +minNodeId+"->"+v.getHeadNode());
+						//System.out.println("****CONSIDERING EDGE " +minNodeId+"->"+v.getHeadNode());
 						
 						List<Integer> ttfUV = ArrayUtils.toList(v.getCosts());
-						System.out.println("****MIN-COST "+minNodeId+": "+ttfU);
-						System.out.println("****V-COST "+v.getHeadNode()+": "+ttfUV);
+						//System.out.println("****MIN-COST "+minNodeId+": "+ttfU);
+						//System.out.println("****V-COST "+v.getHeadNode()+": "+ttfUV);
 						List<Integer> gNew = ttfU==null ? ttfUV : ArrayUtils.linkLists(ttfU, ttfUV);
-						System.out.println("GNEW ("+minNodeId+","+v.getHeadNode()+") : "+gNew);
+						//System.out.println("GNEW ("+minNodeId+","+v.getHeadNode()+") : "+gNew);
 						List<Integer> ttfV = f.get(v.getHeadNode());
 						//if(ttfV != null) System.out.println(v.getHeadNode()+": "+ttfV.toString());
 						if(ttfV==null || !(ArrayUtils.listLargerOrEqual(gNew,ttfV))) {
