@@ -3,6 +3,7 @@ package algorithm.td;
 import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.set.hash.THashSet;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -106,8 +107,9 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 			//contract node
 			System.out.println("CONTRACTING NODE: "+node);
 			int shortcuts = contractSingleNode(node);
-			
+			System.out.println("------&&&&&&------ NEIGHBORS NOT DISABLED: "+graph.getNeighborsNotDisabled(3));
 			//update the node ordering
+			System.out.println("LAZY UPDATING "+node);
 			lazyUpdate(order);
 			
 			//increment total #shortcuts
@@ -154,7 +156,6 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 	public int contractSingleNode(long v, boolean addShortcut) { 		
 		//first set all the neighbors to false,i.e. to indicate unreachablity from node v
 		graph.disableNode(v);
-		
 		//now compute the number of shortcuts that need to be added
 		int shortcuts = computeShortcuts(v, true);
 		
@@ -169,7 +170,6 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 	public int computeEdgeDifference(long v) {
 		//first set all the neighbors to false,i.e. to indicate unreachability from node v
 		graph.disableNode(v);
-				
 		//calculate the #shortcuts without adding them
 		int shortcuts = computeShortcuts(v, false);
 		
@@ -192,6 +192,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		int shortcuts = 0;
 		
 		List<TDArc> neighbors = graph.getNeighborsNotDisabled(v);
+		System.out.println(v+ " NEIGHBORS NOT DISABLED: "+neighbors);
 		for (TDArc tdInArc : neighbors) {
 			for (TDArc tdOutArc : neighbors) {
 				long u = tdInArc.getHeadNode();
@@ -202,23 +203,28 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 					System.out.println("****CHECKING IF SHORTCUT NEEDED BETWEEN "+u+" and "+w);
 					
 					//store the cost of visiting the node through node v for every departure time
-					List<Integer> directCosts = ArrayUtils.linkLists(
+					List<Integer> costsThroughContractedNode = ArrayUtils.linkLists(
 							tdInArc.getCosts(), 
 							tdOutArc.getCosts()
 							);
 					
 					//compute the costs from u to w without v in the graph
-					List<Integer> disabledCosts = ArrayUtils.toList(psDijkstra.computeTravelTimes(u, w));
+					List<Integer> witnessSearchCosts = ArrayUtils.toList(psDijkstra.computeTravelTimes(u, w));
 					
-					System.out.println("****DIRECT COSTS "+directCosts);
-					System.out.println("****DISABLED COSTS "+disabledCosts);
+					System.out.println("****Cost through contracted node "+costsThroughContractedNode);
+					System.out.println("****Cost of witness search "+witnessSearchCosts);
 					
-					if(disabledCosts == null || ArrayUtils.listLarger(disabledCosts, directCosts)) { 
-						System.out.println("****ADDED SHORTCUT BETWEEN "+u+" and "+w);
+					if(witnessSearchCosts != null && ArrayUtils.listLarger(costsThroughContractedNode, witnessSearchCosts))
+						continue;
+					else { 
+						System.out.println("****ATEMPT TO ADD SHORTCUT BETWEEN "+u+" and "+w);
 						/*no path could be found for any departure time 
 						 *   or there was at least one departure time for which the  was larger*/
-						if(addShortcut)
-							graph.addEdge(u, new TDArc(w, ArrayUtils.toIntArray(directCosts), true, v));						
+						if(addShortcut) {
+							graph.addEdge(u, new TDArc(w, ArrayUtils.toIntArray(costsThroughContractedNode), true, v));
+							System.out.println("****SHORTCUT WAS ADDED BETWEEN "+u+" and "+w);
+							System.out.println(u+ " ARCS: "+ graph.getArcs(u, w));
+						}
 						shortcuts++;
 					}
 				}
@@ -232,19 +238,40 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 	 * @param hierachy the hierarchy of the nodes
 	 */
 	public void constructUpwardsGraph(TLongIntHashMap hierarchy) {
+		//System.out.println("HIERARCHY: "+hierarchy);
+		System.out.println("(3,5) ARCS: "+ graph.getArcs(3, 5));
 		int count = 0;
 		for (Tuple2<Long, TDArc> arc : graph.adjacenyList) {
 			long u = arc.a;
 			long v = arc.b.getHeadNode();
+			
 			
 			if(hierarchy.get(v) > hierarchy.get(u))
 				graph.setArcFlagForEdge(u, arc.b, true);			
 			else
 				graph.setArcFlagForEdge(u, arc.b, false);
 			
+			System.out.println("ARC: "+u+"("+hierarchy.get(u)+")"+" , "+v+"("+hierarchy.get(v)+") "+arc.b.isArcFlag());
+			System.out.println("ARC: "+u+"("+hierarchy.get(u)+")"+" , "+v+"("+hierarchy.get(v)+") "+Arrays.toString(arc.b.getCosts()));
+			
 			count++;
 			if(count%100000==0) System.out.println("#arcs processed: " + count);
 		}
+		System.out.println("(3,5) ARCS: "+ graph.getArcs(3, 5));
+	}
+	
+	public int[] computeEarliestArrivalTimes(long source, long target,
+			int minDepartureTime, int maxDepartureTime) {
+		int[] travelTimes = new int[(maxDepartureTime-minDepartureTime)+1];
+		
+		for(int i=0; i < travelTimes.length;i=i+1)
+			travelTimes[i] = this.computeEarliestArrivalTime(source, target, i+minDepartureTime);
+		
+		return travelTimes;
+	}
+	
+	public int[] computeEarliestArrivalTimes(long source, long target) {
+		return computeEarliestArrivalTimes(source, target, 0, 20);
 	}
 	
 	public int computeEarliestArrivalTime(long source, long target, int departureTime) {
@@ -262,6 +289,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 			Queue<NodeEntry> queueT = piqDijkstra.queue;
 			
 			System.out.println("TDDIJKSTRA QUEUE " + queueS);
+			System.out.println("PIQDIJKSTRA QUEUE " + queueT);
 			int iterations = 0;
 		
 			while((!queueS.isEmpty() || !queueT.isEmpty()) 
@@ -281,32 +309,61 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				
 				Tuple2<Integer, Integer> costIntervalU = piqDijkstra.f.get(u.getNodeId());
 				if(costIntervalU == null) costIntervalU = new Tuple2<Integer, Integer>(Integer.MAX_VALUE, Integer.MAX_VALUE);
-						
+				
+				System.out.println("MIN " + u.getNodeId() + " -> costs: "+costU + "," +costIntervalU.a + " B: " + B);
 				//fix for double entries in the queues
 				if(reverseDirection && costIntervalU.a < u.getDistance())
 					continue;
 				if(!reverseDirection && costU < u.getDistance())
 					continue;
 				
-				System.out.println("MIN " + u.getNodeId() + " -> costs: "+costU + "," +costIntervalU.a + " B: " + B);
+				B = (int) Math.min(B, (long)costU + (long)costIntervalU.b);
 				
 				if(B < Integer.MAX_VALUE 
 						&& ((long)costU + (long)costIntervalU.a <= B))
 					candidates.add(u.getNodeId());
 				
-				B = (int) Math.min(B, (long)costU + (long)costIntervalU.b);
+				
 				
 				System.out.println("MIN B: "  + B);
 				
-				for (TDArc arc : graph.getNeighbors(u.getNodeId())) {
-					System.out.println("ARC "+u.getNodeId() +"," + arc.getHeadNode() + " " +ArrayUtils.toList(arc.getCosts()));
-					if(considerArc(arc)) {
-						if (reverseDirection)
-							piqDijkstra.relax(u.getNodeId(), costIntervalU, arc);
-						else
+				if(!reverseDirection) {
+					for (TDArc arc : graph.getNeighbors(u.getNodeId())) {
+						System.out.println("ARC: "+u.getNodeId() +"," + arc.getHeadNode()+" isArcFlag: "+arc.isArcFlag());
+						if(considerArc(arc)) {
+							System.out.println("arc: "+Arrays.toString(arc.getCosts()));
 							tdDijkstra.relax(target, u.getNodeId(), costU, arc);
+						}
 					}
 				}
+				else {
+					for (TDArc arc : graph.getNeighbors(u.getNodeId())) {
+						System.out.println("ARC: "+u.getNodeId() +"," + arc.getHeadNode()+" isArcFlag: "+arc.isArcFlag());
+//						TDArc rArc = graph.getArc(arc.getHeadNode(), u.getNodeId());
+//						System.out.println("ARC: "+arc.getHeadNode() +"," + rArc.getHeadNode()+" isArcFlag: "+rArc.isArcFlag());
+						if(considerArc(arc)) {
+							System.out.println("CONSIDERING ARC ");
+							//TDArc rArc = graph.getArc(arc.getHeadNode(), u.getNodeId());
+							//arc.setCosts(rArc.getCosts());
+							//System.out.println("arc: "+Arrays.toString(arc.getCosts()));
+							//System.out.println("rArc: "+Arrays.toString(rArc.getCosts()));
+//							TDArc rArc = graph.getArc(arc.getHeadNode(), u.getNodeId());
+//							arc.setCosts(rArc.getCosts());
+							piqDijkstra.relax(u.getNodeId(), costIntervalU, arc);
+						}
+					}
+				}
+				
+//				for (TDArc arc : graph.getNeighbors(u.getNodeId())) {
+//					System.out.println("ARC: "+u.getNodeId() +"," + arc.getHeadNode()+" isArcFlag: "+arc.isArcFlag());
+//					if(considerArc(arc)) {
+//						System.out.println("ARC "+u.getNodeId() +"," + arc.getHeadNode() + " " +ArrayUtils.toList(arc.getCosts()));
+//						if (reverseDirection)
+//							piqDijkstra.relax(u.getNodeId(), costIntervalU, arc);
+//						else
+//							tdDijkstra.relax(target, u.getNodeId(), costU, arc);
+//					}
+//				}
 					
 				System.out.println("FW QUEUE " + queueS);
 				System.out.println("BW QUEUE " + queueT);
@@ -345,7 +402,11 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		
 		while(!downwardTDDijkstra.queue.isEmpty()) {
 			NodeEntry u = downwardTDDijkstra.queue.poll();
-			System.out.println("DOWNWARD DIJKSTRA MIN "+u.getNodeId());
+			System.out.println("DOWNWARD DIJKSTRA MIN "+u.getNodeId() + ", "+ u.getDistance());
+			
+			if(u.getDistance() >= Integer.MAX_VALUE)
+				return -1;
+			
 			if(u.getNodeId() == target)
 				return downwardTDDijkstra.f.get(target);
 			
@@ -354,15 +415,22 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				continue;
 			
 			Set<Long> p = piqDijkstra.p.get(u.getNodeId());
-			
+			System.out.println("P: "+p);
 			if(p != null) {
 				for (Long v : p) {
-					TDArc arc = graph.getArc(u.getNodeId(), v);
-					if(!considerArc(arc))
-						downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
+					List<TDArc> arcs = graph.getArcs(u.getNodeId(), v);
+					for (TDArc arc : arcs) {
+						if(!considerArc(arc)) {
+//							TDArc rArc = graph.getArc(arc.getHeadNode(), u.getNodeId());
+//							arc.setCosts(rArc.getCosts());
+							System.out.println("RELAXING ARC "+Arrays.toString(arc.getCosts()));
+//							System.out.println("RELAXING RARC "+Arrays.toString(rArc.getCosts()));
+							downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
+						}
+					}
 				}
 			}
-			
+			System.out.println("DOWNWARD DIJKSTRA QUEUE: "+downwardTDDijkstra.queue);
 		}
 		
 		return eaTime;

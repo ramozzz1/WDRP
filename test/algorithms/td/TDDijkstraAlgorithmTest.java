@@ -114,14 +114,14 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 	public void computeSPSourceTargetValidDepartureTime6() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
 		int arrivalTime = a.computeEarliestArrivalTime(0,5,1);
-		assertEquals(arrivalTime,22);
+		assertEquals(arrivalTime,25);
 	}
 	
 	@Test
 	public void computeSPSourceTargetValidDepartureTime7() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
 		int arrivalTime = a.computeEarliestArrivalTime(0,5,2);
-		assertEquals(arrivalTime,22);
+		assertEquals(arrivalTime,25);
 	}
 	
 	@Test
@@ -142,7 +142,7 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 	public void computeEATimes() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g);
 		int[] eaTimes = a.computeEarliestArrivalTimes(0, 5, 0, 3);
-		assertEquals(Arrays.toString(eaTimes), "[19, 22, 22, 26]");
+		assertEquals(Arrays.toString(eaTimes), "[19, 25, 25, 26]");
 	}
 	
 	@Test

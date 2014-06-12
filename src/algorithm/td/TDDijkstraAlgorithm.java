@@ -54,6 +54,10 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 		return travelTimes;
 	}
 	
+	public int[] computeEarliestArrivalTimes(long source, long target) {
+		return computeEarliestArrivalTimes(source, target, 0, 20);
+	}
+	
 	public int[] computeTravelTimes(long source, long target) {
 		return computeTravelTimes(source, target, 0, 20);
 	}
@@ -104,6 +108,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 			return Integer.MAX_VALUE;
 		}
 		else {
+			if(a.getCostForTime(arrivalTime)<0) return Integer.MAX_VALUE;
 			//time interval is within the bounds, now calculate the calculate the arrival time at the head of the edge
 			return a.getCostForTime(arrivalTime) + arrivalTime;
 		}

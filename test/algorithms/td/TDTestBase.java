@@ -2,6 +2,9 @@ package algorithms.td;
 
 import model.TDGraph;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import util.ArrayUtils;
@@ -9,8 +12,13 @@ import util.ArrayUtils;
 public class TDTestBase {
 	public static TDGraph g;
 	
-	@BeforeClass
-	public static void setUpTDGraph() {
+	@After
+	public void breakTDGraph() {
+		g.clear();
+	}
+	
+	@Before
+	public void setUpTDGraph() {
 		g = new TDGraph();
 		
 		g.addNode(0);
@@ -32,7 +40,7 @@ public class TDTestBase {
 		int[] e4 = ArrayUtils.extrapolateArrayToArray(new int[]{6,7,6,6},5);
 		g.addEdge(2, 3, e4);
 		
-		int[] e5 = ArrayUtils.extrapolateArrayToArray(new int[]{3,10,3,3},5);
+		int[] e5 = ArrayUtils.extrapolateArrayToArray(new int[]{3,10,6,9},5);
 		g.addEdge(3, 4, e5);
 		
 		int[] e6 = ArrayUtils.extrapolateArrayToArray(new int[]{5,7,5,9},5);
@@ -41,4 +49,4 @@ public class TDTestBase {
 		int[] e7 = ArrayUtils.extrapolateArrayToArray(new int[]{3,3,3,3},5);
 		g.addEdge(4, 5, e7);
 	}
-}
+}		

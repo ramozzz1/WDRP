@@ -102,12 +102,13 @@ public class ArrayUtils {
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
 			
-			if(valueB > valueA) return false;
-			equal = equal && valueB == valueA;
+			if((valueA==valueB) && valueA==Integer.MAX_VALUE) continue;
+			if(!(valueA > valueB)) return false;
+			//equal = equal && valueB == valueA;
 			//if(!(valueA > valueB) && valueA!=Integer.MAX_VALUE && valueB!=Integer.MAX_VALUE) return false;
         }  
 		
-		return larger && !equal;
+		return true;
 	}
 	
 	public static boolean listEqual(List<Integer> listA,
@@ -230,5 +231,13 @@ public class ArrayUtils {
         }  
 		
 		return list;
+	}
+
+	public static boolean listLarger(int[] a, int[] b) {
+		return listLarger(toList(a), toList(b));
+	}
+	
+	public static boolean listSmaller(int[] a, int[] b) {
+		return listSmaller(toList(a), toList(b));
 	}
 }

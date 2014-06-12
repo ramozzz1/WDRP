@@ -23,6 +23,7 @@ public class Graph<K extends Arc> {
 	private int numNodes;
 	private int numEdges;
 	private String name;
+	public int timeInterval = 20;
 	
 	public BTreeMap<Long,LatLonPoint> nodes;
 	public NavigableSet<Fun.Tuple2<Long, K>> adjacenyList;
@@ -93,6 +94,16 @@ public class Graph<K extends Arc> {
 			}
 		}
 		return null;
+	}
+	
+	public List<K> getArcs(long sourceId, long targetId) {
+		List<K> arcs = new ArrayList<K>();
+		for (K a : getNeighbors(sourceId)) {
+			if(a.getHeadNode() == targetId) {
+				arcs.add(a);
+			}
+		}
+		return arcs;
 	}
 	
 	public void addNode(long nodeId) {
@@ -204,7 +215,11 @@ public class Graph<K extends Arc> {
 	 */
 	public void disableNode(long n) {
 		for (K a : getNeighbors(n)) {
-			setArcFlagForEdge(a.getHeadNode(),(K) a.reverseEdge(n), false);
+			//setArcFlagForEdge(a.getHeadNode(),(K) a.reverseEdge(n), false);
+			//setArcFlagForEdge(a.getHeadNode(),(K) getArcs(a.getHeadNode(),n), false);
+			for (K rArc : getArcs(a.getHeadNode(),n)) {
+				setArcFlagForEdge(a.getHeadNode(),rArc, false);
+			}
 		}
 	}
 	
@@ -215,7 +230,11 @@ public class Graph<K extends Arc> {
 	 */
 	public void enableNode(long n) {
 		for (K a : getNeighbors(n)) {
-			setArcFlagForEdge(a.getHeadNode(),(K) a.reverseEdge(n), true);
+			//setArcFlagForEdge(a.getHeadNode(),(K) a.reverseEdge(n), true);
+			for (K rArc : getArcs(a.getHeadNode(),n)) {
+				setArcFlagForEdge(a.getHeadNode(),rArc, true);
+			}
+			
 		}
 	}
 	

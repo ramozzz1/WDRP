@@ -2,6 +2,7 @@ package algorithms.td;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mapdb.Fun.Tuple2;
@@ -13,8 +14,8 @@ public class PIQDijkstraAlgorithmTest extends TDTestBase {
 	public static TDDijkstraAlgorithm tdA;
 	public static PIQDijkstraAlgorithm piqA;
 	
-	@BeforeClass
-	public static void setupAlgorithms() {
+	@Before
+	public void setupAlgorithms() {
 		tdA = new TDDijkstraAlgorithm(g);
 		piqA = new PIQDijkstraAlgorithm(g);
 	}
@@ -78,6 +79,11 @@ public class PIQDijkstraAlgorithmTest extends TDTestBase {
 		
 		intervalTD = tdA.computeTravelTimesInterval(1,5);
 		intervalPIQ = piqA.computeTravelTimesInterval(1,5);
+		
+		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
+		
+		intervalTD = tdA.computeTravelTimesInterval(2,0);
+		intervalPIQ = piqA.computeTravelTimesInterval(2,0);
 		
 		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
 	}

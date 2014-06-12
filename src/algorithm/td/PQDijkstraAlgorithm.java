@@ -51,7 +51,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		this.p = new THashMap<Long, Set<Long>>();
 		
 		if(source != NULL_NODE) {
-			f.put(source, ArrayUtils.extrapolateArray(new int[]{0}, 20));
+			f.put(source, ArrayUtils.extrapolateArray(new int[]{0}, graph.timeInterval));
 			p.put(source, null);
 			
 			Queue<NodeEntry> queue = new PriorityQueue<NodeEntry>();

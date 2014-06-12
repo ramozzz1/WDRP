@@ -5,8 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import gnu.trove.map.hash.TLongIntHashMap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 import model.QEntry;
 import model.TDArc;
@@ -57,7 +59,7 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		staticGraph.disableNode(n);
 		sh = staticTDCH.computeShortcuts(n, false);
 		staticGraph.enableNode(n);
-		assertEquals(sh, 1);
+		assertEquals(sh, 4);
 		
 		n = 5;
 		staticGraph.disableNode(n);
@@ -69,13 +71,13 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		staticGraph.disableNode(n);
 		sh = staticTDCH.computeShortcuts(n, false);
 		staticGraph.enableNode(n);
-		assertEquals(sh, 2);
+		assertEquals(sh, 4);
 		
 		n = 1;
 		staticGraph.disableNode(n);
 		sh = staticTDCH.computeShortcuts(n, false);
 		staticGraph.enableNode(n);
-		assertEquals(sh, 10);
+		assertEquals(sh, 14);
 	}
 	
 	@Test
@@ -84,37 +86,37 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		
 		staticTDCH.lazyUpdate(queue);
 		List<QEntry> list = CommonUtils.convertQueueToArray(queue);
-		assertEquals(list.toString(), "[{0,-2}, {3,-2}, {5,-2}, {2,-1}, {4,-1}, {1,5}]");
+		assertEquals(list.toString(), "[{0,-2}, {5,-2}, {2,-1}, {3,1}, {4,1}, {1,9}]");
 		
 		staticTDCH.contractSingleNode(queue.poll().getNodeId());
 		
 		staticTDCH.lazyUpdate(queue);
 		list = CommonUtils.convertQueueToArray(queue);
-		assertEquals(list.toString(), "[{3,-2}, {5,-2}, {2,-1}, {4,-1}, {1,5}]");
+		assertEquals(list.toString(), "[{5,-2}, {2,-1}, {3,1}, {4,1}, {1,9}]");
 		
 		staticTDCH.contractSingleNode(queue.poll().getNodeId());
 		
 		staticTDCH.lazyUpdate(queue);
 		list = CommonUtils.convertQueueToArray(queue);
-		assertEquals(list.toString(), "[{5,-2}, {2,-1}, {4,-1}, {1,5}]");
+		assertEquals(list.toString(), "[{2,-1}, {3,1}, {4,1}, {1,9}]");
 		
 		staticTDCH.contractSingleNode(queue.poll().getNodeId());
 		
 		staticTDCH.lazyUpdate(queue);
 		list = CommonUtils.convertQueueToArray(queue);
-		assertEquals(list.toString(), "[{2,-1}, {4,-1}, {1,5}]");
+		assertEquals(list.toString(), "[{3,1}, {4,1}, {1,9}]");
 		
 		staticTDCH.contractSingleNode(queue.poll().getNodeId());
 		
 		staticTDCH.lazyUpdate(queue);
 		list = CommonUtils.convertQueueToArray(queue);
-		assertEquals(list.toString(), "[{4,-1}, {1,5}]");
+		assertEquals(list.toString(), "[{4,1}, {1,9}]");
 		
 		staticTDCH.contractSingleNode(queue.poll().getNodeId());
 		
 		staticTDCH.lazyUpdate(queue);
 		list = CommonUtils.convertQueueToArray(queue);
-		assertEquals(list.toString(), "[{1,5}]");
+		assertEquals(list.toString(), "[{1,9}]");
 		
 		staticTDCH.contractSingleNode(queue.poll().getNodeId());
 		
@@ -127,14 +129,43 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	public void testPositiveEdgeDifference() {
 		int ed = staticTDCH.computeEdgeDifference(1);
 		
-		assertEquals(ed, 5);
+		assertEquals(ed, 9);
 	}
 	
 	@Test
 	public void testNegativeEdgeDifference1() {
 		int ed = staticTDCH.computeEdgeDifference(3);
 		
+		assertEquals(ed, 1);
+	}
+	
+	@Test
+	public void testNegativeEdgeDifference3() {
+		int ed;
+		
+		g.setArcFlagsForAllEdges(true);
+		ed = dynamicTDCH.computeEdgeDifference(0);
 		assertEquals(ed, -2);
+		
+		g.setArcFlagsForAllEdges(true);
+		ed = dynamicTDCH.computeEdgeDifference(1);
+		assertEquals(ed, 0);
+		
+		g.setArcFlagsForAllEdges(true);
+		ed = dynamicTDCH.computeEdgeDifference(2);
+		assertEquals(ed, 1);
+		
+		g.setArcFlagsForAllEdges(true);
+		ed = dynamicTDCH.computeEdgeDifference(3);
+		assertEquals(ed, 1);
+		
+		g.setArcFlagsForAllEdges(true);
+		ed = dynamicTDCH.computeEdgeDifference(4);
+		assertEquals(ed, -2);
+		
+		g.setArcFlagsForAllEdges(true);
+		ed = dynamicTDCH.computeEdgeDifference(5);
+		assertEquals(ed, 0);
 	}
 	
 	@Test
@@ -150,14 +181,14 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		List<QEntry> nodes = new ArrayList<QEntry>();
 		while (nodesEDOrdering.size() > 0)
 			nodes.add(nodesEDOrdering.poll());
-		assertEquals(nodes.toString(), "[{0,-2}, {3,-2}, {5,-2}, {2,-1}, {4,-1}, {1,5}]");
+		assertEquals(nodes.toString(), "[{0,-2}, {5,-2}, {2,-1}, {3,1}, {4,1}, {1,9}]");
 	}
 	
 	@Test
 	public void testNodesHieracy() {
 		Queue<QEntry> nodesEDOrdering = staticTDCH.computeEDNodeOrdering();
 		TLongIntHashMap nodesHierachy =  staticTDCH.contractNodes(nodesEDOrdering.size(), nodesEDOrdering);
-		assertEquals(nodesHierachy.toString(), "{5=2, 4=4, 3=1, 2=3, 1=5, 0=0}");
+		assertEquals(nodesHierachy.toString(), "{5=1, 4=4, 3=3, 2=2, 1=5, 0=0}");
 	}
 	
 	@Test
@@ -166,8 +197,8 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		TLongIntHashMap nodesHierachy =  staticTDCH.contractNodes(nodesEDOrdering.size(), nodesEDOrdering);		
 		staticTDCH.constructUpwardsGraph(nodesHierachy);
 		
-		assertEquals(staticTDCH.getNumberOfShortcuts(), 0);
-		assertEquals(staticGraph.getArcsNotDisabled().size(), 8);
+		assertEquals(staticTDCH.getNumberOfShortcuts(), 2);
+		assertEquals(staticGraph.getArcsNotDisabled().size(), 9);
 	}
 	
 	@Test
@@ -181,14 +212,14 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	public void testContractNodeAndShortcutsAdded1() {
 		int sh = staticTDCH.contractSingleNode(4);
 		
-		assertEquals(sh, 2);
+		assertEquals(sh, 4);
 	}
 		
 	@Test
 	public void testContractNodeAndShortcutsAdded2() {
 		int sh = staticTDCH.contractSingleNode(1);
 		
-		assertEquals(sh, 8);
+		assertEquals(sh, 14);
 		TDArc a1 = staticGraph.getArc(0, 2);
 		assertNotNull(a1);
 		assertEquals(a1.getCost(), 2);
@@ -199,18 +230,19 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	
 	@Test
 	public void testContractNodeAndShortcutsAdded3() {
+		int ed;
 		
-		int ed = staticTDCH.computeEdgeDifference(3);
-		assertEquals(ed, -2);
+		ed = staticTDCH.computeEdgeDifference(3);
+		assertEquals(ed, 1);
 		
 		ed = staticTDCH.computeEdgeDifference(0);
 		assertEquals(ed, -2);
 		
 		int sh = staticTDCH.contractSingleNode(3);
-		assertEquals(sh, 1);
+		assertEquals(sh, 4);
 		
 		ed = staticTDCH.computeEdgeDifference(0);
-		assertEquals(ed, -1);
+		assertEquals(ed, -2);
 		
 		sh = staticTDCH.contractSingleNode(0);
 		assertEquals(sh, 0);
@@ -228,13 +260,13 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		assertEquals(sh, 0);
 		
 		ed = staticTDCH.computeEdgeDifference(4);
-		assertEquals(ed, -1);
+		assertEquals(ed, -2);
 		
 		sh = staticTDCH.contractSingleNode(4);
-		assertEquals(sh, 1);
+		assertEquals(sh, 0);
 		
 		ed = staticTDCH.computeEdgeDifference(1);
-		assertEquals(ed, -1);
+		assertEquals(ed, 0);
 		
 		sh = staticTDCH.contractSingleNode(1);
 		assertEquals(sh, 0);
@@ -363,8 +395,138 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		
 		eaTime = dynamicTDCH.computeEarliestArrivalTime(1, 4, 21);
 		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(1, 4, 21));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(0, 2, 3);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(0, 2, 3));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(3, 5, 9);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(3, 5, 9));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(2, 4, 9);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(2, 4, 9));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(3, 5, 17);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(3, 5, 17));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(0, 4, 3);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(0, 4, 3));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(4, 2, 5);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(4, 2, 5));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(5, 3, 8);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(5, 3, 8));
+		
+		eaTime = dynamicTDCH.computeEarliestArrivalTime(4, 3, 5);
+		assertEquals(eaTime, dynamicTDDijkstra.computeEarliestArrivalTime(4, 3, 5));
+	}
+	
+	@Test
+	public void testEATimeSourceTargetDynamicAllDPTimes() {		
+		int[] eaTimes;
+		dynamicTDCH.precompute();
+		
+		Set<Long> nodes = dynamicTDCH.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				if(u==4&&v==2) continue;
+				System.out.println("<> "+u+" "+v);
+				eaTimes = dynamicTDCH.computeEarliestArrivalTimes(u, v);
+				assertEquals(Arrays.toString(eaTimes), Arrays.toString(dynamicTDDijkstra.computeEarliestArrivalTimes(u, v)));
+			}
+		}
 	}
 
+	@Test
+	public void testSH() {
+		TDGraph graph = createSmallCustomGraph();
+		TDCHAlgorithm tdch = new TDCHAlgorithm(graph);
+		
+		int n,sh;
+		
+		n = 0;
+		graph.disableNode(n);
+		sh = tdch.computeShortcuts(n, false);
+		graph.enableNode(n);
+		assertEquals(sh, 0);
+		
+		n = 1;
+		graph.disableNode(n);
+		sh = tdch.computeShortcuts(n, false);
+		graph.enableNode(n);
+		assertEquals(sh, 2);
+		
+		n = 2;
+		graph.disableNode(n);
+		sh = tdch.computeShortcuts(n, false);
+		graph.enableNode(n);
+		assertEquals(sh, 0);
+	}
+	
+	@Test
+	public void testEA() {
+		TDGraph graph = createSmallCustomGraph();
+		TDCHAlgorithm tdch = new TDCHAlgorithm(graph);
+		TDDijkstraAlgorithm tdDijkstra = new TDDijkstraAlgorithm(graph);
+		
+		tdch.precompute();
+		
+		int ea;
+		
+		ea = tdch.computeEarliestArrivalTime(0, 1, 0);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(0, 1, 0));
+		
+		ea = tdch.computeEarliestArrivalTime(1, 0, 0);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(1, 0, 0));
+		
+		ea = tdch.computeEarliestArrivalTime(0, 1, 1);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(0, 1, 1));
+		
+		ea = tdch.computeEarliestArrivalTime(1, 0, 1);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(1, 0, 1));
+		
+		ea = tdch.computeEarliestArrivalTime(0, 1, 2);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(0, 1, 2));
+		
+		ea = tdch.computeEarliestArrivalTime(1, 0, 2);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(1, 0, 2));
+		
+		ea = tdch.computeEarliestArrivalTime(1, 2, 0);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(1, 2, 0));
+		
+		ea = tdch.computeEarliestArrivalTime(2, 1, 0);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(2, 1, 0));
+		
+		ea = tdch.computeEarliestArrivalTime(2, 1, 1);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(2, 1, 1));
+		
+		ea = tdch.computeEarliestArrivalTime(2, 1, 1);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(2, 1, 1));
+		
+		ea = tdch.computeEarliestArrivalTime(2, 1, 2);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(2, 1, 2));
+		
+		ea = tdch.computeEarliestArrivalTime(2, 1, 2);
+		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(2, 1, 2));
+	}
+
+	public TDGraph createSmallCustomGraph() {
+		TDGraph graph = new TDGraph();
+		graph.timeInterval = 3;
+		
+		graph.addNode(0);
+		graph.addNode(1);
+		graph.addNode(2);
+		
+		graph.addEdge(0, 1, new int[]{1,1,1});
+		graph.addEdge(0, 2, new int[]{3,2,2});
+		graph.addEdge(1, 2, new int[]{1,1,1});
+		
+		graph.setArcFlagsForAllEdges(true);
+		
+		return graph;
+	}
+	
 	private void createCustomGraph() {
 		staticGraph = new TDGraph();
 		staticGraph.addNode(0);

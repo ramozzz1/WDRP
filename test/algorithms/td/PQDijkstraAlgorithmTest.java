@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -15,8 +16,8 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 	public static TDDijkstraAlgorithm tdA;
 	public static PQDijkstraAlgorithm psA;
 	
-	@BeforeClass
-	public static void setupAlgorithms() {
+	@Before
+	public void setupAlgorithms() {
 		tdA = new TDDijkstraAlgorithm(g);
 		psA = new PQDijkstraAlgorithm(g);
 	}
@@ -48,6 +49,11 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 		
 		travelTimesTDA = tdA.computeTravelTimes(4,5);
 		travelTimesPSA = psA.computeTravelTimes(4,5);
+		
+		assertEquals(Arrays.toString(travelTimesTDA), Arrays.toString(travelTimesPSA));
+		
+		travelTimesTDA = tdA.computeTravelTimes(1,2);
+		travelTimesPSA = psA.computeTravelTimes(1,2);
 		
 		assertEquals(Arrays.toString(travelTimesTDA), Arrays.toString(travelTimesPSA));
 	}

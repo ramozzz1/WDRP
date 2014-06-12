@@ -72,7 +72,7 @@ public class PIQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> {
 
 	public void relax(long u,
 			Tuple2<Integer, Integer> intervalU, TDArc arc) {
-		if(considerArc(arc)) {
+		//if(considerArc(arc)) {
 			System.out.println("----CONSIDERING EDGE " +u+"->"+arc.getHeadNode());
 			
 			int qNew = intervalU.a + ArrayUtils.getMinValue(arc.getCosts());
@@ -83,7 +83,8 @@ public class PIQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> {
 			
 			Tuple2<Integer, Integer> intervalV = f.get(arc.getHeadNode());
 			if(intervalV==null) intervalV = new Tuple2<Integer, Integer>(Integer.MAX_VALUE, Integer.MAX_VALUE);
-			
+			System.out.println("qV: "+intervalV.a);
+			System.out.println("rV: "+intervalV.b);
 			if(qNew > intervalV.b)
 				return;
 			if(rNew < intervalV.a) p.put(arc.getHeadNode(), null);
@@ -105,6 +106,6 @@ public class PIQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> {
 			f.put(arc.getHeadNode(), newInterval);
 			
 			queue.add(new NodeEntry(arc.getHeadNode(), newInterval.a));
-		}
+		//}
 	}
 }

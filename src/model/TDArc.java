@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Arrays;
+
 
 @SuppressWarnings("serial")
 public class TDArc extends Arc{
@@ -61,5 +63,33 @@ public class TDArc extends Arc{
 	
 	public void setCosts(int[] costs) { 
 		this.costs = costs;
+	}
+	
+//	@Override
+//	public int compareTo(Arc a) {
+//		TDArc arc = (TDArc) a;
+//		if(this.headNode > arc.headNode)
+//			return 1;
+//		else if(this.headNode < arc.headNode)
+//			return -1;
+//		else if(this.cost > arc.cost)
+//			return 1;
+//		else if(this.cost < arc.cost)
+//			return -1;
+//		else if(this.shortcutNode > arc.shortcutNode)
+//			return 1;
+//		else if(this.shortcutNode < arc.shortcutNode)
+//			return -1;
+//		/*else if(this.arcFlag==false && a.arcFlag==true)
+//			return -1;
+//		else if(this.arcFlag==true && a.arcFlag==false)
+//			return 1;*/
+//		return 0;
+//		//return Arrays.toString(this.costs).compareTo(Arrays.toString(arc.getCosts()));
+//	}
+	
+	@Override
+	public String toString() {
+		return "("+headNode+", "+cost+", "+arcFlag+", "+shortcutNode+","+Arrays.toString(costs)+")";
 	}
 }
