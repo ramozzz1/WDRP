@@ -68,12 +68,12 @@ public class ArrayUtils {
 	    return intList;
     }
 
-	public static List<Integer> minList(List<Integer> listA, List<Integer> listB) {		
-		int maxSize = Math.max(listA.size(),listB.size());
-		List<Integer> minList = new ArrayList<Integer>(maxSize);
+	public static int[] minList(int[] listA, int[] listB) {		
+		int maxSize = Math.max(listA.length,listB.length);
+		int[] minList = new int[maxSize];
 		for (int i = 0; i < maxSize; i++) {
-			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
-			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			int valueA = i < listA.length ? listA[i] : Integer.MAX_VALUE;
+			int valueB = i < listB.length ? listB[i] : Integer.MAX_VALUE;
 			
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
@@ -82,22 +82,20 @@ public class ArrayUtils {
 			
 			if(minValue==Integer.MAX_VALUE) minValue = -1;
 			
-			minList.add(minValue);
+			minList[i] = minValue;
         }  
 		
 		return minList;
 	}
 
-	public static boolean listLarger(List<Integer> listA,
-			List<Integer> listB) {
-		assert listA.size() == listB.size() : "lists should be equal size";
+	public static boolean listLarger(int[] listA,
+			int[] listB) {
+		assert listA.length == listB.length : "lists should be equal size";
 		
-		boolean larger = true;
-		boolean equal = true;
-		int maxSize = Math.max(listA.size(),listB.size());
+		int maxSize = Math.max(listA.length,listB.length);
 		for (int i = 0; i < maxSize; i++) {
-			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
-			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			int valueA = i < listA.length ? listA[i] : Integer.MAX_VALUE;
+			int valueB = i < listB.length ? listB[i] : Integer.MAX_VALUE;
 			
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
@@ -111,15 +109,15 @@ public class ArrayUtils {
 		return true;
 	}
 	
-	public static boolean listEqual(List<Integer> listA,
-			List<Integer> listB) {
-		assert listA.size() == listB.size() : "lists should be equal size";
+	public static boolean listEqual(int[] listA,
+			int[] listB) {
+		assert listA.length== listB.length : "lists should be equal size";
 		
 		boolean larger = true;
-		int maxSize = Math.max(listA.size(),listB.size());
+		int maxSize = Math.max(listA.length,listB.length);
 		for (int i = 0; i < maxSize; i++) {
-			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
-			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			int valueA = i < listA.length ? listA[i] : Integer.MAX_VALUE;
+			int valueB = i < listB.length ? listB[i] : Integer.MAX_VALUE;
 			
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
@@ -132,14 +130,14 @@ public class ArrayUtils {
 		return larger;
 	}
 	
-	public static boolean listLargerOrEqual(List<Integer> listA,
-			List<Integer> listB) {
-		assert listA.size() == listB.size() : "lists should be equal size";
+	public static boolean listLargerOrEqual(int[] listA,
+			int[] listB) {
+		assert listA.length == listB.length : "lists should be equal size";
 		
-		int maxSize = Math.max(listA.size(),listB.size());
+		int maxSize = Math.max(listA.length,listB.length);
 		for (int i = 0; i < maxSize; i++) {
-			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
-			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			int valueA = i < listA.length ? listA[i] : Integer.MAX_VALUE;
+			int valueB = i < listB.length ? listB[i] : Integer.MAX_VALUE;
 			
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
@@ -150,14 +148,13 @@ public class ArrayUtils {
 		return true;
 	}
 
-	public static boolean listSmaller(List<Integer> listA,
-			List<Integer> listB) {
-		assert listA.size() == listB.size() : "lists should be equal size";
+	public static boolean listSmaller(int[] listA, int[] listB) {
+		assert listA.length == listB.length : "lists should be equal size";
 		
-		int maxSize = Math.max(listA.size(),listB.size());
+		int maxSize = Math.max(listA.length,listB.length);
 		for (int i = 0; i < maxSize; i++) {
-			int valueA = i < listA.size() ? listA.get(i) : Integer.MAX_VALUE;
-			int valueB = i < listB.size() ? listB.get(i) : Integer.MAX_VALUE;
+			int valueA = i < listA.length ? listA[i] : Integer.MAX_VALUE;
+			int valueB = i < listB.length ? listB[i] : Integer.MAX_VALUE;
 			
 			valueA = valueA >= 0 ? valueA : Integer.MAX_VALUE;
 			valueB = valueB >= 0 ? valueB : Integer.MAX_VALUE;
@@ -167,77 +164,58 @@ public class ArrayUtils {
 		
 		return true;
 	}
-	
-	public static List<Integer> extrapolateArray(int[] array, int interval) {
-		int newSize = array.length * interval;
-		List<Integer> list = new ArrayList<Integer>(newSize);
-		for (int i = 0; i < newSize; i++) {
-			int index = i / interval;
-			list.add(array[index]);
-        }  
-		
-		return list;
-	}
-	
-	public static int[] extrapolateArrayToArray(int[] array, int interval) {
-		int newSize = array.length * interval;
-		int[] newArray = new int[newSize];
-		for (int i = 0; i < newSize; i++) {
-			int index = i / interval;
-			newArray[i] = array[index];
-        }  
-		
-		return newArray;
-	}
 
-	public static List<Integer> linkLists(List<Integer> f, List<Integer> g) {
-		int maxSize = Math.max(g.size(),f.size());	
-		List<Integer> linkList = new ArrayList<Integer>(maxSize);
+	public static int[] linkLists(int[] f, int[] g) {
+		if(isZeroArray(g)) {
+			int[] tmp = f;
+			f = g;
+			g = tmp;
+		}
+		int maxSize = Math.max(g.length,f.length);	
+		int[] linkList = new int[maxSize];
 		for (int i = 0; i < maxSize; i++) {
 			int travelTimeUW = -1;
 			
-			int travelTimeUV = f.get(i);
+			int travelTimeUV = f[i];
 			if(travelTimeUV >= 0) {
 				int arrivalTimeV = i+travelTimeUV;
 				
-				if(arrivalTimeV < g.size()) {
-					int travelTimeForArrivalAtG = g.get(arrivalTimeV);
+				if(arrivalTimeV < g.length) {
+					int travelTimeForArrivalAtG = g[arrivalTimeV];
 					if(travelTimeForArrivalAtG >=0)
 						travelTimeUW = travelTimeUV + travelTimeForArrivalAtG;
 				}
 			}
 			
-			linkList.add(travelTimeUW);
+			linkList[i] = travelTimeUW;
         }
 		
 		return linkList;
 	}
 
-	public static List<Integer> linkLists(int[] a, int[] b) {
-		return linkLists(toList(a), toList(b));
+	private static boolean isZeroArray(int[] g) {
+		return listEqual(new int[g.length], g);
 	}
 
-	public static List<Integer> extrapolateArray(List<Integer> array,
-			int interval) {
-		return extrapolateArray(toIntArray(array),interval);
-	}
-
-	public static int[] interpolateArray(List<Integer> array, int interval) {
-		int newSize = array.size() / interval;
+	public static int[] interpolateArray(int[] array, int interval) {
+		int newSize = array.length / interval;
 		int[] list = new int[newSize];
 		for (int i = 0; i < newSize; i++) {
 			int index = i * interval;
-			list[i] = array.get(index);
+			list[i] = array[index];
         }  
 		
 		return list;
 	}
-
-	public static boolean listLarger(int[] a, int[] b) {
-		return listLarger(toList(a), toList(b));
-	}
 	
-	public static boolean listSmaller(int[] a, int[] b) {
-		return listSmaller(toList(a), toList(b));
+	public static int[] extrapolateArray(int[] array, int interval) {
+		int newSize = array.length * interval;
+		int[] list = new int[newSize];
+		for (int i = 0; i < newSize; i++) {
+			int index = i / interval;
+			list[i] = array[index];
+        }  
+		
+		return list;
 	}
 }

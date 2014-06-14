@@ -67,7 +67,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 			while(!queue.isEmpty()) {
 				NodeEntry u = queue.poll();
 				long minNodeId = u.getNodeId();
-				System.out.println("MIN NODE:"+minNodeId +", "+ u.getDistance());
+				//System.out.println("MIN NODE:"+minNodeId +", "+ u.getDistance());
 				visitedNodesMarks.add(minNodeId);
 				
 				if(u.getDistance() >= Integer.MAX_VALUE)
@@ -88,7 +88,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 					continue;
 				
 				for (K arc : graph.getNeighbors(minNodeId)) {
-					System.out.println("NEIGHBOR:"+minNodeId +", "+ arc.getHeadNode());
+					//System.out.println("NEIGHBOR:"+minNodeId +", "+ arc.getHeadNode());
 					if(considerArc(arc))
 						relax(target, minNodeId, distU, arc);
 				}
@@ -102,7 +102,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 		Object distN = f.get(arc.getHeadNode());
 		int dist = getEdgeCost(arc, distU);
 		if(distN==null || dist < (int)distN) {
-			System.out.println("UPDATED "+arc.getHeadNode() + " to "+dist);
+			//System.out.println("UPDATED "+arc.getHeadNode() + " to "+dist);
 			f.put(arc.getHeadNode(), dist);
 			previous.put(arc.getHeadNode(), u);
 			int h = getHeuristicValue(arc.getHeadNode(),target);

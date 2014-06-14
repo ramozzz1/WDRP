@@ -165,7 +165,7 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		
 		g.setArcFlagsForAllEdges(true);
 		ed = dynamicTDCH.computeEdgeDifference(5);
-		assertEquals(ed, 0);
+		assertEquals(ed, 3);
 	}
 	
 	@Test
@@ -429,8 +429,6 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		Set<Long> nodes = dynamicTDCH.graph.nodes.keySet();
 		for (Long u : nodes) {
 			for (Long v : nodes) {
-				if(u==4&&v==2) continue;
-				System.out.println("<> "+u+" "+v);
 				eaTimes = dynamicTDCH.computeEarliestArrivalTimes(u, v);
 				assertEquals(Arrays.toString(eaTimes), Arrays.toString(dynamicTDDijkstra.computeEarliestArrivalTimes(u, v)));
 			}
@@ -535,14 +533,14 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		staticGraph.addNode(3);
 		staticGraph.addNode(4);
 		staticGraph.addNode(5);
-		staticGraph.addEdge(0, 1, ArrayUtils.extrapolateArrayToArray(new int[]{1,1,1,1}, 5));
-		staticGraph.addEdge(0, 3, ArrayUtils.extrapolateArrayToArray(new int[]{3,3,3,3}, 5));
-		staticGraph.addEdge(1, 3, ArrayUtils.extrapolateArrayToArray(new int[]{2,2,2,2}, 5));
-		staticGraph.addEdge(1, 4, ArrayUtils.extrapolateArrayToArray(new int[]{3,3,3,3}, 5));
-		staticGraph.addEdge(1, 5, ArrayUtils.extrapolateArrayToArray(new int[]{4,4,4,4}, 5));
-		staticGraph.addEdge(2, 1, ArrayUtils.extrapolateArrayToArray(new int[]{1,1,1,1}, 5));
-		staticGraph.addEdge(3, 4, ArrayUtils.extrapolateArrayToArray(new int[]{1,1,1,1}, 5));
-		staticGraph.addEdge(4, 5, ArrayUtils.extrapolateArrayToArray(new int[]{1,1,1,1}, 5));
+		staticGraph.addEdge(0, 1, ArrayUtils.extrapolateArray(new int[]{1,1,1,1}, 5));
+		staticGraph.addEdge(0, 3, ArrayUtils.extrapolateArray(new int[]{3,3,3,3}, 5));
+		staticGraph.addEdge(1, 3, ArrayUtils.extrapolateArray(new int[]{2,2,2,2}, 5));
+		staticGraph.addEdge(1, 4, ArrayUtils.extrapolateArray(new int[]{3,3,3,3}, 5));
+		staticGraph.addEdge(1, 5, ArrayUtils.extrapolateArray(new int[]{4,4,4,4}, 5));
+		staticGraph.addEdge(2, 1, ArrayUtils.extrapolateArray(new int[]{1,1,1,1}, 5));
+		staticGraph.addEdge(3, 4, ArrayUtils.extrapolateArray(new int[]{1,1,1,1}, 5));
+		staticGraph.addEdge(4, 5, ArrayUtils.extrapolateArray(new int[]{1,1,1,1}, 5));
 		
 		staticGraph.setArcFlagsForAllEdges(true);
 	}

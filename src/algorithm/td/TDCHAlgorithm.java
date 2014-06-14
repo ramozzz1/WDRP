@@ -28,7 +28,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 	private PIQDijkstraAlgorithm piqDijkstra;
 	private Queue<QEntry> contractionOrder;
 	private TLongIntHashMap nodesHierachy;
-	private Set<Long> candidates;
+	protected Set<Long> candidates;
 	
 	public TDCHAlgorithm(TDGraph graph) {
 		super(graph);
@@ -203,13 +203,13 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 					System.out.println("****CHECKING IF SHORTCUT NEEDED BETWEEN "+u+" and "+w);
 					
 					//store the cost of visiting the node through node v for every departure time
-					List<Integer> costsThroughContractedNode = ArrayUtils.linkLists(
+					int[] costsThroughContractedNode = ArrayUtils.linkLists(
 							tdInArc.getCosts(), 
 							tdOutArc.getCosts()
 							);
 					
 					//compute the costs from u to w without v in the graph
-					List<Integer> witnessSearchCosts = ArrayUtils.toList(psDijkstra.computeTravelTimes(u, w));
+					int[] witnessSearchCosts = psDijkstra.computeTravelTimes(u, w);
 					
 					System.out.println("****Cost through contracted node "+costsThroughContractedNode);
 					System.out.println("****Cost of witness search "+witnessSearchCosts);
@@ -221,7 +221,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 						/*no path could be found for any departure time 
 						 *   or there was at least one departure time for which the  was larger*/
 						if(addShortcut) {
-							graph.addEdge(u, new TDArc(w, ArrayUtils.toIntArray(costsThroughContractedNode), true, v));
+							graph.addEdge(u, new TDArc(w, costsThroughContractedNode, true, v));
 							System.out.println("****SHORTCUT WAS ADDED BETWEEN "+u+" and "+w);
 							System.out.println(u+ " ARCS: "+ graph.getArcs(u, w));
 						}
