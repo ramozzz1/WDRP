@@ -41,7 +41,7 @@ public class Graph<K extends Arc> {
 		if(!temp) {
 			this.db = DBMaker
 					//.newFileDB(new File(fileName))
-					.newMemoryDB()
+					.newDirectMemoryDB()
 					.transactionDisable()
 					.asyncWriteEnable()
 					.closeOnJvmShutdown()

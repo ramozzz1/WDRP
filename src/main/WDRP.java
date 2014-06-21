@@ -17,6 +17,7 @@ import org.simpleframework.http.core.Container;
 import util.GraphUtils;
 import algorithm.AbstractRoutingAlgorithm;
 import algorithm.CHAlgorithm;
+import algorithm.DijkstraAlgorithm;
 
 
 
@@ -124,7 +125,7 @@ public class WDRP {
 		//Graph g = GraphUtils.convertGTFSToGraph("manhattan");
 		//Graph g = new Graph("resources/db/manhattan.graph");
   		List<AbstractRoutingAlgorithm<Arc>> algorithms = new ArrayList<AbstractRoutingAlgorithm<Arc>>();
-    	//algorithms.add(new DijkstraAlgorithm(g));
+    	algorithms.add(new DijkstraAlgorithm<Arc>(g));
     	//algorithms.add(new TimeExpandedDijkstraAlgorithm(g));
     	algorithms.add(new CHAlgorithm(g));
   		//algorithms.add(new AstarAlgorithm(g));

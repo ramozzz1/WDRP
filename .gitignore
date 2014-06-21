@@ -6,5 +6,7 @@
 .project
 .settings
 /bin
-/resources
+*.graph
+*.osm
+*.p
 .DS_Store

@@ -120,7 +120,6 @@ public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 			finalContractionOrder.add(node);
 			
 			//contract node
-			System.out.println("CONTRACTING NODE: "+node);
 			int shortcuts = contractSingleNode(node);
 			
 			//update the node ordering
@@ -253,14 +252,12 @@ public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 					//calculate the sp from node u to w while ignoring v
 					dijkstra.costUpperbound = directCost;
 					int spCost = dijkstra.computeShortestPath(u, w);
-					System.out.println("("+u+","+w+") " + spCost + " " +directCost);
 					if(spCost == -1 || spCost > directCost) { 
 						/*no sp could be found or sp found which is longer than the direct one (i.e. the real sp)
 						  so we have to add a shortcut*/
 						if(addShortcut)
 							graph.addEdge(u, new Arc(w, directCost, true, v));						
 						shortcuts++;
-						System.out.println("ADDED: ("+u+","+w+")");
 					}
 				}
 			}
