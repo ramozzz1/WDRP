@@ -1,5 +1,6 @@
 package model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -40,8 +41,8 @@ public class Graph<K extends Arc> {
 	public Graph(String fileName, boolean temp) {
 		if(!temp) {
 			this.db = DBMaker
-					//.newFileDB(new File(fileName))
-					.newDirectMemoryDB()
+					.newFileDB(new File(fileName))
+					//.newDirectMemoryDB()
 					.transactionDisable()
 					.asyncWriteEnable()
 					.closeOnJvmShutdown()

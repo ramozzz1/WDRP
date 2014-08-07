@@ -30,6 +30,10 @@ public class LatLonPoint implements Serializable {
 	public String toString() {
 		return "{lat="+lat+", lon="+lon+"}";
 	}
+
+	public String toJsonObject() {
+		return "{\"lat\":"+lat+", \"lon\":"+lon+"}";
+	}
 	
 	@Override
 	public boolean equals (Object o) {

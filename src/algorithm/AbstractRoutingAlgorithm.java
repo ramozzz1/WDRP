@@ -31,6 +31,10 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 
 	public abstract Set<Long> getVisitedNodes();
 	
+	public void setGraph(Graph<K> graph) {
+		this.graph = graph;
+	}
+	
 	public List<Long> getNodesOnPath(TLongLongHashMap previous, long target) {
 		List<Long> nodes = new ArrayList<Long>();
 		

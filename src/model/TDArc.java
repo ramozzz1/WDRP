@@ -14,8 +14,12 @@ public class TDArc extends Arc{
 		this.costs = new int[maxTime];
 	}
 	
-	public TDArc(Arc arc) {
+	public TDArc(Arc arc, int maxTime) {
 		super(arc);
+		
+		this.costs = new int[maxTime];
+		for (int i = 0; i < maxTime; i++)
+			this.costs[i] = arc.getCost();
 	}
 	
 	public TDArc(int targetId, int[] costs) {
@@ -64,29 +68,6 @@ public class TDArc extends Arc{
 	public void setCosts(int[] costs) { 
 		this.costs = costs;
 	}
-	
-//	@Override
-//	public int compareTo(Arc a) {
-//		TDArc arc = (TDArc) a;
-//		if(this.headNode > arc.headNode)
-//			return 1;
-//		else if(this.headNode < arc.headNode)
-//			return -1;
-//		else if(this.cost > arc.cost)
-//			return 1;
-//		else if(this.cost < arc.cost)
-//			return -1;
-//		else if(this.shortcutNode > arc.shortcutNode)
-//			return 1;
-//		else if(this.shortcutNode < arc.shortcutNode)
-//			return -1;
-//		/*else if(this.arcFlag==false && a.arcFlag==true)
-//			return -1;
-//		else if(this.arcFlag==true && a.arcFlag==false)
-//			return 1;*/
-//		return 0;
-//		//return Arrays.toString(this.costs).compareTo(Arrays.toString(arc.getCosts()));
-//	}
 	
 	@Override
 	public String toString() {

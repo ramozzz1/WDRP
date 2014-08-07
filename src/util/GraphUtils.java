@@ -7,13 +7,20 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import main.Config;
 import model.Arc;
+import model.Cloud;
 import model.Graph;
 import model.LatLonPoint;
 import model.NodePair;
+import model.TDArc;
+import model.TDGraph;
 import model.TNGraph;
+import model.Weather;
 
 import org.mapdb.BTreeMap;
+import org.mapdb.Fun;
+import org.mapdb.Fun.Tuple2;
 
 import reader.GTFSParser;
 import reader.OSMParser;
@@ -31,14 +38,52 @@ public class GraphUtils {
 	}
 	
 	public static Graph<Arc> convertOSMToGraph (String fileName) {		
-		IOUtils.deleteFile("resources/db/"+fileName+".graph");
+		IOUtils.deleteFile(Config.DBDIR+fileName+".graph");
 		
 		OSMParser parser = new OSMParser();
-		Graph<Arc> g = parser.osmToGraph("resources/osm/"+fileName+".osm");
+		Graph<Arc> g = parser.osmToGraph(Config.OSMDIR+fileName+".osm");
 		GraphUtils.convertToLCC(g);
 		
 		return g;
 	}
+	
+//	public static TDGraph convertGraphToTDGraphWithWeather(Graph<Arc> g, Weather w) {		
+//		
+//		for (Tuple2<Long, Arc> nodeArcPair : g.adjacenyList) {
+//			TDArc tdArc = new TDArc(nodeArcPair.b, g.timeInterval);
+//			
+//			LatLonPoint p1 = g.getLatLon(nodeArcPair.a);
+//			LatLonPoint p2 = g.getLatLon(tdArc.getHeadNode());
+//			
+//			for (Cloud c : w.getClouds()) {
+//				if(c.intersects(p1,p2)) {
+//					arc.b.
+//				}
+//			}
+//		}
+//		
+//		
+//		
+//		return tdGraph;
+//	}
+
+//	public static TDGraph convertGraphToTDGraph (Graph<Arc> g, Weather w) {		
+//		
+//		for (Tuple2<Long, Arc> nodeArcPair : g.adjacenyList) {
+//			TDArc tdArc = new TDArc(nodeArcPair.b, g.timeInterval);
+//			
+//			LatLonPoint p1 = g.getLatLon(nodeArcPair.a);
+//			LatLonPoint p2 = g.getLatLon(tdArc.getHeadNode());
+//			
+//			for (Cloud c : w.getClouds()) {
+//				if(c.intersects(p1,p2)) {
+//					arc.b.
+//				}
+//			}
+//		}
+//		
+//		return tdGraph;
+//	}
 	
 	//convert graph to largest connected component
 	public static void convertToLCC(Graph<Arc> g) {

@@ -26,6 +26,10 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 	public int maxNumSettledNodes;
 	public int startCost;
 	
+	public DijkstraAlgorithm() {
+		this(null);
+	}
+	
 	public DijkstraAlgorithm(Graph<K> graph) {
 		super(graph);
 		setDefaultSettings();

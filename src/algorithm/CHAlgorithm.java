@@ -57,6 +57,10 @@ public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 		this.dijkstra = new DijkstraAlgorithm<Arc>(this.graph);
 	}
 
+	public CHAlgorithm() {
+		this(null);
+	}
+
 	@Override
 	public void precompute() {
 		//set the arc flag for all edges to true
@@ -388,8 +392,14 @@ public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 	}
 	
 	@Override
+	public void setGraph(Graph<Arc> graph) {
+		super.setGraph(graph);
+		dijkstra.setGraph(graph);
+	}
+	
+	@Override
 	public String getName() {
-		return "Contraction Hierarchies";
+		return "CH";
 	}
 	
 	/**

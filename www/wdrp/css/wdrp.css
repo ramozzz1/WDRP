@@ -60,3 +60,16 @@ body {
 .clear {
     clear: both;
 }
+
+.option {
+	width:100%;
+}
+
+.option h1 {
+	font-size:17px;
+	font-weight:bold;
+}
+
+.option .optionList {
+	width:100%;
+}
