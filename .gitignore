@@ -6,6 +6,7 @@
 .project
 .settings
 /bin
+target/
 *.graph
 *.osm
 *.p
