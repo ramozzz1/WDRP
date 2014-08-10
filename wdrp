@@ -1,0 +1,35 @@
+#!/bin/bash
+
+ACTION=$1
+FILE=$2
+
+VERSION=$(grep  "<name>" -A 1 pom.xml | grep version | cut -d'>' -f2 | cut -d'<' -f1) 
+JAR=wdrp-core/target/wdrp-core-$VERSION-jar-with-dependencies.jar
+
+function packageCoreJar {
+  if [ ! -d "./target" ]; then
+    echo "## building parent"
+    mvn --non-recursive install
+     returncode=$?
+     if [[ $returncode != 0 ]] ; then
+       echo "## compilation of parent failed"
+       exit $returncode
+     fi                                     
+  fi
+  
+  if [ ! -f "$JAR" ]; then
+    echo "## now building wdrp jar: $JAR"
+    mvn --projects wdrp-core install -DskipTests=true assembly:single
+    returncode=$?
+    if [[ $returncode != 0 ]] ; then
+        echo "## compilation of core failed"
+        exit $returncode
+    fi      
+  else
+    echo "## existing jar found $JAR"
+  fi
+}
+
+#packageCoreJar
+
+java -cp "$JAR" org.wdrp.core.WDRP
