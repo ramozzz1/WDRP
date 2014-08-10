@@ -5,8 +5,6 @@ import java.util.Set;
 public class Weather {
 	private Set<Cloud> clouds;
 	
-	
-
 	public Set<Cloud> getClouds() {
 		return clouds;
 	}
