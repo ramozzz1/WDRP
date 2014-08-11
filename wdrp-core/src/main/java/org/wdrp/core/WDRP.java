@@ -30,6 +30,7 @@ import org.wdrp.core.model.Arc;
 import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.LatLonPoint;
 import org.wdrp.core.model.Path;
+import org.wdrp.core.model.Weather;
 import org.wdrp.core.reader.OSMDownloader;
 import org.wdrp.core.util.GraphUtils;
 import org.wdrp.core.util.KMLUtil;
@@ -264,16 +265,17 @@ public class WDRP {
 //		Graph<Arc> g = new Graph<Arc>("andorra.graph");
 //		KMLUtil.generateGraphKML(g);
 		
-		int port = 8888;
-		setupAlgorithms();
-		graph = new Graph<Arc>("andorra.graph");
-		
-		Container container = new WDRPHandler();
-		Server server = new ContainerServer(container);
-		connection = new SocketConnection(server);
-		SocketAddress address = new InetSocketAddress(port);
-		
-  		connection.connect(address);
+		Weather w = KMLUtil.generateWeatherFromKML("test.kml");
+//		int port = 8888;
+//		setupAlgorithms();
+//		graph = new Graph<Arc>("andorra.graph");
+//		
+//		Container container = new WDRPHandler();
+//		Server server = new ContainerServer(container);
+//		connection = new SocketConnection(server);
+//		SocketAddress address = new InetSocketAddress(port);
+//		
+//  		connection.connect(address);
     }
 
 	private static void computeShortestPath(String graphPath, String algs,

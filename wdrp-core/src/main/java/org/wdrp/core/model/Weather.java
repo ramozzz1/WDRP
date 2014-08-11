@@ -1,15 +1,26 @@
 package org.wdrp.core.model;
 
-import java.util.Set;
+import java.util.List;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class Weather {
-	private Set<Cloud> clouds;
+	private Multimap<String,Cloud> clouds;
 	
-	public Set<Cloud> getClouds() {
-		return clouds;
+	public Weather() {
+		clouds = ArrayListMultimap.create();
 	}
-
-	public void setClouds(Set<Cloud> clouds) {
-		this.clouds = clouds;
+	
+	public void addCloud(String time, Cloud c) {
+		clouds.put(time, c);
+	}
+	
+	public List<Cloud> getClouds(String time) {
+		return (List<Cloud>) clouds.get(time);
+	}
+	
+	public Multimap<String,Cloud> getClouds() {
+		return clouds;
 	}
 }
