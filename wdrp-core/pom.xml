@@ -102,6 +102,11 @@
         <artifactId>gt-swing</artifactId>
         <version>${geotools.version}</version>
     </dependency>
+    <dependency>
+  		<groupId>com.esri.geometry</groupId>
+  		<artifactId>esri-geometry-api</artifactId>
+  		<version>1.1.1</version>
+	</dependency>
   </dependencies>
   
   <build>

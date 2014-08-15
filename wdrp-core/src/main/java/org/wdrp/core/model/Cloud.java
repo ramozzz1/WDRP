@@ -1,25 +1,22 @@
 package org.wdrp.core.model;
 
-import java.util.ArrayList;
+import com.esri.core.geometry.GeometryEngine;
+import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polygon;
+import com.esri.core.geometry.Polyline;
+import com.esri.core.geometry.SpatialReference;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class Cloud {
 	private Polygon polygon;
 	
-	public Cloud(ArrayList<Coordinate> coordinates) {
-		if(!coordinates.get(0).equals(coordinates.get(coordinates.size()-1))) {
-			coordinates.add(new Coordinate(coordinates.get(0)));
-		}
-		
-		GeometryFactory fact = new GeometryFactory();
-		LinearRing shell = fact.createLinearRing(convertToArray(coordinates));
-		
-		polygon = fact.createPolygon(shell);
+	public Cloud(double[][] pts) {
+		polygon = new Polygon();
+
+		polygon.startPath(new Point(pts[0][0], pts[0][1]));
+	    
+	    for (int i = 1; i < pts.length; i++)
+	    	polygon.lineTo(new Point(pts[i][0], pts[i][1]));
 	}
 
 	public Polygon getPolygon() {
@@ -27,18 +24,10 @@ public class Cloud {
 	}
 
 	public boolean intersectsLine(double x1, double x2, double y1, double y2) {
-		Coordinate[] coordinates = {new Coordinate(x1, y1, 0) ,new Coordinate(x2, y2, 0)};
-		LineString ls = new GeometryFactory().createLineString(coordinates);
-		return polygon.intersects(ls);
-	}
-	
-	private Coordinate[] convertToArray(ArrayList<Coordinate> coordinates) {
-		Coordinate[] cords = new Coordinate[coordinates.size()];
-		int count = 0;
-		for (Coordinate coordinate : coordinates) {
-			cords[count] = coordinate;
-			count++;
-		}
-		return cords;
+		Polyline polyline = new Polyline();
+		polyline.startPath(new Point(x1, y1));
+		polyline.lineTo(new Point(x2, y2));
+		
+		return !GeometryEngine.intersect(polyline, polygon, SpatialReference.create(4326)).isEmpty();
 	}
 }
