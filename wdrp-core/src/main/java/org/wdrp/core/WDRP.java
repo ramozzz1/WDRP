@@ -33,7 +33,7 @@ import org.wdrp.core.model.Path;
 import org.wdrp.core.model.Weather;
 import org.wdrp.core.reader.OSMDownloader;
 import org.wdrp.core.util.GraphUtils;
-import org.wdrp.core.util.KMLUtil;
+import org.wdrp.core.util.WeatherUtil;
 
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
@@ -265,7 +265,7 @@ public class WDRP {
 //		Graph<Arc> g = new Graph<Arc>("andorra.graph");
 //		KMLUtil.generateGraphKML(g);
 		
-		Weather w = KMLUtil.generateWeatherFromKML("test.kml");
+		Weather w = WeatherUtil.generateWeatherFromKML("test.kml");
 //		int port = 8888;
 //		setupAlgorithms();
 //		graph = new Graph<Arc>("andorra.graph");

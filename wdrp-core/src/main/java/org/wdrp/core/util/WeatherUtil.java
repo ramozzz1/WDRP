@@ -3,7 +3,6 @@ package org.wdrp.core.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.mapdb.Fun.Tuple2;
@@ -28,7 +27,7 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 
-public class KMLUtil {
+public class WeatherUtil {
 	
 	public static Weather generateWeatherFromKML(String kmlPath) throws FileNotFoundException {
 		Weather w = new Weather();
@@ -56,13 +55,13 @@ public class KMLUtil {
 			                                LinearRing linearRing = outerBoundaryIs.getLinearRing();
 			                                if(linearRing != null) {
 			                                	List<Coordinate> coordinates = linearRing.getCoordinates();
-			                                	ArrayList<com.vividsolutions.jts.geom.Coordinate> cords = new ArrayList<com.vividsolutions.jts.geom.Coordinate>();
+			                                	double cords[][] = new double[coordinates.size()][2];
 			                                    if(coordinates != null) {
-			                                        for(Coordinate coordinate : coordinates) {
-			                                        	if(coordinate != null) {
-			                                        		cords.add(new com.vividsolutions.jts.geom.Coordinate(coordinate.getLongitude(),coordinate.getLatitude()));
-			                                            }
-			                                        }
+			                                        for (int i = 0; i < coordinates.size(); i++) {
+			                                        	Coordinate coordinate = coordinates.get(i);
+			                                        	cords[i][0] = coordinate.getLongitude();
+		                                        		cords[i][1] = coordinate.getLatitude();
+													}
 			                                    }
 			                                    
 			                                    w.addCloud(time, new Cloud(cords));
