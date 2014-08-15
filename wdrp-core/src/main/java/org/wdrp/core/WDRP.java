@@ -265,17 +265,16 @@ public class WDRP {
 //		Graph<Arc> g = new Graph<Arc>("andorra.graph");
 //		KMLUtil.generateGraphKML(g);
 		
-		Weather w = WeatherUtil.generateWeatherFromKML("test.kml");
-//		int port = 8888;
-//		setupAlgorithms();
-//		graph = new Graph<Arc>("andorra.graph");
-//		
-//		Container container = new WDRPHandler();
-//		Server server = new ContainerServer(container);
-//		connection = new SocketConnection(server);
-//		SocketAddress address = new InetSocketAddress(port);
-//		
-//  		connection.connect(address);
+		int port = 8888;
+		setupAlgorithms();
+		graph = new Graph<Arc>("andorra.graph");
+		
+		Container container = new WDRPHandler();
+		Server server = new ContainerServer(container);
+		connection = new SocketConnection(server);
+		SocketAddress address = new InetSocketAddress(port);
+		
+		connection.connect(address);
     }
 
 	private static void computeShortestPath(String graphPath, String algs,
