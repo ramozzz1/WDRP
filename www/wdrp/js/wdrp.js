@@ -14,7 +14,9 @@ var edgesApiEndPoint = "edges";
 var selectGraphApiEndPoint = "select_graph";
 var getMapsApiEndPoint = "get_maps";
 var selectAlgorithmApiEndPoint = "select_algorithm";
+var selectCloudApiEndPoint = "select_cloud";
 var getAlgorithmsApiEndPoint = "get_algorithms";
+var getCloudsApiEndPoint = "get_clouds";
 var algorithmColors = {'CH': "#577c19", 'Dijkstra': "#534c96"}
 
 $(document).ready(function(){
@@ -25,6 +27,9 @@ $(document).ready(function(){
 	
 	//get algorithms available
 	getAlgorithms();
+	
+	//get cloud maps available
+	getClouds();
 	
 	//set first option as selected
 	var defaultMap = $("#mapList option:first").val();
@@ -79,6 +84,27 @@ function getMaps() {
         	var options = $("#mapsList");
         	$.each(maps, function() {
         	    options.append($("<option />").val(this.fileName).text(this.fileName));
+        	});
+        }
+    });
+}
+
+function getClouds() {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + getCloudsApiEndPoint;
+	console.log(url);
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	var clouds = json.clouds;
+        	var options = $("#cloudsList");
+        	$.each(clouds, function() {
+        	    options.append($("<option />").val(this.fileUrl).text(this.fileName));
         	});
         }
     });
@@ -286,6 +312,29 @@ function selectAlgorithm() {
         }, 
         success: function(json) {
         	
+        }
+    });
+}
+
+function selectCloud() {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + selectCloudApiEndPoint;
+	url += "&cloud_name=" + $("#cloudsList").val();
+	console.log(url);
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	console.log("successfuly selected cloud");
+        	map.data.loadGeoJson('/Users/Zakaria/Desktop/google.json');
+//        	var ctaLayer = new google.maps.KmlLayer({
+//        	    url: 'https://www.dropbox.com/s/tqha7gsdyq46sot/test.kml?dl=1'
+//        	  });
+//        	  ctaLayer.setMap(map);
         }
     });
 }

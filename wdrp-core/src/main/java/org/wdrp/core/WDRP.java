@@ -91,6 +91,28 @@ public class WDRP {
 							content="No graph_name specified";
 						}
 					}
+					else if(action.equals("select_cloud")) {
+						String cloudName = query.get("cloud_name");
+						if(cloudName!=null) {
+							String cloudPath = cloudName;
+							File f = new File(cloudPath);
+							if(f.exists() && !f.isDirectory()) {
+								//if no tdgraph exist for graph and cloud combination convert the current graph to a tdgraph
+								
+								//if it does exist load it
+								
+								content = "{\n";
+								content += "\"success\":"+true;
+								content += "\n}";
+							}
+							else {
+								content="No cloud found for: "+cloudPath;
+							}
+						}
+						else {
+							content="No cloud_name specified";
+						}
+					}
 					else if(action.equals("select_algorithm")) {
 						algorithmsToRun = new ArrayList<AbstractRoutingAlgorithm<Arc>>();
 						List<String> selectedAlgorithms = Arrays.asList(query.get("algorithms").split(","));
@@ -123,6 +145,27 @@ public class WDRP {
 							if (listOfFiles[i].isFile() && FilenameUtils.isExtension(listOfFiles[i].getName(), "graph")) {
 								content += prefix 
 										+ "{" + "\"fileName\":" + "\""+listOfFiles[i].getName()+"\""
+										+"}";
+								prefix = ",";
+							}
+						 }
+						    
+						content += "]\n}";
+					}
+					else if(action.equals("get_clouds")) {
+						content = "{\n";
+						content += "\"clouds\": [";
+						
+						File folder = new File(Paths.get("").toAbsolutePath().toString());
+						File[] listOfFiles = folder.listFiles();
+						
+						String prefix = "";
+						for (int i = 0; i < listOfFiles.length; i++) {
+							if (listOfFiles[i].isFile() && FilenameUtils.isExtension(listOfFiles[i].getName(), "kml")) {
+								content += prefix 
+										+ "{" 
+										+ "\"fileName\":" + "\""+listOfFiles[i].getName()+"\"" + ","
+										+ "\"fileUrl\":" + "\""+listOfFiles[i].getAbsolutePath() +"\""
 										+"}";
 								prefix = ",";
 							}
@@ -253,7 +296,6 @@ public class WDRP {
 		
 //		OSMDownloader.downloadOsmFromGeofabrik("andorra.osm","europe/andorra");
 //		GraphUtils.convertOSMToGraph("andorra.osm", true);
-//		
 //		Long startNode = 0l;
 //		Long endNode = 0l;
 //		String graphPath = "andorra.graph";
@@ -267,7 +309,7 @@ public class WDRP {
 		
 		int port = 8888;
 		setupAlgorithms();
-		graph = new Graph<Arc>("andorra.graph");
+//		graph = new Graph<Arc>("andorra.graph");
 		
 		Container container = new WDRPHandler();
 		Server server = new ContainerServer(container);
