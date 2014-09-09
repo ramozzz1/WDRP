@@ -29,8 +29,8 @@ import de.micromata.opengis.kml.v_2_2_0.Style;
 
 public class WeatherUtil {
 	
-	public static Weather generateWeatherFromKML(String kmlPath) throws FileNotFoundException {
-		Weather w = new Weather();
+	public static Weather generateWeatherFromKML(String kmlPath, String fileName) throws FileNotFoundException {
+		Weather w = new Weather(fileName);
 		
 		Kml kml = Kml.unmarshal(new File(kmlPath));
 		Feature feature = kml.getFeature();
