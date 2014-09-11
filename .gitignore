@@ -11,4 +11,4 @@ target/
 *.osm
 *.p
 .DS_Store
-.wea
+*.wea
