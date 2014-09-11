@@ -10,12 +10,17 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.mapdb.BTreeMap;
+import org.mapdb.Fun.Tuple2;
 import org.wdrp.core.algorithm.CHAlgorithm;
 import org.wdrp.core.algorithm.DijkstraAlgorithm;
 import org.wdrp.core.model.Arc;
+import org.wdrp.core.model.Cloud;
 import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.LatLonPoint;
 import org.wdrp.core.model.NodePair;
+import org.wdrp.core.model.TDArc;
+import org.wdrp.core.model.TDGraph;
+import org.wdrp.core.model.Weather;
 import org.wdrp.core.reader.OSMParser;
 
 public class GraphUtils {
@@ -50,43 +55,9 @@ public class GraphUtils {
 		return ch.graph;
 	}
 	
-//	public static TDGraph convertGraphToTDGraphWithWeather(Graph<Arc> g, Weather w) {		
-//		
-//		for (Tuple2<Long, Arc> nodeArcPair : g.adjacenyList) {
-//			TDArc tdArc = new TDArc(nodeArcPair.b, g.timeInterval);
-//			
-//			LatLonPoint p1 = g.getLatLon(nodeArcPair.a);
-//			LatLonPoint p2 = g.getLatLon(tdArc.getHeadNode());
-//			
-//			for (Cloud c : w.getClouds()) {
-//				if(c.intersects(p1,p2)) {
-//					arc.b.
-//				}
-//			}
-//		}
-//		
-//		
-//		
-//		return tdGraph;
-//	}
-
-//	public static TDGraph convertGraphToTDGraph (Graph<Arc> g, Weather w) {		
-//		
-//		for (Tuple2<Long, Arc> nodeArcPair : g.adjacenyList) {
-//			TDArc tdArc = new TDArc(nodeArcPair.b, g.timeInterval);
-//			
-//			LatLonPoint p1 = g.getLatLon(nodeArcPair.a);
-//			LatLonPoint p2 = g.getLatLon(tdArc.getHeadNode());
-//			
-//			for (Cloud c : w.getClouds()) {
-//				if(c.intersects(p1,p2)) {
-//					arc.b.
-//				}
-//			}
-//		}
-//		
-//		return tdGraph;
-//	}
+	public static TDGraph convertGraphToTDGraphWithWeather(Graph<Arc> g, Weather w) {		
+		return null;
+	}
 	
 	//convert graph to largest connected component
 	public static void convertToLCC(Graph<Arc> g) {

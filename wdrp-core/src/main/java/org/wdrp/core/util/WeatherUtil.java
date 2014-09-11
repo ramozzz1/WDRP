@@ -29,7 +29,7 @@ import de.micromata.opengis.kml.v_2_2_0.Style;
 
 public class WeatherUtil {
 	
-	public static Weather generateWeatherFromKML(String kmlPath, String fileName) throws FileNotFoundException {
+	public static void generateWeatherFromKML(String kmlPath, String fileName) throws FileNotFoundException {
 		Weather w = new Weather(fileName);
 		
 		Kml kml = Kml.unmarshal(new File(kmlPath));
@@ -37,6 +37,10 @@ public class WeatherUtil {
 		if(feature != null) {
 	        if(feature instanceof Document) {
 	            Document document = (Document) feature;
+	            String[] parsedTimeString = parseTimeString(document.getName());
+	            w.setBeginTime(parsedTimeString[0]);
+	            w.setEndTime(parsedTimeString[1]);
+	            w.setTimeStep(parsedTimeString[2]);
 	            List<Feature> folderList = document.getFeature();
 	            for(Feature documentFeature : folderList) {
 	            	if(documentFeature instanceof Folder) {
@@ -76,9 +80,21 @@ public class WeatherUtil {
 	        }
 	    }
 		
-		return w;
+		w.close();
 	}
 	
+	private static String[] parseTimeString(String timeString) {
+		String[] parsedTimeString = new String[3];
+		String[] firstSplit = timeString.split("@");
+		parsedTimeString[2] = firstSplit[1];
+		
+		String[] timeSplit = firstSplit[0].split("-");
+		parsedTimeString[0] = timeSplit[0];
+		parsedTimeString[1] = timeSplit[1];
+		
+		return parsedTimeString;
+	}
+
 	public static void generateGraphKML(Graph<Arc> g) throws FileNotFoundException {
 		Kml kml = new Kml();
 		

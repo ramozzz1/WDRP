@@ -49,6 +49,7 @@ import de.micromata.opengis.kml.v_2_2_0.Style;
 
 public class WDRP {
 	private static Graph<Arc> graph;
+	private static Weather weather;
 	private static List<AbstractRoutingAlgorithm<Arc>> algorithmsToRun;
 	String regionBoxSaarland = "49.20,49.25,6.95,7.05";
 	String regionBoxBW = "47.95,48.05,7.75,7.90";
@@ -91,12 +92,13 @@ public class WDRP {
 							content="No graph_name specified";
 						}
 					}
-					else if(action.equals("select_cloud")) {
-						String cloudName = query.get("cloud_name");
-						if(cloudName!=null) {
-							String cloudPath = cloudName;
-							File f = new File(cloudPath);
+					else if(action.equals("select_weather")) {
+						String weatherName = query.get("weather_name");
+						if(weatherName!=null) {
+							String weatherPath = weatherName;
+							File f = new File(weatherPath);
 							if(f.exists() && !f.isDirectory()) {
+								weather = new Weather(weatherPath);
 								//if no tdgraph exist for graph and cloud combination convert the current graph to a tdgraph
 								
 								//if it does exist load it
@@ -106,7 +108,7 @@ public class WDRP {
 								content += "\n}";
 							}
 							else {
-								content="No cloud found for: "+cloudPath;
+								content="No cloud found for: "+weatherPath;
 							}
 						}
 						else {
@@ -152,20 +154,19 @@ public class WDRP {
 						    
 						content += "]\n}";
 					}
-					else if(action.equals("get_clouds")) {
+					else if(action.equals("get_weathers")) {
 						content = "{\n";
-						content += "\"clouds\": [";
+						content += "\"weathers\": [";
 						
 						File folder = new File(Paths.get("").toAbsolutePath().toString());
 						File[] listOfFiles = folder.listFiles();
 						
 						String prefix = "";
 						for (int i = 0; i < listOfFiles.length; i++) {
-							if (listOfFiles[i].isFile() && FilenameUtils.isExtension(listOfFiles[i].getName(), "kml")) {
+							if (listOfFiles[i].isFile() && FilenameUtils.isExtension(listOfFiles[i].getName(), "wea")) {
 								content += prefix 
 										+ "{" 
-										+ "\"fileName\":" + "\""+listOfFiles[i].getName()+"\"" + ","
-										+ "\"fileUrl\":" + "\""+listOfFiles[i].getAbsolutePath() +"\""
+										+ "\"fileName\":" + "\""+listOfFiles[i].getName()+"\""
 										+"}";
 								prefix = ",";
 							}
@@ -307,9 +308,10 @@ public class WDRP {
 //		Graph<Arc> g = new Graph<Arc>("andorra.graph");
 //		KMLUtil.generateGraphKML(g);
 		
+		//WeatherUtil.generateWeatherFromKML("test.kml", "test.wea");
+		
 		int port = 8888;
 		setupAlgorithms();
-//		graph = new Graph<Arc>("andorra.graph");
 		
 		Container container = new WDRPHandler();
 		Server server = new ContainerServer(container);

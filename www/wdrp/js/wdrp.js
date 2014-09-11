@@ -14,9 +14,9 @@ var edgesApiEndPoint = "edges";
 var selectGraphApiEndPoint = "select_graph";
 var getMapsApiEndPoint = "get_maps";
 var selectAlgorithmApiEndPoint = "select_algorithm";
-var selectCloudApiEndPoint = "select_cloud";
+var selectWeatherApiEndPoint = "select_weather";
 var getAlgorithmsApiEndPoint = "get_algorithms";
-var getCloudsApiEndPoint = "get_clouds";
+var getWeathersApiEndPoint = "get_weathers";
 var algorithmColors = {'CH': "#577c19", 'Dijkstra': "#534c96"}
 
 $(document).ready(function(){
@@ -28,8 +28,8 @@ $(document).ready(function(){
 	//get algorithms available
 	getAlgorithms();
 	
-	//get cloud maps available
-	getClouds();
+	//get weather maps available
+	getWeathers();
 	
 	//set first option as selected
 	var defaultMap = $("#mapList option:first").val();
@@ -43,7 +43,6 @@ $(document).ready(function(){
 		};
 	
 	map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-	selectMap();
   
 	lines = [];
 	googleLine = new google.maps.Polyline({map: map, path: [],
@@ -89,9 +88,9 @@ function getMaps() {
     });
 }
 
-function getClouds() {
+function getWeathers() {
 	var url = "http://"+host+":"+port+"?";		
-	url += "action=" + getCloudsApiEndPoint;
+	url += "action=" + getWeathersApiEndPoint;
 	console.log(url);
 	$.ajax({
         url: url,
@@ -101,10 +100,11 @@ function getClouds() {
             console.log(err);
         }, 
         success: function(json) {
-        	var clouds = json.clouds;
-        	var options = $("#cloudsList");
-        	$.each(clouds, function() {
-        	    options.append($("<option />").val(this.fileUrl).text(this.fileName));
+        	var weathers = json.weathers;
+        	console.log(weathers);
+        	var options = $("#weathersList");
+        	$.each(weathers, function() {
+        	    options.append($("<option />").val(this.fileName).text(this.fileName));
         	});
         }
     });
@@ -316,10 +316,10 @@ function selectAlgorithm() {
     });
 }
 
-function selectCloud() {
+function selectWeather() {
 	var url = "http://"+host+":"+port+"?";		
-	url += "action=" + selectCloudApiEndPoint;
-	url += "&cloud_name=" + $("#cloudsList").val();
+	url += "action=" + selectWeatherApiEndPoint;
+	url += "&weather_name=" + $("#weathersList").val();
 	console.log(url);
 	$.ajax({
         url: url,
@@ -329,12 +329,7 @@ function selectCloud() {
             console.log(err);
         }, 
         success: function(json) {
-        	console.log("successfuly selected cloud");
-        	map.data.loadGeoJson('/Users/Zakaria/Desktop/google.json');
-//        	var ctaLayer = new google.maps.KmlLayer({
-//        	    url: 'https://www.dropbox.com/s/tqha7gsdyq46sot/test.kml?dl=1'
-//        	  });
-//        	  ctaLayer.setMap(map);
+        	console.log("successfuly selected weather");
         }
     });
 }

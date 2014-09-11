@@ -4,10 +4,12 @@
 <head>
   <!-- The next line is for proper rendering on mobile devices -->
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+  
   <!-- The stylesheet for this page -->
   <link rel="stylesheet" type="text/css" href="css/wdrp.css">
-  <!-- The jQuery library -->
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
   <script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+  <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
   <!-- The Google Maps JavaScript library. The "sensor" argument is mandatory
   and says whether a GPS-like device is present and can be used -->
   <script type="text/javascript"
@@ -68,8 +70,8 @@
         </div>
         
         <div class="option">
-        	<h1>Cloud Maps</h1>
-	        <select id="cloudsList" class="optionList" size="5" onchange="selectCloud(this)">
+        	<h1>Weather Maps</h1>
+	        <select id="weathersList" class="optionList" size="5" onchange="selectWeather(this)">
 			</select>
         </div>
         
@@ -77,6 +79,12 @@
         	<h1>Algorithms</h1>
 	        <select id="algorithmsList" class="optionList" size="5" onchange="selectAlgorithm(this)" multiple>
 			</select>
+        </div>
+        
+        <div class="option">
+        	<p id="timeRange">
+			</p>
+			<div id="timeSlider"></div>
         </div>
         
 	</div>

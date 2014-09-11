@@ -14,6 +14,9 @@ public class WeatherTest {
 		Weather w = new Weather();
 		assertTrue(w.getCloudsAsList("17:00").isEmpty());
 		assertTrue(w.getCloudsAsList("17:00").isEmpty());
+		assertNull(w.getBeginTime());
+		assertNull(w.getEndTime());
+		assertNull(w.getTimeStep());
 	}
 	
 	@Test
@@ -34,22 +37,33 @@ public class WeatherTest {
 	@Test
 	public void testPersistentWeather() {
 		String fileName = "test.wea";
-		Weather w = new Weather(fileName);
+		IOUtils.deleteFile(fileName);
+		
+		Weather w = new Weather(fileName, "17:00", "17:05", "5");
 		
 		double[][] points = {{0,0},{0,2}, {2,2}};
 		w.addCloud("17:00", new Cloud(points));
 		double[][] points2 = {{0,0},{0,2}, {-2,2}};
 		w.addCloud("17:05", new Cloud(points2));
 		
+		assertEquals("17:00", w.getBeginTime());
+		assertEquals("17:05", w.getEndTime());
+		assertEquals("5", w.getTimeStep());
 		assertEquals(1, w.getCloudsAsList("17:00").size());
 		assertEquals(1, w.getCloudsAsList("17:05").size());
 		
+		w.close();
+		
 		Weather w1 = new Weather(fileName);
+		
+		assertEquals("17:00", w.getBeginTime());
+		assertEquals("17:05", w.getEndTime());
+		assertEquals("5", w.getTimeStep());
 		assertEquals(1, w1.getCloudsAsList("17:00").size());
 		assertEquals(1, w1.getCloudsAsList("17:05").size());
 		
-		assertEquals("[(0.0 , 0.0), (0.0 , 2.0), (2.0 , 2.0)]", Arrays.toString(w.getCloudsAsList("17:00").get(0).getPolygon().getCoordinates2D()));
-		assertEquals("[(0.0 , 0.0), (0.0 , 2.0), (-2.0 , 2.0)]", Arrays.toString(w.getCloudsAsList("17:05").get(0).getPolygon().getCoordinates2D()));
+		assertEquals("[(0.0 , 0.0), (0.0 , 2.0), (2.0 , 2.0)]", Arrays.toString(w1.getCloudsAsList("17:00").get(0).getPolygon().getCoordinates2D()));
+		assertEquals("[(0.0 , 0.0), (0.0 , 2.0), (-2.0 , 2.0)]", Arrays.toString(w1.getCloudsAsList("17:05").get(0).getPolygon().getCoordinates2D()));
 		
 		IOUtils.deleteFile(fileName);
 	}
