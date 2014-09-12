@@ -1,15 +1,16 @@
 package org.wdrp.core;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -31,18 +32,6 @@ import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.LatLonPoint;
 import org.wdrp.core.model.Path;
 import org.wdrp.core.model.Weather;
-import org.wdrp.core.reader.OSMDownloader;
-import org.wdrp.core.util.GraphUtils;
-import org.wdrp.core.util.WeatherUtil;
-
-import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
-import de.micromata.opengis.kml.v_2_2_0.Coordinate;
-import de.micromata.opengis.kml.v_2_2_0.Document;
-import de.micromata.opengis.kml.v_2_2_0.Feature;
-import de.micromata.opengis.kml.v_2_2_0.Kml;
-import de.micromata.opengis.kml.v_2_2_0.LineString;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
-import de.micromata.opengis.kml.v_2_2_0.Style;
 
 
 
@@ -103,16 +92,21 @@ public class WDRP {
 								
 								//if it does exist load it
 								
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+								String currDate = sdf.format(new Date());
+								
 								content = "{\n";
-								content += "\"success\":"+true;
+								content += "\"beginTime\":"+"\""+currDate+" "+weather.getBeginTime()+"\"" + ",";
+								content += "\"endTime\":"+"\""+currDate+" "+weather.getEndTime()+"\"" + ",";
+								content += "\"timeStep\":"+weather.getTimeStep();
 								content += "\n}";
 							}
 							else {
-								content="No cloud found for: "+weatherPath;
+								content="No weather found for: "+weatherPath;
 							}
 						}
 						else {
-							content="No cloud_name specified";
+							content="No weather_name specified";
 						}
 					}
 					else if(action.equals("select_algorithm")) {
@@ -308,7 +302,7 @@ public class WDRP {
 //		Graph<Arc> g = new Graph<Arc>("andorra.graph");
 //		KMLUtil.generateGraphKML(g);
 		
-		//WeatherUtil.generateWeatherFromKML("test.kml", "test.wea");
+//		WeatherUtil.generateWeatherFromKML("test.kml", "test.wea");
 		
 		int port = 8888;
 		setupAlgorithms();

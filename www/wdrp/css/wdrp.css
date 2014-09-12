@@ -26,8 +26,9 @@ body {
 #input {
 	width: 255px;
     float: left;                
-    padding-left: 10px; 
+    padding-left: 20px; 
     padding-right: 15px;
+    overflow:auto;
 }
 
 #planButton {

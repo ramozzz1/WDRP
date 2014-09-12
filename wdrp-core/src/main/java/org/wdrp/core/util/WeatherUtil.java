@@ -3,6 +3,7 @@ package org.wdrp.core.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.mapdb.Fun.Tuple2;
@@ -40,7 +41,7 @@ public class WeatherUtil {
 	            String[] parsedTimeString = parseTimeString(document.getName());
 	            w.setBeginTime(parsedTimeString[0]);
 	            w.setEndTime(parsedTimeString[1]);
-	            w.setTimeStep(parsedTimeString[2]);
+	            w.setTimeStep(Integer.parseInt(parsedTimeString[2]));
 	            List<Feature> folderList = document.getFeature();
 	            for(Feature documentFeature : folderList) {
 	            	if(documentFeature instanceof Folder) {

@@ -16,7 +16,7 @@ public class WeatherTest {
 		assertTrue(w.getCloudsAsList("17:00").isEmpty());
 		assertNull(w.getBeginTime());
 		assertNull(w.getEndTime());
-		assertNull(w.getTimeStep());
+		assertEquals(0, w.getTimeStep());
 	}
 	
 	@Test
@@ -39,7 +39,10 @@ public class WeatherTest {
 		String fileName = "test.wea";
 		IOUtils.deleteFile(fileName);
 		
-		Weather w = new Weather(fileName, "17:00", "17:05", "5");
+		Weather w = new Weather(fileName);
+		w.setBeginTime("17:00");
+		w.setEndTime("17:05");
+		w.setTimeStep(5);
 		
 		double[][] points = {{0,0},{0,2}, {2,2}};
 		w.addCloud("17:00", new Cloud(points));
@@ -48,7 +51,7 @@ public class WeatherTest {
 		
 		assertEquals("17:00", w.getBeginTime());
 		assertEquals("17:05", w.getEndTime());
-		assertEquals("5", w.getTimeStep());
+		assertEquals(5, w.getTimeStep());
 		assertEquals(1, w.getCloudsAsList("17:00").size());
 		assertEquals(1, w.getCloudsAsList("17:05").size());
 		
@@ -56,9 +59,9 @@ public class WeatherTest {
 		
 		Weather w1 = new Weather(fileName);
 		
-		assertEquals("17:00", w.getBeginTime());
-		assertEquals("17:05", w.getEndTime());
-		assertEquals("5", w.getTimeStep());
+		assertEquals("17:00", w1.getBeginTime());
+		assertEquals("17:05", w1.getEndTime());
+		assertEquals(5, w1.getTimeStep());
 		assertEquals(1, w1.getCloudsAsList("17:00").size());
 		assertEquals(1, w1.getCloudsAsList("17:05").size());
 		

@@ -28,6 +28,10 @@ public class WeatherUtilTest {
 		
 		Weather w = new Weather(fileName);
 		
+		assertEquals("17:00", w.getBeginTime());
+		assertEquals("17:05", w.getEndTime());
+		assertEquals(5, w.getTimeStep());
+		
 		List<Cloud> clouds1700 = w.getCloudsAsList("17:00");
 		assertEquals(2,clouds1700.size());
 		List<Cloud> clouds1705 = w.getCloudsAsList("17:05");

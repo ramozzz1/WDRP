@@ -330,6 +330,19 @@ function selectWeather() {
         }, 
         success: function(json) {
         	console.log("successfuly selected weather");
+        	var beginDate = new Date(json.beginTime);
+        	var endDate = new Date(json.endTime);
+        	var diff = ((endDate - beginDate)/1000)/60;
+        	$("#timeRange").html(beginDate.toLocaleTimeString());
+        	$("#timeSlider").slider({
+        	      value:0,
+        	      min: 0,
+        	      max: diff,
+        	      step: json.timeStep,
+        	      slide: function( event, ui ) {
+        	        //$( "#amount" ).val( "$" + ui.value );
+        	      }
+        	    });
         }
     });
 }
