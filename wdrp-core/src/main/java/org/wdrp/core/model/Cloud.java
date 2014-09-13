@@ -49,4 +49,8 @@ public class Cloud implements Serializable, Comparable<Cloud> {
 			return 0;
 		}
 	}
+
+	public double[][] getCoordinates() {
+		return _coordinates;
+	}
 }

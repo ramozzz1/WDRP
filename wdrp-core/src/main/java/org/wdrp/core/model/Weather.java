@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mapdb.BTreeKeySerializer;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -13,6 +17,8 @@ import org.mapdb.Fun;
 import com.google.common.collect.Lists;
 
 public class Weather {
+	private static Logger logger = Logger.getLogger(Weather.class);
+	
 	private DB _db;
 	private NavigableSet<Fun.Tuple2<String, Cloud>> _clouds;
 	private String _beginTime;
@@ -108,5 +114,41 @@ public class Weather {
 			}
 		}
 		_timeStep = timeStep;
+	}
+
+	public String toGeoJSON(String time) {
+		JSONObject featureCollection = new JSONObject();
+	    try {
+	        JSONArray featureList = new JSONArray();
+	        for (Cloud c : getClouds(time)) {
+	        	double[][] coordinates = c.getCoordinates();
+	        	
+	        	JSONObject polygon = new JSONObject();
+	            polygon.put("type", "Polygon");
+	            String coordinatesString = "[[";
+	            String prefix = "";
+	        	for (int i = 0; i < coordinates.length; i++) {
+	        		coordinatesString += prefix + "[" + coordinates[i][0]+","+coordinates[i][1] +","+0+"]";
+	        		prefix = ",";
+	        	}
+	        	coordinatesString += prefix + "[" + coordinates[0][0]+","+coordinates[0][1] +","+0+"]";
+	            coordinatesString += "]]";
+	        	polygon.put("coordinates", new JSONArray(coordinatesString));
+	        	
+	        	JSONObject feature = new JSONObject();
+	        	feature.put("geometry", polygon);
+	        	feature.put("properties", new JSONObject());
+	        	feature.put("type", "Feature");
+	        	featureList.put(feature);
+	        }
+	        
+            featureCollection.put("features", featureList);
+            featureCollection.put("type", "FeatureCollection");
+	    } catch (JSONException e) {
+	    	logger.error("can't save json object: "+e.toString());
+	    }
+	    // output the result
+	    System.out.println(featureCollection.toString());
+		return featureCollection.toString();
 	}
 }

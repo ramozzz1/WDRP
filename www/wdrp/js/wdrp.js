@@ -17,6 +17,10 @@ var selectAlgorithmApiEndPoint = "select_algorithm";
 var selectWeatherApiEndPoint = "select_weather";
 var getAlgorithmsApiEndPoint = "get_algorithms";
 var getWeathersApiEndPoint = "get_weathers";
+var getWeatherLayerApiEndPoint = "get_weather_layer";
+var features;
+var beginTime;
+var endTime;
 var algorithmColors = {'CH': "#577c19", 'Dijkstra': "#534c96"}
 
 $(document).ready(function(){
@@ -330,10 +334,10 @@ function selectWeather() {
         }, 
         success: function(json) {
         	console.log("successfuly selected weather");
-        	var beginDate = new Date(json.beginTime);
-        	var endDate = new Date(json.endTime);
-        	var diff = ((endDate - beginDate)/1000)/60;
-        	$("#timeRange").html(beginDate.toLocaleTimeString());
+        	beginTime = new Date(json.beginTime);
+        	endTime = new Date(json.endTime);
+        	var diff = ((endTime - beginTime)/1000)/60;
+        	$("#timeRange").html(beginTime.toLocaleTimeString().slice(0,5));
         	$("#timeSlider").slider({
         	      value:0,
         	      min: 0,
@@ -341,8 +345,38 @@ function selectWeather() {
         	      step: json.timeStep,
         	      slide: function( event, ui ) {
         	        //$( "#amount" ).val( "$" + ui.value );
+        	    	  var currDate = new Date(beginTime.getTime()); 
+        	    	  currDate.setMinutes(currDate.getMinutes() + ui.value);
+        	    	  
+        	    	  var currTime = currDate.toLocaleTimeString().slice(0,5);
+        	    	  $("#timeRange").html(currTime);
+        	    	  showWeatherLayer(currTime);
         	      }
         	    });
+        }
+    });
+}
+
+function showWeatherLayer(time) {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + getWeatherLayerApiEndPoint;
+	url += "&time=" + time;
+	console.log(url);
+	
+	if(features) {
+		for (var i = 0; i < features.length; i++)
+			map.data.remove(features[i]);
+	}
+	
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	features = map.data.addGeoJson(json);
         }
     });
 }

@@ -32,6 +32,7 @@ import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.LatLonPoint;
 import org.wdrp.core.model.Path;
 import org.wdrp.core.model.Weather;
+import org.wdrp.core.util.WeatherUtil;
 
 
 
@@ -168,6 +169,16 @@ public class WDRP {
 						    
 						content += "]\n}";
 					}
+					else if(action.equals("get_weather_layer")) {
+						String time = query.get("time");
+						if(time!=null) {
+							System.out.println(time);
+							content = weather.toGeoJSON(time);
+						}
+						else {
+							content="No time specified";
+						}
+					}
 					else if(action.equals("get_algorithms")) {
 						content = "{\n";
 						content += "\"algorithms\": [";
@@ -302,7 +313,7 @@ public class WDRP {
 //		Graph<Arc> g = new Graph<Arc>("andorra.graph");
 //		KMLUtil.generateGraphKML(g);
 		
-//		WeatherUtil.generateWeatherFromKML("test.kml", "test.wea");
+		WeatherUtil.generateWeatherFromKML("test.kml", "test.wea");
 		
 		int port = 8888;
 		setupAlgorithms();
