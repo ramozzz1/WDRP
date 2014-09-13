@@ -21,10 +21,12 @@ var getWeatherLayerApiEndPoint = "get_weather_layer";
 var features;
 var beginTime;
 var endTime;
+var playingWeather;
 var algorithmColors = {'CH': "#577c19", 'Dijkstra': "#534c96"}
 
 $(document).ready(function(){
 	firstClickToRoute = true;
+	playingWeather = false;
 	
 	//get maps available
 	getMaps();
@@ -69,6 +71,13 @@ $(document).ready(function(){
 			computeGoogleMapsPath();
 		}
 	});
+	
+	setInterval(function(){
+		if(playingWeather) {
+			incrementWeatherTimeSlider();
+		}
+	},1500);
+	
 });
 
 function getMaps() {
@@ -337,27 +346,38 @@ function selectWeather() {
         	beginTime = new Date(json.beginTime);
         	endTime = new Date(json.endTime);
         	var diff = ((endTime - beginTime)/1000)/60;
-        	$("#timeRange").html(beginTime.toLocaleTimeString().slice(0,5));
         	$("#timeSlider").slider({
         	      value:0,
         	      min: 0,
         	      max: diff,
         	      step: json.timeStep,
-        	      slide: function( event, ui ) {
-        	        //$( "#amount" ).val( "$" + ui.value );
-        	    	  var currDate = new Date(beginTime.getTime()); 
-        	    	  currDate.setMinutes(currDate.getMinutes() + ui.value);
-        	    	  
-        	    	  var currTime = currDate.toLocaleTimeString().slice(0,5);
-        	    	  $("#timeRange").html(currTime);
-        	    	  showWeatherLayer(currTime);
-        	      }
+        	      slide: function( event, ui ) {}
         	    });
+        	
+        	$( "#timeSlider" ).on("slide", 
+        		function( event, ui ) {
+        			updateWeatherAndTime(ui.value, false);
+        		}
+        	);
+        	
+        	updateWeatherAndTime(0, true);
         }
     });
 }
 
-function showWeatherLayer(time) {
+function updateWeatherAndTime(value, zoom) {
+	var currTime = valueToTime(value);
+	$("#timeRange").html(currTime);
+	showWeatherLayer(currTime, zoom);
+}
+
+function valueToTime(value) {
+	var begin = new Date(beginTime.getTime()); 
+	begin.setMinutes(begin.getMinutes() + value);
+	return begin.toLocaleTimeString().slice(0,5);
+}
+
+function showWeatherLayer(time, zoom) {
 	var url = "http://"+host+":"+port+"?";		
 	url += "action=" + getWeatherLayerApiEndPoint;
 	url += "&time=" + time;
@@ -377,6 +397,62 @@ function showWeatherLayer(time) {
         }, 
         success: function(json) {
         	features = map.data.addGeoJson(json);
+        	if(zoom) zoomToWeahter();
         }
     });
+}
+
+function togglePlayWeather() {
+	var inst = $( "#timeSlider" ).slider( "instance" );
+	if(inst) {
+		if(playingWeather) {
+			playingWeather = false;
+			$("#playButton").html("Play");
+			setValueForSlider(0);
+		}
+		else {
+			playingWeather = true;
+			$("#playButton").html("Stop");
+		}
+	}
+	else {
+		alert("Select weather first");
+	}	
+}
+
+function incrementWeatherTimeSlider() {
+	var value = $("#timeSlider").slider( "option", "value" );
+	var step = $("#timeSlider").slider( "option", "step" );
+	var max = $("#timeSlider").slider( "option", "max" );
+	var newValue = value+step;
+	if(newValue>max)
+		newValue = 0;
+	
+	setValueForSlider(newValue);
+}
+
+function setValueForSlider(val) {
+	$("#timeSlider").slider("value", val);
+	$("#timeSlider").trigger("slide", [{value:val},{}]);
+}
+
+function zoomToWeahter() {
+  var bounds = new google.maps.LatLngBounds();
+  map.data.forEach(function(feature) {
+    processPoints(feature.getGeometry(), bounds.extend, bounds);
+  });
+  map.fitBounds(bounds);
+  map.setZoom(map.getZoom()-2);
+}
+
+function processPoints(geometry, callback, thisArg) {
+  if (geometry instanceof google.maps.LatLng) {
+    callback.call(thisArg, geometry);
+  } else if (geometry instanceof google.maps.Data.Point) {
+    callback.call(thisArg, geometry.get());
+  } else {
+    geometry.getArray().forEach(function(g) {
+      processPoints(g, callback, thisArg);
+    });
+  }
 }
