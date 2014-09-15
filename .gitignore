@@ -12,3 +12,4 @@ target/
 *.p
 .DS_Store
 *.wea
+*.tdgraph
