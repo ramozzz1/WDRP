@@ -2,8 +2,10 @@ package org.wdrp.core.util;
 
 import gnu.trove.set.hash.THashSet;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -55,10 +57,51 @@ public class GraphUtils {
 		return ch.graph;
 	}
 	
-	public static TDGraph convertGraphToTDGraphWithWeather(Graph<Arc> g, Weather w) {		
-		return null;
+	public static TDGraph convertGraphToTDGraphWithWeather(Graph<Arc> g, Weather w) throws ParseException {
+		
+		TDGraph tdGraph;
+		if(g.getName() != null) {
+			String tdGraphFileName = g.getName()+".tdgraph";
+			IOUtils.deleteFile(tdGraphFileName);
+			tdGraph = new TDGraph(tdGraphFileName);
+		}
+		else tdGraph = new TDGraph();
+		
+		int count = 0;
+		for (Entry<Long, LatLonPoint> n : g.nodes.entrySet()) {
+			count++;
+			tdGraph.addNode(n.getKey(),n.getValue().lat,n.getValue().lon);
+			if(count%100000==0) logger.info("#nodes processed: "+count);
+		}
+		
+		for (Tuple2<Long, Arc> tp : g.adjacenyList) {
+			Long id = tp.a;
+			Arc arc = tp.b;
+			
+			LatLonPoint pntA = g.getLatLon(id);
+			LatLonPoint pntB = g.getLatLon(arc.getHeadNode());
+			
+			int numberOfTimeSteps = w.getNumberOfTimeSteps();
+			int[] costs = new int[numberOfTimeSteps+1];
+			
+			int i = 0;
+			while(i < costs.length) {
+				costs[i] = arc.getCost();
+				for (Cloud c : w.getClouds(w.addTimeStepAndGetTime(i))) {
+					if(c.intersectsLine(pntA.lon, pntB.lon, pntA.lat, pntB.lat)) {
+						costs[i] = -1;
+						break;
+					}
+				}
+				i++;
+			}
+			
+			tdGraph.addEdge(id, new TDArc(arc.getHeadNode(), costs));
+		}
+		
+		return tdGraph;
 	}
-	
+
 	//convert graph to largest connected component
 	public static void convertToLCC(Graph<Arc> g) {
 		Set<Long> visitedNodes = new THashSet<Long>();

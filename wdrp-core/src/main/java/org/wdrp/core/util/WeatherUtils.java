@@ -3,7 +3,6 @@ package org.wdrp.core.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.mapdb.Fun.Tuple2;
@@ -28,9 +27,11 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 
-public class WeatherUtil {
+public class WeatherUtils {
 	
 	public static void generateWeatherFromKML(String kmlPath, String fileName) throws FileNotFoundException {
+		IOUtils.deleteFile(fileName);
+		
 		Weather w = new Weather(fileName);
 		
 		Kml kml = Kml.unmarshal(new File(kmlPath));

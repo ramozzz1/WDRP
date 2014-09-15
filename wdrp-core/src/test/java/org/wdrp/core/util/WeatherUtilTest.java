@@ -24,7 +24,7 @@ public class WeatherUtilTest {
 		String fileName = "test.wea";
 		IOUtils.deleteFile(fileName);
 		
-		WeatherUtil.generateWeatherFromKML(resource.getPath(),fileName);
+		WeatherUtils.generateWeatherFromKML(resource.getPath(),fileName);
 		
 		Weather w = new Weather(fileName);
 		

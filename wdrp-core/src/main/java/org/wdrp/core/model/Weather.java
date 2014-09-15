@@ -1,6 +1,9 @@
 package org.wdrp.core.model;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.TreeSet;
@@ -150,5 +153,22 @@ public class Weather {
 	    // output the result
 	    System.out.println(featureCollection.toString());
 		return featureCollection.toString();
+	}
+
+	public int getNumberOfTimeSteps() throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		Date begin = format.parse(getBeginTime());
+		Date end = format.parse(getEndTime());
+		
+		int diffMinutes = (int)((end.getTime() - begin.getTime())/1000)/60;
+		return diffMinutes/getTimeStep();
+	}
+
+	public String addTimeStepAndGetTime(int i) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		Date begin = format.parse(getBeginTime());
+		Date dateAfter = new Date(begin.getTime() + (getTimeStep() * i * 60000));
+		
+		return format.format(dateAfter);
 	}
 }

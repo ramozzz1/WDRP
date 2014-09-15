@@ -22,7 +22,7 @@ public class TDArc extends Arc{
 			this.costs[i] = arc.getCost();
 	}
 	
-	public TDArc(int targetId, int[] costs) {
+	public TDArc(long targetId, int[] costs) {
 		super(targetId, costs[0]);
 		
 		this.costs = costs;

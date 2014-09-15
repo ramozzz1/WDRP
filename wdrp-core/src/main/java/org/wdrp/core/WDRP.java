@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +32,11 @@ import org.wdrp.core.model.Arc;
 import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.LatLonPoint;
 import org.wdrp.core.model.Path;
+import org.wdrp.core.model.TDArc;
+import org.wdrp.core.model.TDGraph;
 import org.wdrp.core.model.Weather;
-import org.wdrp.core.util.WeatherUtil;
+import org.wdrp.core.util.GraphUtils;
+import org.wdrp.core.util.WeatherUtils;
 
 
 
@@ -298,7 +302,7 @@ public class WDRP {
 		
 	}
 	
-	public static void main(String[] args) throws IOException, URISyntaxException{
+	public static void main(String[] args) throws IOException, URISyntaxException, ParseException{
 		
 //		OSMDownloader.downloadOsmFromGeofabrik("andorra.osm","europe/andorra");
 //		GraphUtils.convertOSMToGraph("andorra.osm", true);
@@ -313,7 +317,13 @@ public class WDRP {
 //		Graph<Arc> g = new Graph<Arc>("andorra.graph");
 //		KMLUtil.generateGraphKML(g);
 		
-		WeatherUtil.generateWeatherFromKML("test.kml", "test.wea");
+		GraphUtils.convertOSMToGraph("test.osm", false);
+		WeatherUtils.generateWeatherFromKML("test.kml", "test.wea");
+		
+		Graph<Arc> graph = new Graph<Arc>("test.graph");
+		Weather weather =  new Weather("test.wea");
+		
+		TDGraph tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(graph, weather);
 		
 		int port = 8888;
 		setupAlgorithms();

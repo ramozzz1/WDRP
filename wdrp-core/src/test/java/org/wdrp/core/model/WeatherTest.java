@@ -2,6 +2,7 @@ package org.wdrp.core.model;
 
 import static org.junit.Assert.*;
 
+import java.text.ParseException;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -69,5 +70,36 @@ public class WeatherTest {
 		assertEquals("[(0.0 , 0.0), (0.0 , 2.0), (-2.0 , 2.0)]", Arrays.toString(w1.getCloudsAsList("17:05").get(0).getPolygon().getCoordinates2D()));
 		
 		IOUtils.deleteFile(fileName);
+	}
+	
+	@Test
+	public void testNumberOfTimeSteps() throws ParseException {
+		Weather w = new Weather();
+		w.setBeginTime("17:00");
+		w.setEndTime("19:00");
+		w.setTimeStep(10);
+		
+		assertEquals(12, w.getNumberOfTimeSteps());
+		
+		w.setTimeStep(1);
+		
+		assertEquals(120, w.getNumberOfTimeSteps());
+		
+		w.setTimeStep(5);
+		
+		assertEquals(24, w.getNumberOfTimeSteps());
+	}
+	
+	@Test
+	public void testAddTimeStepAndGetTime() throws ParseException {
+		Weather w = new Weather();
+		w.setBeginTime("17:00");
+		w.setEndTime("19:00");
+		w.setTimeStep(5);
+		
+		assertEquals("17:00", w.addTimeStepAndGetTime(0));
+		assertEquals("18:00", w.addTimeStepAndGetTime(12));
+		assertEquals("18:30", w.addTimeStepAndGetTime(18));
+		assertEquals("19:00", w.addTimeStepAndGetTime(24));
 	}
 }

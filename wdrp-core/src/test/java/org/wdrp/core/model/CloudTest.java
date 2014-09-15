@@ -32,6 +32,63 @@ public class CloudTest {
 
 		assertTrue(c.intersectsLine(x1,x2,y1,y2));
 	}
+	
+	@Test
+	public void testPartOfLineWithinCloud1() {
+		double[][] crd = {
+							{4.505767822265625,51.916479358958874},
+							{4.505767822265625,51.90896108130657},
+							{4.516582489013672,51.90880223087697},
+							{4.515724182128906,51.91579111827799}
+						};
+		
+		Cloud c = new Cloud(crd);
+		
+		double x1 = 4.501562118530273;
+		double x2 = 4.508771896362305;
+		double y1 = 51.91303805005687;
+		double y2 = 51.91293215944665;
+
+		assertTrue(c.intersectsLine(x1,x2,y1,y2));
+	}
+	
+	@Test
+	public void testPartOfLineWithinCloud2() {
+		double[][] crd = { 
+							{ 4.504609107971191, 51.91348808236464 },
+							{ 4.504952430725098, 51.91286597768845 },
+							{ 4.506196975708008, 51.91315717669492 },
+							{ 4.506111145019531, 51.913554263205945 } 
+						};
+		
+		Cloud c = new Cloud(crd);
+
+		double x1 = 4.508771896362305;
+		double x2 = 4.501562118530273;
+		double y1 = 51.91293215944665;
+		double y2 = 51.91293215944665;
+
+		assertTrue(c.intersectsLine(x1,x2,y1,y2));
+	}
+	
+	@Test
+	public void testWholeLineOutOfCloud1() {
+		double[][] crd = {
+							{4.505767822265625,51.916479358958874},
+							{4.505767822265625,51.90896108130657},
+							{4.516582489013672,51.90880223087697},
+							{4.515724182128906,51.91579111827799}
+						};
+		
+		Cloud c = new Cloud(crd);
+		
+		double x1 = 4.501562118530273;
+		double x2 = 4.501476287841797;
+		double y1 = 51.91303805005687;
+		double y2 =  51.910867242637416;
+
+		assertFalse(c.intersectsLine(x1,x2,y1,y2));
+	}
     	
 	@Test
 	public void testWholeLineWithinCloudWithLinePointsOnBorder() {
