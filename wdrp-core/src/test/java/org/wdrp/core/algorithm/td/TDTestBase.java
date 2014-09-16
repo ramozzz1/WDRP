@@ -2,19 +2,44 @@ package org.wdrp.core.algorithm.td;
 
 import org.junit.After;
 import org.junit.Before;
+import org.wdrp.core.model.TDArc;
 import org.wdrp.core.model.TDGraph;
 import org.wdrp.core.util.ArrayUtils;
 
 public class TDTestBase {
-	public static TDGraph g;
+	protected static TDGraph g;
+	protected static TDGraph tdGraphTwoMin;
 	
 	@After
 	public void breakTDGraph() {
 		g.clear();
+		tdGraphTwoMin.clear();
 	}
 	
 	@Before
 	public void setUpTDGraph() {
+		buildStandardTDGraph();
+		buildTwoMinTDGraph();
+	}
+
+	private void buildTwoMinTDGraph() {
+		tdGraphTwoMin = new TDGraph(60,2);
+		tdGraphTwoMin.addNode(0);
+		tdGraphTwoMin.addNode(1);
+		tdGraphTwoMin.addNode(2);
+		tdGraphTwoMin.addNode(3);
+		tdGraphTwoMin.addNode(4);
+		tdGraphTwoMin.addNode(5);
+		
+		tdGraphTwoMin.addEdge(0, 1,new int[]{10,10});
+		tdGraphTwoMin.addEdge(1, 2, new int[]{10,-1});
+		tdGraphTwoMin.addEdge(2, 3, new int[]{20, -1});
+		tdGraphTwoMin.addEdge(0, 4, new int[]{5, 5});
+		tdGraphTwoMin.addEdge(4, 5, new int[]{5, 5});
+		tdGraphTwoMin.addEdge(5, 3, new int[]{5, 5});
+	}
+
+	private void buildStandardTDGraph() {
 		g = new TDGraph(1,20);
 		
 		g.addNode(0);

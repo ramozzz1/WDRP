@@ -76,7 +76,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				
 				for (TDArc v : graph.getNeighbors(minNodeId)) {
 					if(considerArc(v)) {
-						int[] gNew = ttfU==null ? v.getCosts() : ArrayUtils.linkLists(ttfU, v.getCosts());
+						int[] gNew = ttfU==null ? v.getCosts() : ArrayUtils.linkLists(ttfU, v.getCosts(), ((TDGraph)graph).getInterval());
 						relax(minNodeId, gNew, v);
 					}
 				}

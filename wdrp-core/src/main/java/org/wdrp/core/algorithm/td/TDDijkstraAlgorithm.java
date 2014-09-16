@@ -36,7 +36,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 		
 		//Check if the arrival time was found
 		if(earliestArrivalTime >= 0)
-			return earliestArrivalTime - departureTime;
+			return earliestArrivalTime - (departureTime*((TDGraph)graph).getInterval());
 			
 		return earliestArrivalTime;
 	}
@@ -44,7 +44,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	@Override
 	public int[] computeEarliestArrivalTimes(long source, long target,
 			int minDepartureTime, int maxDepartureTime) {
-		int[] travelTimes = new int[(maxDepartureTime-minDepartureTime)+1];
+		int[] travelTimes = new int[(maxDepartureTime-minDepartureTime)];
 		
 		for(int i=0; i < travelTimes.length;i=i+1)
 			travelTimes[i] = this.computeEarliestArrivalTime(source, target, i+minDepartureTime);

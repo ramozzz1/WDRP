@@ -76,7 +76,7 @@ public class ArrayUtilsTest {
 		listC[1] =(13);
 		listC[2] =(7);
 
-		int[] linkList = ArrayUtils.linkLists(listA, listB);
+		int[] linkList = ArrayUtils.linkLists(listA, listB,1);
 		
 		assertEquals("[7, 6, -1]", Arrays.toString(linkList));
 	}

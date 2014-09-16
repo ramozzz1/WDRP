@@ -3,6 +3,8 @@ package org.wdrp.core.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.wdrp.core.model.TDGraph;
+
 public class ArrayUtils {
 	public static int getMinValue(List<Integer> list){  
 		int currentValue = Integer.MAX_VALUE;
@@ -165,7 +167,7 @@ public class ArrayUtils {
 		return true;
 	}
 
-	public static int[] linkLists(int[] f, int[] g) {
+	public static int[] linkLists(int[] f, int[] g, int interval) {
 		if(isZeroArray(g)) {
 			int[] tmp = f;
 			f = g;
@@ -178,10 +180,12 @@ public class ArrayUtils {
 			
 			int travelTimeUV = f[i];
 			if(travelTimeUV >= 0) {
-				int arrivalTimeV = i+travelTimeUV;
+				int arrivalTimeV = i*interval+travelTimeUV;
 				
-				if(arrivalTimeV < g.length) {
-					int travelTimeForArrivalAtG = g[arrivalTimeV];
+				int index = (int) Math.floor((float) arrivalTimeV/interval);
+				
+				if(index < g.length) {
+					int travelTimeForArrivalAtG = g[index];
 					if(travelTimeForArrivalAtG >=0)
 						travelTimeUW = travelTimeUV + travelTimeForArrivalAtG;
 				}

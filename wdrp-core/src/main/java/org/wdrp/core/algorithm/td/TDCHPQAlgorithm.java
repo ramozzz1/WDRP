@@ -86,7 +86,7 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 						if(considerArc(arc)) {
 							System.out.println("ARC " +arc);
 							System.out.println("LINKING " +Arrays.toString(ttfUSource) + " "+Arrays.toString(arc.getCosts()));
-							int[] gNew = ttfUSource==null ? arc.getCosts() : ArrayUtils.linkLists(ttfUSource, arc.getCosts());
+							int[] gNew = ttfUSource==null ? arc.getCosts() : ArrayUtils.linkLists(ttfUSource, arc.getCosts(), ((TDGraph)pqSource.graph).getInterval());
 							pqSource.relax(u.getNodeId(), gNew, arc);
 						}
 					}
@@ -96,7 +96,7 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 						if(considerArc(arc)) {
 							System.out.println("ARC " +arc);
 							System.out.println("LINKING " +Arrays.toString(arc.getCosts()) + " "+Arrays.toString(ttfUTarget));
-							int[] gNew = ttfUTarget==null ? arc.getCosts() : ArrayUtils.linkLists(graph.getArc(arc.getHeadNode(), u.getNodeId()).getCosts(),ttfUTarget);
+							int[] gNew = ttfUTarget==null ? arc.getCosts() : ArrayUtils.linkLists(graph.getArc(arc.getHeadNode(), u.getNodeId()).getCosts(),ttfUTarget, ((TDGraph)pqTarget.graph).getInterval());
 							System.out.println("gNew " +Arrays.toString(gNew));
 							pqTarget.relax(u.getNodeId(), gNew, arc);
 						}
@@ -124,7 +124,7 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 			System.out.println("ttfXSource: "+Arrays.toString(ttfXSource));
 			System.out.println("ttfXTarget: "+Arrays.toString(ttfXTarget));
 			
-			int[] ttf = ArrayUtils.linkLists(ttfXSource, ttfXTarget);
+			int[] ttf = ArrayUtils.linkLists(ttfXSource, ttfXTarget, ((TDGraph)graph).getInterval());
 			
 			System.out.println("LINKED: "+Arrays.toString(ttf));
 			pq.add(new TTFEntry(ttf, ttf.length));

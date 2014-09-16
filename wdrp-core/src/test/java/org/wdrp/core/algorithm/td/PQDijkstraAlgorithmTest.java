@@ -185,9 +185,24 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 		Set<Long> nodes = pqA.graph.nodes.keySet();
 		for (Long u : nodes) {
 			for (Long v : nodes) {
-				System.out.println("<> "+u+" "+v);
 				eaTimes = pqA.computeTravelTimes(u, v);
 				assertEquals(Arrays.toString(eaTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
+			}
+		}
+	}
+	
+	@Test
+	public void testTravelTimesSourceTargetDynamicAllDPTimesOnTwoMinGraph() {		
+		int[] travelTimes;
+		
+		tdA = new TDDijkstraAlgorithm(tdGraphTwoMin);
+		pqA = new PQDijkstraAlgorithm(tdGraphTwoMin);
+		
+		Set<Long> nodes = pqA.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				travelTimes = pqA.computeTravelTimes(u, v);
+				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
 			}
 		}
 	}

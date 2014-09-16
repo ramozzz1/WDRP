@@ -1,6 +1,10 @@
 package org.wdrp.core.algorithm.td;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -82,5 +86,21 @@ public class PIQDijkstraAlgorithmTest extends TDTestBase {
 		intervalPIQ = piqA.computeTravelTimesInterval(2,0);
 		
 		assertTrue(intevalLargerOrEqual(intervalPIQ,intervalTD));
+	}
+	
+	@Test
+	public void testTTIntervalSourceTargetDynamicAllDPTimesOnTwoMinGraph() {		
+		Tuple2<Integer, Integer> intervalPIQ;
+		
+		tdA = new TDDijkstraAlgorithm(tdGraphTwoMin);
+		piqA = new PIQDijkstraAlgorithm(tdGraphTwoMin);
+		
+		Set<Long> nodes = piqA.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				intervalPIQ = piqA.computeTravelTimesInterval(u, v);
+				assertTrue(intevalLargerOrEqual(intervalPIQ,tdA.computeTravelTimesInterval(u, v)));
+			}
+		}
 	}
 }

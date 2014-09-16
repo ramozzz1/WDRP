@@ -206,4 +206,41 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 		int bestDepartureTime = a.computeBestDepartureTime(0, 5, 2, 3);
 		assertEquals(bestDepartureTime, 2);
 	}
+	
+	@Test
+	public void computeEATimeOnTwoMinGraph() {
+		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(tdGraphTwoMin);
+		
+		int eaTime;
+		
+		eaTime = a.computeEarliestArrivalTime(0, 0, 0);
+		assertEquals(eaTime, 0);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 0, 1);
+		assertEquals(eaTime, 60);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 1, 0);
+		assertEquals(eaTime, 10);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 1, 1);
+		assertEquals(eaTime, 70);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 2, 0);
+		assertEquals(eaTime, 20);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 2, 1);
+		assertEquals(eaTime, -1);
+		
+		eaTime = a.computeEarliestArrivalTime(1, 2, 0);
+		assertEquals(eaTime, 10);
+		
+		eaTime = a.computeEarliestArrivalTime(1, 2, 1);
+		assertEquals(eaTime, -1);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 3, 0);
+		assertEquals(eaTime, 15);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 3, 1);
+		assertEquals(eaTime, 75);
+	}
 }

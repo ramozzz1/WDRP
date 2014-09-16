@@ -203,14 +203,15 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 					//store the cost of visiting the node through node v for every departure time
 					int[] costsThroughContractedNode = ArrayUtils.linkLists(
 							tdInArc.getCosts(), 
-							tdOutArc.getCosts()
+							tdOutArc.getCosts(),
+							((TDGraph)graph).getInterval()
 							);
 					
 					//compute the costs from u to w without v in the graph
 					int[] witnessSearchCosts = psDijkstra.computeTravelTimes(u, w);
 					
-					System.out.println("****Cost through contracted node "+costsThroughContractedNode);
-					System.out.println("****Cost of witness search "+witnessSearchCosts);
+					System.out.println("****Cost through contracted node "+Arrays.toString(costsThroughContractedNode));
+					System.out.println("****Cost of witness search "+Arrays.toString(witnessSearchCosts));
 					
 					if(witnessSearchCosts != null && ArrayUtils.listLarger(costsThroughContractedNode, witnessSearchCosts))
 						continue;
@@ -260,7 +261,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 	
 	public int[] computeEarliestArrivalTimes(long source, long target,
 			int minDepartureTime, int maxDepartureTime) {
-		int[] travelTimes = new int[(maxDepartureTime-minDepartureTime)+1];
+		int[] travelTimes = new int[(maxDepartureTime-minDepartureTime)];
 		
 		for(int i=0; i < travelTimes.length;i=i+1)
 			travelTimes[i] = this.computeEarliestArrivalTime(source, target, i+minDepartureTime);
@@ -269,7 +270,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 	}
 	
 	public int[] computeEarliestArrivalTimes(long source, long target) {
-		return computeEarliestArrivalTimes(source, target, 0, 20);
+		return computeEarliestArrivalTimes(source, target, 0, ((TDGraph)graph).getMaxTime());
 	}
 	
 	public int computeEarliestArrivalTime(long source, long target, int departureTime) {
@@ -277,7 +278,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 			int B = Integer.MAX_VALUE; //upperbound
 			candidates = new THashSet<Long>();
 			
-			tdDijkstra.startCost = departureTime;
+			tdDijkstra.startCost = departureTime*((TDGraph)graph).getInterval();
 			
 			tdDijkstra.init(source);
 			piqDijkstra.init(target);

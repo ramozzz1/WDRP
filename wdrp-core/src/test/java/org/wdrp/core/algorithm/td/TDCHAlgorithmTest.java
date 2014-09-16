@@ -503,6 +503,57 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		ea = tdch.computeEarliestArrivalTime(2, 1, 2);
 		assertEquals(ea, tdDijkstra.computeEarliestArrivalTime(2, 1, 2));
 	}
+	
+	@Test
+	public void computeEATimeOnTwoMinGraph() {
+		TDCHAlgorithm tdch = new TDCHAlgorithm(tdGraphTwoMin);
+		
+		tdch.precompute();
+		
+		int eaTime;
+		
+		eaTime = tdch.computeEarliestArrivalTime(0, 1, 0);
+		assertEquals(eaTime, 10);
+		
+		eaTime = tdch.computeEarliestArrivalTime(0, 1, 1);
+		assertEquals(eaTime, 70);
+		
+		eaTime = tdch.computeEarliestArrivalTime(0, 2, 0);
+		assertEquals(eaTime, 20);
+		
+		eaTime = tdch.computeEarliestArrivalTime(0, 2, 1);
+		assertEquals(eaTime, -1);
+		
+		eaTime = tdch.computeEarliestArrivalTime(1, 2, 0);
+		assertEquals(eaTime, 10);
+		
+		eaTime = tdch.computeEarliestArrivalTime(1, 2, 1);
+		assertEquals(eaTime, -1);
+		
+		eaTime = tdch.computeEarliestArrivalTime(0, 3, 0);
+		assertEquals(eaTime, 15);
+		
+		eaTime = tdch.computeEarliestArrivalTime(0, 3, 1);
+		assertEquals(eaTime, 75);
+	}
+	
+	@Test
+	public void testEATimeSourceTargetDynamicAllDPTimesOnTwoMinGraph() {		
+		int[] eaTimes;
+		
+		TDCHAlgorithm tdch = new TDCHAlgorithm(tdGraphTwoMin);
+		TDDijkstraAlgorithm tdd = new TDDijkstraAlgorithm(tdGraphTwoMin);
+				
+		tdch.precompute();
+		
+		Set<Long> nodes = tdch.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				eaTimes = tdch.computeEarliestArrivalTimes(u, v);
+				assertEquals(Arrays.toString(eaTimes), Arrays.toString(tdd.computeEarliestArrivalTimes(u, v)));
+			}
+		}
+	}
 
 	public TDGraph createSmallCustomGraph() {
 		TDGraph graph = new TDGraph(1,20);
