@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.wdrp.core.model.TDArc;
+import org.wdrp.core.model.TDGraph;
 
 public class TDDijkstraAlgorithmTest extends TDTestBase {
 	
@@ -41,6 +43,47 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 		
 		cost = a.getEdgeCost(g.getArc(0, 1), 20);
 		assertEquals(cost, Integer.MAX_VALUE);
+	}
+	
+	@Test
+	public void testTDEdgeCost1() {
+		TDGraph tdg = new TDGraph(60,2);
+		tdg.addNode(0);
+		tdg.addNode(1);
+		
+		int[] costs = {10,20};
+		tdg.addEdge(0, new TDArc(1, costs));
+	
+		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(tdg);
+		
+		int cost;
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 0);
+		assertEquals(10, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 30);
+		assertEquals(40, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 59);
+		assertEquals(69, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 60);
+		assertEquals(80, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 90);
+		assertEquals(110, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 119);
+		assertEquals(139, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 120);
+		assertEquals(Integer.MAX_VALUE, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 130);
+		assertEquals(Integer.MAX_VALUE, cost);
+		
+		cost = a.getEdgeCost(tdg.getArc(0, 1), 180);
+		assertEquals(Integer.MAX_VALUE, cost);
 	}
 	
 	@Test
