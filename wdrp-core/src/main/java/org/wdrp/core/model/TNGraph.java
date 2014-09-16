@@ -15,8 +15,8 @@ public class TNGraph extends Graph<Arc> {
 	public TNGraph(String fileName, boolean temp) {
 		super(fileName,temp);
 		
-		this.stations = db.createTreeMap("stations").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).counterEnable().makeOrGet();
-		this.nodesPerStation = db.createTreeSet("nodesPerStation").serializer(BTreeKeySerializer.TUPLE2).counterEnable().makeOrGet();
+		this.stations = _db.createTreeMap("stations").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).counterEnable().makeOrGet();
+		this.nodesPerStation = _db.createTreeSet("nodesPerStation").serializer(BTreeKeySerializer.TUPLE2).counterEnable().makeOrGet();
 		this.numStations = this.stations.size();
 	}
 	

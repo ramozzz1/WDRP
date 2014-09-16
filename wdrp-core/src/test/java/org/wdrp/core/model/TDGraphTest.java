@@ -10,7 +10,7 @@ public class TDGraphTest {
 	
 	@Test
 	public void testTDGraph() {
-		TDGraph g = new TDGraph();
+		TDGraph g = new TDGraph(1, 20);
 		
 		g.addNode(0);
 		g.addNode(1);
@@ -35,7 +35,7 @@ public class TDGraphTest {
 	
 	@Test
 	public void testGetCostForTimeGraph() {
-		TDGraph g = new TDGraph();
+		TDGraph g = new TDGraph(1, 20);
 		
 		g.addNode(0);
 		g.addNode(1);

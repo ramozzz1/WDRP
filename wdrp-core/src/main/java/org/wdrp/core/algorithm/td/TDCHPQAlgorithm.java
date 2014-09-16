@@ -53,9 +53,9 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 				
 				System.out.println("MIN " +u);
 				int[] ttfUSource = pqSource.f.get(u.getNodeId());
-				if(ttfUSource==null) ttfUSource = ArrayUtils.extrapolateArray(new int[]{Integer.MAX_VALUE}, pqSource.graph.timeInterval);
+				if(ttfUSource==null) ttfUSource = ArrayUtils.extrapolateArray(new int[]{Integer.MAX_VALUE}, ((TDGraph)pqSource.graph).getMaxTime());
 				int[] ttfUTarget = pqTarget.f.get(u.getNodeId());
-				if(ttfUTarget==null) ttfUTarget = ArrayUtils.extrapolateArray(new int[]{Integer.MAX_VALUE}, pqTarget.graph.timeInterval);
+				if(ttfUTarget==null) ttfUTarget = ArrayUtils.extrapolateArray(new int[]{Integer.MAX_VALUE}, ((TDGraph)pqTarget.graph).getMaxTime());
 				
 				System.out.println("ttfUSource " +Arrays.toString(ttfUSource)+ " MAX "+  ArrayUtils.getMaxValue(ttfUSource));
 				System.out.println("ttfUTarget " +Arrays.toString(ttfUTarget) + " MAX "+  ArrayUtils.getMaxValue(ttfUTarget));

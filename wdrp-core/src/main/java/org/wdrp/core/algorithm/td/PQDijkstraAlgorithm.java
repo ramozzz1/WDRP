@@ -35,7 +35,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		this.p = new THashMap<Long, Set<Long>>();
 		this.queue = new PriorityQueue<NodeEntry>();
 		
-		f.put(source, new int[graph.timeInterval]);
+		f.put(source, new int[((TDGraph)graph).getMaxTime()]);
 		p.put(source, null);
 		queue.add(new NodeEntry(source, 0));
 	}

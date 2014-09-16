@@ -15,7 +15,7 @@ public class TDTestBase {
 	
 	@Before
 	public void setUpTDGraph() {
-		g = new TDGraph();
+		g = new TDGraph(1,20);
 		
 		g.addNode(0);
 		g.addNode(1);

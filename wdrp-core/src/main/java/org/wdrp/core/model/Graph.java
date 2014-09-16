@@ -19,11 +19,10 @@ import org.wdrp.core.util.DistanceUtils;
 import org.wdrp.core.util.IOUtils;
 
 public class Graph<K extends Arc> {
-	protected DB db;
+	protected DB _db;
 	private int numNodes;
 	private int numEdges;
 	private String name;
-	public int timeInterval = 20;
 	
 	public BTreeMap<Long,LatLonPoint> nodes;
 	public NavigableSet<Fun.Tuple2<Long, K>> adjacenyList;
@@ -39,7 +38,7 @@ public class Graph<K extends Arc> {
 	
 	public Graph(String fileName, boolean temp) {
 		if(!temp) {
-			this.db = DBMaker
+			this._db = DBMaker
 					.newFileDB(new File(fileName))
 					//.newDirectMemoryDB()
 					.transactionDisable()
@@ -50,13 +49,13 @@ public class Graph<K extends Arc> {
 			this.name = FilenameUtils.getBaseName(fileName);
 		}
 		else {
-			this.db = DBMaker.newTempFileDB().transactionDisable().deleteFilesAfterClose().make();
+			this._db = DBMaker.newTempFileDB().transactionDisable().deleteFilesAfterClose().make();
 		}
 		
 		Serializer<LatLonPoint> serializer = new LatLonPointSerializer();
-		this.nodes = db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).valueSerializer(serializer).counterEnable().makeOrGet();
-		this.adjacenyList = db.createTreeSet("adjacenyList").serializer(BTreeKeySerializer.TUPLE2).counterEnable().makeOrGet();
-		this.bounds = db.createTreeSet("bound").counterEnable().makeOrGet();
+		this.nodes = _db.createTreeMap("nodes").keySerializer(BTreeKeySerializer.ZERO_OR_POSITIVE_LONG).valueSerializer(serializer).counterEnable().makeOrGet();
+		this.adjacenyList = _db.createTreeSet("adjacenyList").serializer(BTreeKeySerializer.TUPLE2).counterEnable().makeOrGet();
+		this.bounds = _db.createTreeSet("bound").counterEnable().makeOrGet();
 		if(this.bounds.size() == 0) {
 			this.bounds.add(new Bounds());
 		}
@@ -66,7 +65,7 @@ public class Graph<K extends Arc> {
 	}
 	
 	public void closeConnection() {
-		db.close();
+		_db.close();
 	}
 	
 	public String getName() {
@@ -328,11 +327,11 @@ public class Graph<K extends Arc> {
 	}
 	
 	public void setCH(boolean ch) {
-		db.getAtomicBoolean("ch").set(ch);
+		_db.getAtomicBoolean("ch").set(ch);
 	}
 	
 	public boolean isCH() {
-		return db.getAtomicBoolean("ch").get();
+		return _db.getAtomicBoolean("ch").get();
 	}
 	
 	@Override

@@ -21,7 +21,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 			int departureTime) {
 		
 		//set start cost of source to departure time
-		super.startCost = departureTime;
+		super.startCost = departureTime*((TDGraph)graph).getInterval();
 		
 		int earliestArrivalTime = super.computeShortestPath(source, target);
 		
@@ -53,11 +53,11 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	}
 	
 	public int[] computeEarliestArrivalTimes(long source, long target) {
-		return computeEarliestArrivalTimes(source, target, 0, 20);
+		return computeEarliestArrivalTimes(source, target, 0, ((TDGraph)graph).getMaxTime());
 	}
 	
 	public int[] computeTravelTimes(long source, long target) {
-		return computeTravelTimes(source, target, 0, 20);
+		return computeTravelTimes(source, target, 0, ((TDGraph)graph).getMaxTime());
 	}
 	
 	@Override
@@ -83,7 +83,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	}
 	
 	public int computeBestDepartureTime(long source, long target) {
-		return computeBestDepartureTime(source, target, 0, 20);
+		return computeBestDepartureTime(source, target, 0, ((TDGraph)graph).getMaxTime());
 	}
 	
 	@Override
@@ -100,15 +100,16 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	@Override
 	public int getEdgeCost(TDArc a, int arrivalTime) {
 		
+		int index = arrivalTime/((TDGraph)graph).getInterval();
 		//check if arrival time is within the possible arrival times of the arc
-		if(arrivalTime >= a.costs.length) {
+		if(index >= a.costs.length) {
 			//the time interval is not within the bounds of this arc (so arc is not reachable)
 			return Integer.MAX_VALUE;
 		}
 		else {
-			if(a.getCostForTime(arrivalTime)<0) return Integer.MAX_VALUE;
-			//time interval is within the bounds, now calculate the calculate the arrival time at the head of the edge
-			return a.getCostForTime(arrivalTime) + arrivalTime;
+			if(a.getCostForTime(index)<0) return Integer.MAX_VALUE;
+			//time interval is within the bounds, now calculate the arrival time at the head of the edge
+			return a.getCostForTime(index) + arrivalTime;
 		}
 	}
 

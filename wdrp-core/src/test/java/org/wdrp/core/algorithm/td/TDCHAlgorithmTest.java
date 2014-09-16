@@ -505,8 +505,7 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	}
 
 	public TDGraph createSmallCustomGraph() {
-		TDGraph graph = new TDGraph();
-		graph.timeInterval = 3;
+		TDGraph graph = new TDGraph(1,20);
 		
 		graph.addNode(0);
 		graph.addNode(1);
@@ -522,7 +521,7 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	}
 	
 	private void createCustomGraph() {
-		staticGraph = new TDGraph();
+		staticGraph = new TDGraph(1,20);
 		staticGraph.addNode(0);
 		staticGraph.addNode(1);
 		staticGraph.addNode(2);

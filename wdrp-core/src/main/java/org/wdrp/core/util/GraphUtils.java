@@ -65,7 +65,12 @@ public class GraphUtils {
 			IOUtils.deleteFile(tdGraphFileName);
 			tdGraph = new TDGraph(tdGraphFileName);
 		}
-		else tdGraph = new TDGraph();
+		else tdGraph = new TDGraph(0,0);
+		
+		int numberOfTimeSteps = w.getNumberOfTimeSteps()+1;
+		
+		tdGraph.setInterval(w.getTimeStep()*60);
+		tdGraph.setInterval(numberOfTimeSteps);
 		
 		int count = 0;
 		for (Entry<Long, LatLonPoint> n : g.nodes.entrySet()) {
@@ -81,8 +86,7 @@ public class GraphUtils {
 			LatLonPoint pntA = g.getLatLon(id);
 			LatLonPoint pntB = g.getLatLon(arc.getHeadNode());
 			
-			int numberOfTimeSteps = w.getNumberOfTimeSteps();
-			int[] costs = new int[numberOfTimeSteps+1];
+			int[] costs = new int[numberOfTimeSteps];
 			
 			int i = 0;
 			while(i < costs.length) {
