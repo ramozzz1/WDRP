@@ -1,10 +1,17 @@
 package org.wdrp.core.algorithm.td;
 
+import java.io.FileNotFoundException;
+import java.text.ParseException;
+
 import org.junit.After;
 import org.junit.Before;
-import org.wdrp.core.model.TDArc;
+import org.wdrp.core.model.Arc;
+import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.TDGraph;
+import org.wdrp.core.model.Weather;
 import org.wdrp.core.util.ArrayUtils;
+import org.wdrp.core.util.GraphUtils;
+import org.wdrp.core.util.WeatherUtils;
 
 public class TDTestBase {
 	protected static TDGraph g;
@@ -77,5 +84,15 @@ public class TDTestBase {
 		
 		int[] e9 = ArrayUtils.extrapolateArray(new int[]{5,5,8,7},5);
 		g.addEdge(6, 7, e9);
+	}
+	
+	public TDGraph getTestTDGraphGeneratedFromWeahter() throws FileNotFoundException, ParseException {
+		GraphUtils.convertOSMToGraph("test.osm", false);
+		WeatherUtils.generateWeatherFromKML("test.kml", "test.wea");
+		
+		Graph<Arc> graph = new Graph<Arc>("test.graph");
+		Weather weather =  new Weather("test.wea");
+		
+		return GraphUtils.convertGraphToTDGraphWithWeather(graph, weather);
 	}
 }		

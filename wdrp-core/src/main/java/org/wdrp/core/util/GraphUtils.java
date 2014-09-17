@@ -70,7 +70,7 @@ public class GraphUtils {
 		int numberOfTimeSteps = w.getNumberOfTimeSteps()+1;
 		
 		tdGraph.setInterval(w.getTimeStep()*60);
-		tdGraph.setInterval(numberOfTimeSteps);
+		tdGraph.setMaxTime(numberOfTimeSteps);
 		
 		int count = 0;
 		for (Entry<Long, LatLonPoint> n : g.nodes.entrySet()) {

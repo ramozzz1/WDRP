@@ -101,6 +101,8 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	public int getEdgeCost(TDArc a, int arrivalTime) {
 		
 		int index = (int) Math.floor((float) arrivalTime/((TDGraph)graph).getInterval());
+		
+		
 		//check if arrival time is within the possible arrival times of the arc
 		if(index >= a.costs.length) {
 			//the time interval is not within the bounds of this arc (so arc is not reachable)
@@ -109,6 +111,8 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 		else {
 			if(a.getCostForTime(index)<0) return Integer.MAX_VALUE;
 			//time interval is within the bounds, now calculate the arrival time at the head of the edge
+			
+			System.out.println("index "+index + " "+arrivalTime + " " +a.getCostForTime(index));
 			return a.getCostForTime(index) + arrivalTime;
 		}
 	}

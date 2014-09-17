@@ -77,6 +77,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				for (TDArc v : graph.getNeighbors(minNodeId)) {
 					if(considerArc(v)) {
 						int[] gNew = ttfU==null ? v.getCosts() : ArrayUtils.linkLists(ttfU, v.getCosts(), ((TDGraph)graph).getInterval());
+						System.out.println(v.getHeadNode()+" "+Arrays.toString(ttfU) + " " + Arrays.toString(v.getCosts())+ " " + Arrays.toString(gNew));
 						relax(minNodeId, gNew, v);
 					}
 				}
@@ -90,6 +91,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 
 	public void relax(long u, int[] gNew, TDArc v) {
 		int[] ttfV = f.get(v.getHeadNode());
+		System.out.println(v.getHeadNode()+" ttV: " + Arrays.toString(ttfV));
 		if(ttfV==null || !(ArrayUtils.listLargerOrEqual(gNew,ttfV))) {
 			
 			if(ttfV==null || ArrayUtils.listSmaller(gNew,ttfV)) p.put(v.getHeadNode(), null);
@@ -109,6 +111,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 			p.put(v.getHeadNode(), predV);
 			
 			int minValue = ArrayUtils.getMinValue(minTTF);
+			System.out.println(v.getHeadNode()+" "+Arrays.toString(minTTF) + " " + Arrays.toString(ttfV)+ " " + Arrays.toString(gNew));
 			queue.add(new NodeEntry(v.getHeadNode(), minValue));
 		}
 	}
