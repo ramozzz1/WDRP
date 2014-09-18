@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import gnu.trove.map.hash.TLongIntHashMap;
 
+import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -543,6 +545,28 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		
 		TDCHAlgorithm tdch = new TDCHAlgorithm(tdGraphTwoMin);
 		TDDijkstraAlgorithm tdd = new TDDijkstraAlgorithm(tdGraphTwoMin);
+				
+		tdch.precompute();
+		
+		Set<Long> nodes = tdch.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				eaTimes = tdch.computeEarliestArrivalTimes(u, v);
+				assertEquals(Arrays.toString(eaTimes), Arrays.toString(tdd.computeEarliestArrivalTimes(u, v)));
+			}
+		}
+	}
+	
+	@Test
+	public void testEATimesSourceTargetDynamicAllDPTimesOnTDGraphGeneratedFromWeather() throws FileNotFoundException, ParseException {		
+		int[] eaTimes;
+		
+		TDGraph tdGraph = getTestTDGraphGeneratedFromWeahter();
+		assertEquals(2, tdGraph.getMaxTime());
+		assertEquals(300, tdGraph.getInterval());
+		
+		TDCHAlgorithm tdch = new TDCHAlgorithm(tdGraph);
+		TDDijkstraAlgorithm tdd = new TDDijkstraAlgorithm(tdGraph);
 				
 		tdch.precompute();
 		

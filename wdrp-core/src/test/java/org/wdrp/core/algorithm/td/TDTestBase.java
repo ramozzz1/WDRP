@@ -37,6 +37,12 @@ public class TDTestBase {
 		tdGraphTwoMin.addNode(3);
 		tdGraphTwoMin.addNode(4);
 		tdGraphTwoMin.addNode(5);
+		tdGraphTwoMin.addNode(6);
+		tdGraphTwoMin.addNode(7);
+		tdGraphTwoMin.addNode(8);
+		tdGraphTwoMin.addNode(9);
+		tdGraphTwoMin.addNode(10);
+		tdGraphTwoMin.addNode(11);
 		
 		tdGraphTwoMin.addEdge(0, 1,new int[]{10,10});
 		tdGraphTwoMin.addEdge(1, 2, new int[]{10,-1});
@@ -44,6 +50,13 @@ public class TDTestBase {
 		tdGraphTwoMin.addEdge(0, 4, new int[]{5, 5});
 		tdGraphTwoMin.addEdge(4, 5, new int[]{5, 5});
 		tdGraphTwoMin.addEdge(5, 3, new int[]{5, 5});
+		tdGraphTwoMin.addEdge(5, 6, new int[]{-1, 5});
+		tdGraphTwoMin.addEdge(6, 7, new int[]{45, 5});
+		tdGraphTwoMin.addEdge(7, 8, new int[]{5, 5});
+		tdGraphTwoMin.addEdge(8, 9, new int[]{30, 30});
+		tdGraphTwoMin.addEdge(8, 10, new int[]{10, 10});
+		tdGraphTwoMin.addEdge(10, 11, new int[]{5, -1});
+		tdGraphTwoMin.addEdge(11, 9, new int[]{5, 5});
 	}
 
 	private void buildStandardTDGraph() {

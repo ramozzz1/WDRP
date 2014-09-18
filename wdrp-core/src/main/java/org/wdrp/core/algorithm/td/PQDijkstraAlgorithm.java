@@ -62,6 +62,7 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 			while(!queue.isEmpty()) {
 				NodeEntry u = queue.poll();
 				long minNodeId = u.getNodeId();
+				System.out.println("MINNODE:"+minNodeId + " -> " + Arrays.toString(f.get(minNodeId)));
 				
 				int[] targetTTF = f.get(target);
 				if(targetTTF != null && u.getDistance() > ArrayUtils.getMaxValue(targetTTF))
@@ -83,7 +84,8 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				}
 			}
 			
-			return f.get(target);
+			int[] t = f.get(target);
+			return t != null ? t: ArrayUtils.nullArray(((TDGraph)graph).getMaxTime());
 		}
 		
 		return null;

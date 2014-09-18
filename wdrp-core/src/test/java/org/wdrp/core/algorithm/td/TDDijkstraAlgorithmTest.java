@@ -242,5 +242,14 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 		
 		eaTime = a.computeEarliestArrivalTime(0, 3, 1);
 		assertEquals(eaTime, 75);
+		
+		eaTime = a.computeEarliestArrivalTime(0, 7, 0);
+		assertEquals(eaTime, -1);
+		
+		eaTime = a.computeMinimumTravelTime(8, 9, 0);
+		assertEquals(eaTime, 20);
+		
+		eaTime = a.computeMinimumTravelTime(8, 9, 1);
+		assertEquals(eaTime, 30);
 	}
 }

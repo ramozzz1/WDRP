@@ -42,6 +42,8 @@ public class ArrayUtils {
 	public static int getMaxValue(int[] array) {
 		int currentValue = Integer.MIN_VALUE;
 		for (int j=0; j < array.length; j++) {
+			if(array[j]==-1)
+				return Integer.MAX_VALUE;
 			if (array[j] > currentValue)
 				currentValue = array[j];
 		}
@@ -221,5 +223,15 @@ public class ArrayUtils {
         }  
 		
 		return list;
+	}
+
+	public static int[] nullArray(int size) {
+		int[] nullArray = new int[size];
+		
+		for (int i = 0; i < nullArray.length; i++) {
+			nullArray[i] = -1;
+		}
+		
+		return nullArray;
 	}
 }

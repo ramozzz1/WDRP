@@ -2,11 +2,14 @@ package org.wdrp.core.algorithm.td;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.wdrp.core.model.TDGraph;
 
 public class TDCHPQAlgorithmTest extends TDTestBase {
 	
@@ -92,6 +95,29 @@ public class TDCHPQAlgorithmTest extends TDTestBase {
 		Set<Long> nodes = tdCHPQ.graph.nodes.keySet();
 		for (Long u : nodes) {
 			for (Long v : nodes) {
+				travelTimes = tdCHPQ.computeTravelTimes(u, v);
+				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
+			}
+		}
+	}
+	
+	@Test
+	public void testTravelTimesSourceTargetDynamicAllDPTimesOnTDGraphGeneratedFromWeather() throws FileNotFoundException, ParseException {		
+		int[] travelTimes;
+		
+		TDGraph tdGraph = getTestTDGraphGeneratedFromWeahter();
+		assertEquals(2, tdGraph.getMaxTime());
+		assertEquals(300, tdGraph.getInterval());
+		
+		tdA = new TDDijkstraAlgorithm(tdGraph);
+		tdCHPQ = new TDCHPQAlgorithm(tdGraph);
+		
+		tdCHPQ.precompute();
+		
+		Set<Long> nodes = tdCHPQ.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				System.out.println(u+"<>"+v);
 				travelTimes = tdCHPQ.computeTravelTimes(u, v);
 				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
 			}

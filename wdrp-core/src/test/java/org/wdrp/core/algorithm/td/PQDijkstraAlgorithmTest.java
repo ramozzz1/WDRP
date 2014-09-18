@@ -204,6 +204,7 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 		Set<Long> nodes = pqA.graph.nodes.keySet();
 		for (Long u : nodes) {
 			for (Long v : nodes) {
+				System.out.println(u+"<>"+v);
 				travelTimes = pqA.computeTravelTimes(u, v);
 				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
 			}
@@ -221,14 +222,13 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 		tdA = new TDDijkstraAlgorithm(tdGraph);
 		pqA = new PQDijkstraAlgorithm(tdGraph);
 		
-		System.out.println(tdA.computeTravelTimes(44311061, 44330609)[1]);
-//		Set<Long> nodes = pqA.graph.nodes.keySet();
-//		for (Long u : nodes) {
-//			for (Long v : nodes) {
-//				System.out.println(u+"<>"+v);
-//				travelTimes = pqA.computeTravelTimes(u, v);
-//				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
-//			}
-//		}
+		Set<Long> nodes = pqA.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				System.out.println(u+"<>"+v);
+				travelTimes = pqA.computeTravelTimes(u, v);
+				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
+			}
+		}
 	}
 }
