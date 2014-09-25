@@ -16,8 +16,8 @@ public class PIQDijkstraAlgorithmTest extends TDTestBase {
 	
 	@Before
 	public void setupAlgorithms() {
-		tdA = new TDDijkstraAlgorithm(g);
-		piqA = new PIQDijkstraAlgorithm(g);
+		tdA = new TDDijkstraAlgorithm(g1);
+		piqA = new PIQDijkstraAlgorithm(g1);
 	}
 	
 	private boolean intevalLargerOrEqual(Tuple2<Integer, Integer> intA, Tuple2<Integer, Integer> intB) {

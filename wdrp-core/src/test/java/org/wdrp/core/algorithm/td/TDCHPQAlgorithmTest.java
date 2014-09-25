@@ -18,8 +18,8 @@ public class TDCHPQAlgorithmTest extends TDTestBase {
 	
 	@Before
 	public void setupAlgorithms() {
-		tdA = new TDDijkstraAlgorithm(g);
-		tdCHPQ = new TDCHPQAlgorithm(g);
+		tdA = new TDDijkstraAlgorithm(g1);
+		tdCHPQ = new TDCHPQAlgorithm(g1);
 		
 		tdCHPQ.precompute();
 	}

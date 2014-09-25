@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.mapdb.Fun.Tuple2;
 import org.wdrp.core.algorithm.DijkstraAlgorithm;
+import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.NodeEntry;
 import org.wdrp.core.model.QEntry;
 import org.wdrp.core.model.TDArc;
@@ -42,6 +43,19 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		this.tdDijkstra = new TDDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
 		this.downwardTDDijkstra = new TDDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
 		this.piqDijkstra = new PIQDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
+	}
+	
+	public TDCHAlgorithm() {
+		this(null);
+	}
+
+	@Override
+	public void setGraph(Graph<TDArc> graph) {
+		super.setGraph(graph);
+		psDijkstra.setGraph(graph);
+		tdDijkstra.setGraph(graph);
+		downwardTDDijkstra.setGraph(graph);
+		piqDijkstra.setGraph(graph);
 	}
 
 	@Override
@@ -259,6 +273,37 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		System.out.println("(3,5) ARCS: "+ graph.getArcs(3, 5));
 	}
 	
+	@Override
+	public int computeTraveTime(long source, long target, int departureTime) {
+		//compute the earliest arrival time for the given departure time
+		int earliestArrivalTime = this.computeEarliestArrivalTime(source, target, departureTime);
+		
+		//Check if the arrival time was found
+		if(earliestArrivalTime >= 0)
+			return earliestArrivalTime - (departureTime*((TDGraph)graph).getInterval());
+			
+		return earliestArrivalTime;
+	}
+	
+	@Override
+	public int computeDepartureTime(long source, long target, int minDepTime, int maxDepTime) {
+		int[] travelTimes = computeTravelTimes(source, target, minDepTime, maxDepTime);
+		
+		int bestDepartureTime = ArrayUtils.getMinIndex(travelTimes);
+		
+		return bestDepartureTime;
+	}
+	
+	public int[] computeTravelTimes(long source, long target,
+			int minDepartureTime, int maxDepartureTime) {
+		int[] travelTimes = new int[maxDepartureTime-minDepartureTime];
+		
+		for(int i=0; i < travelTimes.length;i=i+1)
+			travelTimes[i] = this.computeTraveTime(source, target, i+minDepartureTime);
+		
+		return travelTimes;
+	}
+	
 	public int[] computeEarliestArrivalTimes(long source, long target,
 			int minDepartureTime, int maxDepartureTime) {
 		int[] travelTimes = new int[(maxDepartureTime-minDepartureTime)];
@@ -433,5 +478,10 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		}
 		
 		return eaTime;
+	}
+	
+	@Override
+	public String getName() {
+		return "tdch";
 	}
 }

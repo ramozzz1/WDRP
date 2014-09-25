@@ -12,10 +12,14 @@ var routeApiEndPoint = "route";
 var graphBoundsApiEndPoint = "graph_bounds";
 var edgesApiEndPoint = "edges";
 var selectGraphApiEndPoint = "select_graph";
+var selectTDGraphApiEndPoint = "select_tdgraph";
 var getMapsApiEndPoint = "get_maps";
+var getTDGraphsApiEndPoint = "get_tdgraphs";
 var selectAlgorithmApiEndPoint = "select_algorithm";
+var selectTDAlgorithmApiEndPoint = "select_tdalgorithm";
 var selectWeatherApiEndPoint = "select_weather";
 var getAlgorithmsApiEndPoint = "get_algorithms";
+var getTDAlgorithmsApiEndPoint = "get_tdalgorithms";
 var getWeathersApiEndPoint = "get_weathers";
 var getWeatherLayerApiEndPoint = "get_weather_layer";
 var features;
@@ -23,6 +27,8 @@ var beginTime;
 var endTime;
 var playingWeather;
 var algorithmColors = {'CH': "#577c19", 'Dijkstra': "#534c96"}
+var minDPTime = "17:00";
+var maxDPTime = "17:05";
 
 $(document).ready(function(){
 	firstClickToRoute = true;
@@ -31,8 +37,14 @@ $(document).ready(function(){
 	//get maps available
 	getMaps();
 	
+	//get maps available
+	getTDGraphs();
+	
 	//get algorithms available
 	getAlgorithms();
+	
+	//get td/algorithms available
+	getTDAlgorithms();
 	
 	//get weather maps available
 	getWeathers();
@@ -95,6 +107,27 @@ function getMaps() {
         	var maps = json.maps;
         	var options = $("#mapsList");
         	$.each(maps, function() {
+        	    options.append($("<option />").val(this.fileName).text(this.fileName));
+        	});
+        }
+    });
+}
+
+function getTDGraphs() {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + getTDGraphsApiEndPoint;
+	console.log(url);
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	var tdgraphs = json.tdgraphs;
+        	var options = $("#tdGraphsList");
+        	$.each(tdgraphs, function() {
         	    options.append($("<option />").val(this.fileName).text(this.fileName));
         	});
         }
@@ -184,6 +217,8 @@ function computePath() {
 		url += "action=" + routeApiEndPoint;
 		url += "&source=" + source.getPosition().lat() + "," + source.getPosition().lng();
 		url += "&target=" + target.getPosition().lat() + "," + target.getPosition().lng();
+		url += "&minDPTime=" + minDPTime;
+		//url += "&maxDPTime=" + maxDPTime;
 		
 		$.ajax({
             url: url,
@@ -257,24 +292,48 @@ function drawStraightLine() {
 }
 
 function drawPath(path) {
-	var pathList = new Array();
-	var bounds = new google.maps.LatLngBounds();
-	var points = path.points;
-	for(i=0;i<points.length;i++) {
-		var latlng = new google.maps.LatLng(points[i][0], points[i][1]);
-		pathList.push(latlng);
-		bounds.extend(latlng);
+	if(path.travel_time != -1) {
+		var pathList = new Array();
+		var bounds = new google.maps.LatLngBounds();
+		var points = path.points;
+		for(i=0;i<points.length;i++) {
+			var latlng = new google.maps.LatLng(points[i][0], points[i][1]);
+			pathList.push(latlng);
+			bounds.extend(latlng);
+		}
+		var line = new google.maps.Polyline({map: map, path: pathList,
+			  strokeColor: algorithmColors[path.algorithm], strokeWeight: 8, strokeOpacity: 0.5});
+		lines[lines.length] = line; 
+		map.fitBounds(bounds);
 	}
-	var line = new google.maps.Polyline({map: map, path: pathList,
-		  strokeColor: algorithmColors[path.algorithm], strokeWeight: 8, strokeOpacity: 0.5});
-	lines[lines.length] = line; 
-	map.fitBounds(bounds);
+	else {
+		console.log("No path found: " + path);
+	}
 }
 
 function selectMap() {
 	var url = "http://"+host+":"+port+"?";		
 	url += "action=" + selectGraphApiEndPoint;
 	url += "&graph_name=" + $("#mapsList").val();
+	console.log(url);
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	drawGraphBounds();
+        	drawEdges();
+        }
+    });
+}
+
+function selectTDGraph() {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + selectTDGraphApiEndPoint;
+	url += "&tdgraph_name=" + $("#tdGraphsList").val();
 	console.log(url);
 	$.ajax({
         url: url,
@@ -311,10 +370,49 @@ function getAlgorithms() {
     });
 }
 
+function getTDAlgorithms() {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + getTDAlgorithmsApiEndPoint;
+	console.log(url);
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	var tdalgorithms = json.tdalgorithms;
+        	var options = $("#tdAlgorithmsList");
+        	$.each(tdalgorithms, function() {
+        	    options.append($("<option />").val(this.name).text(this.name));
+        	});
+        }
+    });
+}
+
 function selectAlgorithm() {
 	var url = "http://"+host+":"+port+"?";		
 	url += "action=" + selectAlgorithmApiEndPoint;
 	url += "&algorithms=" + $("#algorithmsList").val();
+	console.log(url);
+	$.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json", 
+        error: function(err) {
+            console.log(err);
+        }, 
+        success: function(json) {
+        	
+        }
+    });
+}
+
+function selectTDAlgorithm() {
+	var url = "http://"+host+":"+port+"?";		
+	url += "action=" + selectTDAlgorithmApiEndPoint;
+	url += "&tdalgorithms=" + $("#tdAlgorithmsList").val();
 	console.log(url);
 	$.ajax({
         url: url,

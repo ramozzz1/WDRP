@@ -43,7 +43,7 @@ public class GraphUtilsTest {
 		double[][] crd = {{4.505767822265625,51.916479358958874},{4.505767822265625,51.90896108130657},{4.516582489013672,51.90880223087697},{4.515724182128906,51.91579111827799}};
 		w.addCloud("17:00", new Cloud(crd));
 		
-		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w);
+		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w, false);
 		
 		assertEquals("[5, 5, 5, 5]", Arrays.toString(tdGraph.getArc(0, 1).costs));
 		assertEquals("[-1, 5, 5, 5]", Arrays.toString(tdGraph.getArc(2, 3).costs));
@@ -59,7 +59,7 @@ public class GraphUtilsTest {
 		w.addCloud("17:10", new Cloud(crd));
 		w.addCloud("17:15", new Cloud(crd));
 		
-		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w);
+		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w, false);
 		
 		assertEquals("[5, 5, 5, 5]", Arrays.toString(tdGraph.getArc(0, 1).costs));
 		assertEquals("[-1, -1, -1, -1]", Arrays.toString(tdGraph.getArc(2, 3).costs));
@@ -75,7 +75,7 @@ public class GraphUtilsTest {
 		w.addCloud("17:10", new Cloud(crd));
 		w.addCloud("17:15", new Cloud(crd));
 		
-		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w);
+		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w, false);
 		
 		assertEquals("[-1, -1, -1, -1]", Arrays.toString(tdGraph.getArc(0, 1).costs));
 		assertEquals("[-1, -1, -1, -1]", Arrays.toString(tdGraph.getArc(2, 3).costs));
@@ -91,7 +91,7 @@ public class GraphUtilsTest {
 		w.addCloud("17:10", new Cloud(crd));
 		w.addCloud("17:15", new Cloud(crd));
 		
-		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w);
+		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w, false);
 		
 		assertEquals("[5, 5, 5, 5]", Arrays.toString(tdGraph.getArc(0, 1).costs));
 		assertEquals("[5, 5, 5, 5]", Arrays.toString(tdGraph.getArc(2, 3).costs));
@@ -119,7 +119,7 @@ public class GraphUtilsTest {
 		double[][] crd4_1 = { { 4.510424137115478, 51.91335572038936 }, { 4.510939121246338, 51.91279979583272 }, { 4.512183666229248, 51.913302775490024 }, { 4.5116472244262695, 51.913686624595975 }};
 		w.addCloud("17:15", new Cloud(crd4_1));
 		
-		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w);
+		tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(g, w, false);
 		
 		assertEquals("[5, 5, 5, 5]", Arrays.toString(tdGraph.getArc(0, 1).costs));
 		assertEquals("[5, 5, -1, 5]", Arrays.toString(tdGraph.getArc(2, 3).costs));

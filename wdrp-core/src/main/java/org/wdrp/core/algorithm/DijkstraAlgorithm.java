@@ -68,6 +68,8 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 			init(source);
 			
 			while(!queue.isEmpty()) {
+				System.out.println("QUEUE:"+queue);
+				
 				NodeEntry u = queue.poll();
 				long minNodeId = u.getNodeId();
 				System.out.println("MIN NODE:"+minNodeId +", "+ u.getDistance());
@@ -104,6 +106,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 	public void relax(long target, long u, int distU, K arc) {
 		Object distN = f.get(arc.getHeadNode());
 		int dist = getEdgeCost(arc, distU);
+		System.out.println("OLD COST: "+distN+" NEW COST: " +dist);
 		if(distN==null || dist < (int)distN) {
 			System.out.println("UPDATED "+arc.getHeadNode() + " to "+dist);
 			f.put(arc.getHeadNode(), dist);

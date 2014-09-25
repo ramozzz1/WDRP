@@ -22,6 +22,14 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 	}
 	
 	public abstract int computeShortestPath(long source, long target);
+	
+	public int computeTraveTime(long source, long target, int depTime) {
+		return -1;
+	}
+	
+	public int computeDepartureTime(long source, long target, int minDepTime, int maxDepTime) {
+		return -1;
+	}
 
 	public abstract void precompute();
 	

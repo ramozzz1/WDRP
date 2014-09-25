@@ -171,4 +171,13 @@ public class Weather {
 		
 		return format.format(dateAfter);
 	}
+
+	public int getIndexFromTime(String time) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		Date begin = format.parse(getBeginTime());
+		Date givenDate = format.parse(time);
+		
+		int diffMinutes = (int)((givenDate.getTime() - begin.getTime())/1000)/60;
+		return diffMinutes/getTimeStep();
+	}
 }

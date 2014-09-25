@@ -28,7 +28,12 @@ import org.simpleframework.transport.connect.SocketConnection;
 import org.wdrp.core.algorithm.AbstractRoutingAlgorithm;
 import org.wdrp.core.algorithm.CHAlgorithm;
 import org.wdrp.core.algorithm.DijkstraAlgorithm;
+import org.wdrp.core.algorithm.td.PQDijkstraAlgorithm;
+import org.wdrp.core.algorithm.td.TDCHAlgorithm;
+import org.wdrp.core.algorithm.td.TDCHPQAlgorithm;
+import org.wdrp.core.algorithm.td.TDDijkstraAlgorithm;
 import org.wdrp.core.model.Arc;
+import org.wdrp.core.model.Bounds;
 import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.LatLonPoint;
 import org.wdrp.core.model.Path;
@@ -43,12 +48,15 @@ import org.wdrp.core.util.WeatherUtils;
 
 public class WDRP {
 	private static Graph<Arc> graph;
+	private static TDGraph tdGraph;
 	private static Weather weather;
 	private static List<AbstractRoutingAlgorithm<Arc>> algorithmsToRun;
+	private static List<DijkstraAlgorithm<TDArc>> tdAlgorithmsToRun;
 	String regionBoxSaarland = "49.20,49.25,6.95,7.05";
 	String regionBoxBW = "47.95,48.05,7.75,7.90";
 	private static Connection connection;
 	private static List<AbstractRoutingAlgorithm<Arc>> algorithms;
+	private static List<DijkstraAlgorithm<TDArc>> tdAlgorithms;
 	static Logger logger = Logger.getLogger(WDRP.class);
 	
 	public static class WDRPHandler implements Container {
@@ -58,12 +66,18 @@ public class WDRP {
 			try {
 				Query query = request.getQuery();
 				String action = query.get("action");
-				System.out.println(action);
+				System.out.println("action: "+action);
 				if(action != null) {
 					String content = "Invalid request";
 					if(action.equals("graph_bounds")) {
+						Bounds bounds = null;
+						if(tdGraph!=null)
+							bounds = tdGraph.getBounds();
+						else
+							bounds = graph.getBounds();
+						
 						content = "{\n";
-						content += "\"bounds\":"+graph.getBounds().toJsonArray();
+						content += "\"bounds\":"+bounds.toJsonArray();
 						content += "\n}";
 					}
 					else if(action.equals("select_graph")) {
@@ -84,6 +98,27 @@ public class WDRP {
 						}
 						else {
 							content="No graph_name specified";
+						}
+					}
+					else if(action.equals("select_tdgraph")) {
+						String tdGraphName = query.get("tdgraph_name");
+						if(tdGraphName!=null) {
+							String tdGraphPath = tdGraphName;
+							File f = new File(tdGraphPath);
+							System.out.println(f.getAbsolutePath());
+							if(f.exists() && !f.isDirectory()) {
+								tdGraph = new TDGraph(tdGraphPath);
+								
+								content = "{\n";
+								content += "\"success\":"+true;
+								content += "\n}";
+							}
+							else {
+								content="No tdgraph found for: "+tdGraphPath;
+							}
+						}
+						else {
+							content="No tdgraph_name specified";
 						}
 					}
 					else if(action.equals("select_weather")) {
@@ -134,6 +169,26 @@ public class WDRP {
 							content="No algorithms specified";
 						}
 					}
+					else if(action.equals("select_tdalgorithm")) {
+						tdAlgorithmsToRun = new ArrayList<DijkstraAlgorithm<TDArc>>();
+						List<String> selectedAlgorithms = Arrays.asList(query.get("tdalgorithms").split(","));
+						if(selectedAlgorithms != null && selectedAlgorithms.size() > 0) {
+							for (int i = 0; i < tdAlgorithms.size(); i++) {
+								DijkstraAlgorithm<TDArc> alg = tdAlgorithms.get(i);
+								if(selectedAlgorithms.contains(alg.getName())) {
+									alg.setGraph(tdGraph);
+									tdAlgorithmsToRun.add(alg);
+									
+									content = "{\n";
+									content += "\"success\":"+true;
+									content += "\n}";
+								}
+							}
+						}
+						else {
+							content="No algorithms specified";
+						}
+					}
 					else if(action.equals("get_maps")) {
 						content = "{\n";
 						content += "\"maps\": [";
@@ -144,6 +199,25 @@ public class WDRP {
 						String prefix = "";
 						for (int i = 0; i < listOfFiles.length; i++) {
 							if (listOfFiles[i].isFile() && FilenameUtils.isExtension(listOfFiles[i].getName(), "graph")) {
+								content += prefix 
+										+ "{" + "\"fileName\":" + "\""+listOfFiles[i].getName()+"\""
+										+"}";
+								prefix = ",";
+							}
+						 }
+						    
+						content += "]\n}";
+					}
+					else if(action.equals("get_tdgraphs")) {
+						content = "{\n";
+						content += "\"tdgraphs\": [";
+						
+						File folder = new File(Paths.get("").toAbsolutePath().toString());
+						File[] listOfFiles = folder.listFiles();
+						
+						String prefix = "";
+						for (int i = 0; i < listOfFiles.length; i++) {
+							if (listOfFiles[i].isFile() && FilenameUtils.isExtension(listOfFiles[i].getName(), "tdgraph")) {
 								content += prefix 
 										+ "{" + "\"fileName\":" + "\""+listOfFiles[i].getName()+"\""
 										+"}";
@@ -196,6 +270,19 @@ public class WDRP {
 						 }
 						content += "]\n}";
 					}
+					else if(action.equals("get_tdalgorithms")) {
+						content = "{\n";
+						content += "\"tdalgorithms\": [";
+						
+						String prefix = "";
+						for (int i = 0; i < tdAlgorithms.size(); i++) {
+								content += prefix 
+										+ "{" + "\"name\":" + "\""+tdAlgorithms.get(i).getName()+"\""
+										+"}";
+								prefix = ",";
+						 }
+						content += "]\n}";
+					}
 					else if(action.equals("edges")) {
 						content = "{\n";
 						
@@ -205,17 +292,20 @@ public class WDRP {
 						int i =0;
 						System.out.println("Getting edges...");
 						for (Tuple2<Long,Arc> arc : graph.adjacenyList) {
-							LatLonPoint nodeFrom = graph.getLatLon(arc.a);
-							LatLonPoint nodeTo = graph.getLatLon(arc.b.getHeadNode());
-							content += prefix 
-									+ "{" + "\"nodeFrom\":" + nodeFrom.toJsonObject()
-									+ "," + "\"nodeTo\":"   + nodeTo.toJsonObject()
-									+ "," + "\"shortcut\":"   + arc.b.isShortcut()
-									+"}";
-							prefix = ",";
-							i++;
-							
-							if(i==10000) break;
+							//if(arc.b.costs[0] == -1) {
+								LatLonPoint nodeFrom = graph.getLatLon(arc.a);
+								LatLonPoint nodeTo = graph.getLatLon(arc.b.getHeadNode());
+								content += prefix 
+										+ "{" + "\"nodeFrom\":" + nodeFrom.toJsonObject()
+										+ "," + "\"nodeTo\":"   + nodeTo.toJsonObject()
+										+ "," + "\"shortcut\":"   + arc.b.isShortcut()
+										+"}";
+								prefix = ",";
+								i++;
+								
+								
+								if(i==10000) break;
+							//}
 						}
 						
 						content += "]\n}";
@@ -223,7 +313,9 @@ public class WDRP {
 					else if(action.equals("route")) {
 						String s = query.get("source");
 						String t = query.get("target");
-						System.out.println(s + " " + t);
+						String minDPTime = query.get("minDPTime");
+						String maxDPTime = query.get("maxDPTime");
+						System.out.println(s + " " + t + " " + minDPTime + " " + maxDPTime);
 						if(s != null && t != null) {
 							String[] source = s.split(",");
 							String[] target = t.split(",");
@@ -246,27 +338,60 @@ public class WDRP {
 					    		content = "{\n";
 								content += "\"paths\": [";
 								
-					    		for (int i = 0; i < algorithmsToRun.size(); i++) {
-					    			AbstractRoutingAlgorithm<Arc> alg = algorithmsToRun.get(i);
-					    			
-					    			long start = System.currentTimeMillis();
-									int travelTime = alg.computeShortestPath(sourceId, targetId);
-						    		long end = System.currentTimeMillis() - start;
-						    		Path p = alg.extractPath(targetId);
-						    		System.out.println("Running algorithm: " + alg.getName());
-						    		System.out.println("Path found within: " + end + "ms");
-						    		System.out.println("#Visited nodes: " + alg.getVisitedNodes().size());
-						    		System.out.println("Travel time: " +travelTime);
-						    		System.out.println("Path length: " + p.length());
-						    		
-						    		content += prefix
-						    				+ "{\n"
-						    				+ " \"algorithm\": " + "\""+ alg.getName() + "\""+ ",\n"
-						    				+ " \"travel_time\": " + travelTime + ",\n"
-						    				+ " \"bounds\": " + p.getBounds().toJsonArray() + ",\n"
-						    				+ " \"points\":" + p.toJsonArray()
-						    				+ "\n}";
-						    		prefix = ",";
+								if(algorithmsToRun!=null) {
+						    		for (int i = 0; i < algorithmsToRun.size(); i++) {
+						    			AbstractRoutingAlgorithm<Arc> alg = algorithmsToRun.get(i);
+						    			
+						    			long start = System.currentTimeMillis();
+										int travelTime = alg.computeShortestPath(sourceId, targetId);
+							    		long end = System.currentTimeMillis() - start;
+							    		Path p = alg.extractPath(targetId);
+							    		System.out.println("Running algorithm: " + alg.getName());
+							    		System.out.println("Path found within: " + end + "ms");
+							    		System.out.println("#Visited nodes: " + alg.getVisitedNodes().size());
+							    		System.out.println("Travel time: " +travelTime);
+							    		System.out.println("Path length: " + p.length());
+							    		
+							    		content += prefix
+							    				+ "{\n"
+							    				+ " \"algorithm\": " + "\""+ alg.getName() + "\""+ ",\n"
+							    				+ " \"travel_time\": " + travelTime + ",\n"
+							    				+ " \"bounds\": " + p.getBounds().toJsonArray() + ",\n"
+							    				+ " \"points\":" + p.toJsonArray()
+							    				+ "\n}";
+							    		prefix = ",";
+									}
+								}
+					    		
+								if(tdAlgorithmsToRun!=null) {
+						    		int minDPIndex = weather.getIndexFromTime(minDPTime); 
+						    		for (int i = 0; i < tdAlgorithmsToRun.size(); i++) {
+						    			DijkstraAlgorithm<TDArc> alg = tdAlgorithmsToRun.get(i);
+						    			int travelTime = -1;
+						    			long start = System.currentTimeMillis();
+										if(maxDPTime!=null) {
+											int maxDPIndex = weather.getIndexFromTime(maxDPTime); 
+											travelTime = alg.computeDepartureTime(sourceId, targetId, minDPIndex, maxDPIndex);
+										}
+										else
+											travelTime = alg.computeTraveTime(sourceId, targetId, minDPIndex);
+							    		long end = System.currentTimeMillis() - start;
+							    		Path p = alg.extractPath(targetId);
+							    		System.out.println("Running algorithm: " + alg.getName());
+							    		System.out.println("Path found within: " + end + "ms");
+							    		System.out.println("#Visited nodes: " + alg.getVisitedNodes().size());
+							    		System.out.println("Travel time: " +travelTime);
+							    		System.out.println("Path length: " + p.length());
+							    		
+							    		content += prefix
+							    				+ "{\n"
+							    				+ " \"algorithm\": " + "\""+ alg.getName() + "\""+ ",\n"
+							    				+ " \"travel_time\": " + travelTime + ",\n"
+							    				+ " \"bounds\": " + p.getBounds().toJsonArray() + ",\n"
+							    				+ " \"points\":" + p.toJsonArray()
+							    				+ "\n}";
+							    		prefix = ",";
+									}
 								}
 					    		
 					    		content += "]\n}";
@@ -303,30 +428,18 @@ public class WDRP {
 	}
 	
 	public static void main(String[] args) throws IOException, URISyntaxException, ParseException{
-		
-//		OSMDownloader.downloadOsmFromGeofabrik("andorra.osm","europe/andorra");
-//		GraphUtils.convertOSMToGraph("andorra.osm", true);
-//		Long startNode = 0l;
-//		Long endNode = 0l;
-//		String graphPath = "andorra.graph";
-//		int numberOfTimes = 0;
-//		String algs = "dijkstra,ch";
-//		
-//		computeShortestPath(graphPath,algs,numberOfTimes,startNode ,endNode);
-//		
-//		Graph<Arc> g = new Graph<Arc>("andorra.graph");
-//		KMLUtil.generateGraphKML(g);
-		
 		GraphUtils.convertOSMToGraph("test.osm", false);
 		WeatherUtils.generateWeatherFromKML("test.kml", "test.wea");
 		
 		Graph<Arc> graph = new Graph<Arc>("test.graph");
 		Weather weather =  new Weather("test.wea");
 		
-		TDGraph tdGraph = GraphUtils.convertGraphToTDGraphWithWeather(graph, weather);
+		TDGraph tg = GraphUtils.convertGraphToTDGraphWithWeather(graph, weather, false);
+		tg.closeConnection();
 		
 		int port = 8888;
 		setupAlgorithms();
+		setupTDAlgorithms();
 		
 		Container container = new WDRPHandler();
 		Server server = new ContainerServer(container);
@@ -336,15 +449,19 @@ public class WDRP {
 		connection.connect(address);
     }
 
-	private static void computeShortestPath(String graphPath, String algs,
-			int numberOfTimes, Long startNode, Long endNode) {
-		
-	}
-
 	private static void setupAlgorithms() {
 		algorithms = Arrays.asList(
 				new DijkstraAlgorithm<Arc>(),
 				new CHAlgorithm()
 				);
 	}   
+	
+	private static void setupTDAlgorithms() {
+		tdAlgorithms = Arrays.asList(
+				new TDDijkstraAlgorithm(),
+				new TDCHAlgorithm(),
+				new PQDijkstraAlgorithm(),
+				new TDCHPQAlgorithm()
+				);
+	} 
 }

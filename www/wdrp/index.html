@@ -25,59 +25,34 @@
 		<div id="header">
 			WDRP (Weather Dependent Route Planning)
 		</div>
-		
-		<div class="option">
-		
-	        <div id="options">
-	            <span id="vehicles">
-	            	<button class="vehicle-btn selectvehicle" title="Car" id="car">
-	            		<img src="img/car.png" alt="Car">
-	            	</button>
-	            	<button class="vehicle-btn" title="Bike" id="bike">
-	            		<img src="img/bike.png" alt="Bike">
-	            	</button>
-	            	<button class="vehicle-btn" title="Foot" id="foot">
-	            		<img src="img/foot.png" alt="Foot">
-	            	</button>
-	            </span>
-	        </div>
-	        
-	        <form id="locationform">
-	        
-	            <div id="sourceDiv">
-	                <input id="sourceInput" type="text" placeholder="From"/>                   
-	            </div>
-	            
-	            <div id="targetDiv">
-	                <input id="targetInput" type="text" placeholder="To"/>                   
-	            </div>
-	            
-	            <input id="planButton" type="submit" value="Plan">
-	        </form>
-	        
-	        <div class="clear"></div>
-	        
-	        <div id="info" class="small_text"></div>
-	        
-	        <div id="error" class="error"></div>
-	        
-        </div>
         
         <div class="option">
-        	<h1>Road Maps</h1>
-	        <select id="mapsList" class="optionList" size="5" onchange="selectMap(this)">
-			</select>
-        </div>
-        
-        <div class="option">
-        	<h1>Weather Maps</h1>
-	        <select id="weathersList" class="optionList" size="5" onchange="selectWeather(this)">
+        	<h1>Static Graphs</h1>
+	        <select id="mapsList" class="optionList" size="3" onchange="selectMap(this)">
 			</select>
         </div>
         
         <div class="option">
         	<h1>Algorithms</h1>
-	        <select id="algorithmsList" class="optionList" size="5" onchange="selectAlgorithm(this)" multiple>
+	        <select id="algorithmsList" class="optionList" size="3" onchange="selectAlgorithm(this)" multiple>
+			</select>
+        </div>
+        
+        <div class="option">
+        	<h1>TD Graphs</h1>
+	        <select id="tdGraphsList" class="optionList" size="3" onchange="selectTDGraph(this)">
+			</select>
+        </div>
+        
+        <div class="option">
+        	<h1>TD Algorithms</h1>
+	        <select id="tdAlgorithmsList" class="optionList" size="4" onchange="selectTDAlgorithm(this)" multiple>
+			</select>
+        </div>
+        
+        <div class="option">
+        	<h1>Weather Maps</h1>
+	        <select id="weathersList" class="optionList" size="3" onchange="selectWeather(this)">
 			</select>
         </div>
         

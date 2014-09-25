@@ -29,6 +29,10 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		super(graph, considerArcFlags, considerShortcuts);
 	}
 	
+	public PQDijkstraAlgorithm() {
+		this(null);
+	}
+
 	@Override
 	public void init(long source) {
 		this.f = new THashMap<Long, int[]>();
@@ -39,13 +43,23 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		p.put(source, null);
 		queue.add(new NodeEntry(source, 0));
 	}
+	
+	@Override
+	public int computeTraveTime(long source, long target, int departureTime) {
+		return this.computeTravelTimes(source, target)[departureTime];
+	}
 
-	public int computeBestDepartureTime(long source, long target) {
-		int[] travelTimes = computeTravelTimes(source, target);
+	@Override
+	public int computeDepartureTime(long source, long target, int minDepTime, int maxDepTime) {
+		int[] travelTimes = computeTravelTimes(source, target, minDepTime, maxDepTime);
 		
 		int bestDepartureTime = ArrayUtils.getMinIndex(travelTimes);
 		
 		return bestDepartureTime;
+	}
+	
+	public int computeDepartureTime(long source, long target) {
+		return computeDepartureTime(source, target, 0, ((TDGraph)graph).getMaxTime());
 	}
 	
 	public int[] computeTravelTimes(long source, long target, int minDepartureTime, int maxDepartureTime) {
@@ -116,5 +130,10 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 			System.out.println(v.getHeadNode()+" "+Arrays.toString(minTTF) + " " + Arrays.toString(ttfV)+ " " + Arrays.toString(gNew));
 			queue.add(new NodeEntry(v.getHeadNode(), minValue));
 		}
+	}
+	
+	@Override
+	public String getName() {
+		return "pqdijkstra";
 	}
 }

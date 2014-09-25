@@ -1,5 +1,7 @@
 package org.wdrp.core.algorithm.td;
 
+import java.util.Arrays;
+
 import org.mapdb.Fun.Tuple2;
 import org.wdrp.core.algorithm.DijkstraAlgorithm;
 import org.wdrp.core.model.TDArc;
@@ -8,6 +10,10 @@ import org.wdrp.core.util.ArrayUtils;
 
 public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements TimeDependentAlgorithm {
 
+	public TDDijkstraAlgorithm() {
+		this(null);
+	}
+	
 	public TDDijkstraAlgorithm(TDGraph graph) {
 		super(graph);
 	}
@@ -29,7 +35,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	}
 	
 	@Override
-	public int computeMinimumTravelTime(long source, long target,
+	public int computeTraveTime(long source, long target,
 			int departureTime) {
 		//compute the earliest arrival time for the given departure time
 		int earliestArrivalTime = this.computeEarliestArrivalTime(source, target, departureTime);
@@ -39,6 +45,19 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 			return earliestArrivalTime - (departureTime*((TDGraph)graph).getInterval());
 			
 		return earliestArrivalTime;
+	}
+	
+	@Override
+	public int computeDepartureTime(long source, long target, int minDepTime, int maxDepTime) {
+		int[] travelTimes = computeTravelTimes(source, target, minDepTime, maxDepTime);
+		
+		int bestDepartureTime = ArrayUtils.getMinIndex(travelTimes);
+		
+		return bestDepartureTime;
+	}
+	
+	public int computeDepartureTime(long source, long target) {
+		return computeDepartureTime(source, target, 0, ((TDGraph)graph).getMaxTime());
 	}
 	
 	@Override
@@ -66,42 +85,16 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 		int[] travelTimes = new int[maxDepartureTime-minDepartureTime];
 		
 		for(int i=0; i < travelTimes.length;i=i+1)
-			travelTimes[i] = this.computeMinimumTravelTime(source, target, i+minDepartureTime);
+			travelTimes[i] = this.computeTraveTime(source, target, i+minDepartureTime);
 		
 		return travelTimes;
-	}
-
-	@Override
-	public int computeMinimumTravelTime(long source, long target,
-			int minDepartureTime, int maxDepartureTime) {
-		
-		int[] travelTimes = computeTravelTimes(source, target, minDepartureTime, maxDepartureTime);
-		
-		int minimumTravelTime = ArrayUtils.getMinValue(travelTimes);
-		
-		return minimumTravelTime;
-	}
-	
-	public int computeBestDepartureTime(long source, long target) {
-		return computeBestDepartureTime(source, target, 0, ((TDGraph)graph).getMaxTime());
-	}
-	
-	@Override
-	public int computeBestDepartureTime(long source, long target,
-			int minDepartureTime, int maxDepartureTime) {
-		
-		int[] travelTimes = computeTravelTimes(source, target, minDepartureTime, maxDepartureTime);
-				
-		int bestDepartureTime = ArrayUtils.getMinIndex(travelTimes)+minDepartureTime;
-		
-		return bestDepartureTime;
 	}
 	
 	@Override
 	public int getEdgeCost(TDArc a, int arrivalTime) {
 		
 		int index = (int) Math.floor((float) arrivalTime/((TDGraph)graph).getInterval());
-		
+		System.out.println("index "+index + " "+arrivalTime + " " +a.getCostForTime(index) + " " + Arrays.toString(a.getCosts()));
 		
 		//check if arrival time is within the possible arrival times of the arc
 		if(index >= a.costs.length) {
@@ -112,7 +105,6 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 			if(a.getCostForTime(index)<0) return Integer.MAX_VALUE;
 			//time interval is within the bounds, now calculate the arrival time at the head of the edge
 			
-			System.out.println("index "+index + " "+arrivalTime + " " +a.getCostForTime(index));
 			return a.getCostForTime(index) + arrivalTime;
 		}
 	}
@@ -124,5 +116,10 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 				ArrayUtils.getMinValue(travelTimes), 
 				ArrayUtils.getMaxValue(travelTimes)
 				);
+	}
+	
+	@Override
+	public String getName() {
+		return "tddijkstra";
 	}
 }

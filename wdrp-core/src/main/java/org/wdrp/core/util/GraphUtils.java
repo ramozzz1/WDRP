@@ -15,6 +15,7 @@ import org.mapdb.BTreeMap;
 import org.mapdb.Fun.Tuple2;
 import org.wdrp.core.algorithm.CHAlgorithm;
 import org.wdrp.core.algorithm.DijkstraAlgorithm;
+import org.wdrp.core.algorithm.td.TDCHAlgorithm;
 import org.wdrp.core.model.Arc;
 import org.wdrp.core.model.Cloud;
 import org.wdrp.core.model.Graph;
@@ -57,7 +58,13 @@ public class GraphUtils {
 		return ch.graph;
 	}
 	
-	public static TDGraph convertGraphToTDGraphWithWeather(Graph<Arc> g, Weather w) throws ParseException {
+	public static TDGraph addTDShortcuts(TDGraph tg) {
+		TDCHAlgorithm tdch = new TDCHAlgorithm(tg);
+		tdch.precompute();
+		return (TDGraph)tdch.graph;
+	}
+	
+	public static TDGraph convertGraphToTDGraphWithWeather(Graph<Arc> g, Weather w, boolean addTDShortcuts) throws ParseException {
 		
 		TDGraph tdGraph;
 		if(g.getName() != null) {
@@ -83,24 +90,32 @@ public class GraphUtils {
 			Long id = tp.a;
 			Arc arc = tp.b;
 			
-			LatLonPoint pntA = g.getLatLon(id);
-			LatLonPoint pntB = g.getLatLon(arc.getHeadNode());
-			
-			int[] costs = new int[numberOfTimeSteps];
-			
-			int i = 0;
-			while(i < costs.length) {
-				costs[i] = arc.getCost();
-				for (Cloud c : w.getClouds(w.addTimeStepAndGetTime(i))) {
-					if(c.intersectsLine(pntA.lon, pntB.lon, pntA.lat, pntB.lat)) {
-						costs[i] = -1;
-						break;
+			if(!arc.isShortcut()) {
+				LatLonPoint pntA = g.getLatLon(id);
+				LatLonPoint pntB = g.getLatLon(arc.getHeadNode());
+				
+				int[] costs = new int[numberOfTimeSteps];
+				
+				int i = 0;
+				while(i < costs.length) {
+					costs[i] = arc.getCost();
+					for (Cloud c : w.getClouds(w.addTimeStepAndGetTime(i))) {
+						if(c.intersectsLine(pntA.lon, pntB.lon, pntA.lat, pntB.lat)) {
+							costs[i] = -1;
+							break;
+						}
 					}
+					i++;
 				}
-				i++;
+				
+				tdGraph.addEdge(id, new TDArc(arc.getHeadNode(), costs));
 			}
-			
-			tdGraph.addEdge(id, new TDArc(arc.getHeadNode(), costs));
+		}
+		
+		if(addTDShortcuts) {
+			logger.info("Add td-shortcuts to tdgraph");
+			addTDShortcuts(tdGraph);
+			logger.info("TDShortcuts successfully added");
 		}
 		
 		return tdGraph;
@@ -108,33 +123,23 @@ public class GraphUtils {
 
 	//convert graph to largest connected component
 	public static void convertToLCC(Graph<Arc> g) {
-		Set<Long> visitedNodes = new THashSet<Long>();
     	Set<Long> maxVisitedNodes = new THashSet<Long>();
     	int count = 0;
+    	int removedNodes = 0;
 		for (Long id : g.nodes.keySet()) {
-			if(count > 0 && count%100000==0) logger.info("#nodes processed: "+count);
-			if (!visitedNodes.contains(id)) {
+			if(count > 0 && count%100000==0) logger.info("#nodes processed: "+count + " #nodes removed: " +removedNodes);
+			if (!maxVisitedNodes.contains(id)) {
 				DijkstraAlgorithm<Arc> d = new DijkstraAlgorithm<Arc>(g);
 				d.computeShortestPath(id, -1);
 				if(d.getVisitedNodes().size() >  maxVisitedNodes.size())
 					maxVisitedNodes = d.getVisitedNodes();
-				visitedNodes.addAll(d.getVisitedNodes());
-			}
-			count++;
-		}
-		
-		logger.info("|V|:"+g.nodes.size()+" |E|:"+g.adjacenyList.size()/2);
-		logger.info("LCC: "+ maxVisitedNodes.size());
-		
-		logger.info("Removing nodes/edges not part of LCC");
-		count = 0;
-		int removedNodes = 0;
-		for (Long id : g.nodes.keySet()) {
-			if(count > 0 && count%100000==0) logger.info("#nodes processed: "+count + " #nodes removed: " +removedNodes);
-			if (!maxVisitedNodes.contains(id)) {
-				g.removeNode(id);
-				g.removeAllEdgesOfNode(id);
-				removedNodes++;
+				else {
+					for (Long nodeToRemove : d.getVisitedNodes()) {
+						g.removeNode(nodeToRemove);
+						g.removeAllEdgesOfNode(nodeToRemove);
+						removedNodes++;
+					}
+				}
 			}
 			count++;
 		}

@@ -32,9 +32,9 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	public void setUpCH() {
 		createCustomGraph();
 		staticTDCH = new TDCHAlgorithm(staticGraph);
-		dynamicTDCH = new TDCHAlgorithm(g);
+		dynamicTDCH = new TDCHAlgorithm(g1);
 		staticTDDijkstra = new TDDijkstraAlgorithm(staticGraph);
-		dynamicTDDijkstra = new TDDijkstraAlgorithm(g);
+		dynamicTDDijkstra = new TDDijkstraAlgorithm(g1);
 	}
 	
 	@Test
@@ -141,27 +141,27 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	public void testNegativeEdgeDifference3() {
 		int ed;
 		
-		g.setArcFlagsForAllEdges(true);
+		g1.setArcFlagsForAllEdges(true);
 		ed = dynamicTDCH.computeEdgeDifference(0);
 		assertEquals(ed, -2);
 		
-		g.setArcFlagsForAllEdges(true);
+		g1.setArcFlagsForAllEdges(true);
 		ed = dynamicTDCH.computeEdgeDifference(1);
 		assertEquals(ed, 0);
 		
-		g.setArcFlagsForAllEdges(true);
+		g1.setArcFlagsForAllEdges(true);
 		ed = dynamicTDCH.computeEdgeDifference(2);
 		assertEquals(ed, 1);
 		
-		g.setArcFlagsForAllEdges(true);
+		g1.setArcFlagsForAllEdges(true);
 		ed = dynamicTDCH.computeEdgeDifference(3);
 		assertEquals(ed, 1);
 		
-		g.setArcFlagsForAllEdges(true);
+		g1.setArcFlagsForAllEdges(true);
 		ed = dynamicTDCH.computeEdgeDifference(4);
 		assertEquals(ed, -2);
 		
-		g.setArcFlagsForAllEdges(true);
+		g1.setArcFlagsForAllEdges(true);
 		ed = dynamicTDCH.computeEdgeDifference(5);
 		assertEquals(ed, 3);
 	}

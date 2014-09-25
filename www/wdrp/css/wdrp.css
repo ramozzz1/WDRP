@@ -9,7 +9,6 @@ body {
 	height: 100%; 
 	margin: 0px; 
 	padding: 0px; 
-	overflow: hidden;
 }
 /* The div in which we draw the map should fill out the whole web page */
 #map_canvas {
@@ -28,7 +27,7 @@ body {
     float: left;                
     padding-left: 20px; 
     padding-right: 15px;
-    overflow:auto;
+    overflow:visible;
 }
 
 #planButton {

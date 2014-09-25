@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.NodeEntry;
 import org.wdrp.core.model.TDArc;
 import org.wdrp.core.model.TDGraph;
@@ -16,6 +17,10 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 	public static PQDijkstraAlgorithm pqSource;
 	public static PQDijkstraAlgorithm pqTarget;
 	
+	public TDCHPQAlgorithm() {
+		this(null);
+	}
+	
 	public TDCHPQAlgorithm(TDGraph graph) {
 		super(graph);
 		
@@ -24,6 +29,33 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 		
 		pqSource = new PQDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
 		pqTarget = new PQDijkstraAlgorithm(graph, this.considerArcFlags, this.considerShortcuts);
+	}
+	
+	@Override
+	public void setGraph(Graph<TDArc> graph) {
+		super.setGraph(graph);
+		pqSource.setGraph(graph);
+		pqTarget.setGraph(graph);
+	}
+	
+	@Override
+	public int computeTraveTime(long source, long target, int departureTime) {
+		return this.computeTravelTimes(source, target)[departureTime];
+	}
+	
+	@Override
+	public int computeDepartureTime(long source, long target, int minDepTime, int maxDepTime) {
+		int[] travelTimes = computeTravelTimes(source, target, minDepTime, maxDepTime);
+		
+		int bestDepartureTime = ArrayUtils.getMinIndex(travelTimes);
+		
+		return bestDepartureTime;
+	}
+	
+	public int[] computeTravelTimes(long source, long target, int minDepartureTime, int maxDepartureTime) {
+		int travelTimes[] = computeTravelTimes(source, target);
+		
+		return Arrays.copyOfRange(travelTimes, minDepartureTime, maxDepartureTime);
 	}
 	
 	public int[] computeTravelTimes(long source, long target) {
@@ -152,6 +184,11 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 		int eaTimes[] = computeEarliestArrivalTimes(source, target);
 		
 		return eaTimes[departureTime];
+	}
+	
+	@Override
+	public String getName() {
+		return "tdchpq";
 	}
 }
 

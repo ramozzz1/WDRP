@@ -18,8 +18,8 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 	
 	@Before
 	public void setupAlgorithms() {
-		tdA = new TDDijkstraAlgorithm(g);
-		pqA = new PQDijkstraAlgorithm(g);
+		tdA = new TDDijkstraAlgorithm(g1);
+		pqA = new PQDijkstraAlgorithm(g1);
 	}
 	
 	@Test
@@ -159,24 +159,24 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 	
 	@Test
 	public void computeBestDepartureTimeSourceSourceAllDepartureTimes() {
-		int departureTimeTDA = tdA.computeBestDepartureTime(0,0);
-		int departureTimePSA = pqA.computeBestDepartureTime(0,0);
+		int departureTimeTDA = tdA.computeDepartureTime(0,0);
+		int departureTimePSA = pqA.computeDepartureTime(0,0);
 		
 		assertEquals(departureTimeTDA, departureTimePSA);
 	}
 	
 	@Test
 	public void computeBestDepartureTimeSourceNeighbourAllDepartureTimes() {
-		int departureTimeTDA = tdA.computeBestDepartureTime(0,1);
-		int departureTimePSA = pqA.computeBestDepartureTime(0,1);
+		int departureTimeTDA = tdA.computeDepartureTime(0,1);
+		int departureTimePSA = pqA.computeDepartureTime(0,1);
 		
 		assertEquals(departureTimeTDA, departureTimePSA);
 	}
 	
 	@Test
 	public void computeBestDepartureTimeSourceTargetAllDepartureTimes() {
-		int departureTimeTDA = tdA.computeBestDepartureTime(0,5);
-		int departureTimePSA = pqA.computeBestDepartureTime(0,5);
+		int departureTimeTDA = tdA.computeDepartureTime(0,5);
+		int departureTimePSA = pqA.computeDepartureTime(0,5);
 		
 		assertEquals(departureTimeTDA, departureTimePSA);
 	}

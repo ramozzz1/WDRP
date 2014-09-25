@@ -3,8 +3,6 @@ package org.wdrp.core.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.wdrp.core.model.TDGraph;
-
 public class ArrayUtils {
 	public static int getMinValue(List<Integer> list){  
 		int currentValue = Integer.MAX_VALUE;
