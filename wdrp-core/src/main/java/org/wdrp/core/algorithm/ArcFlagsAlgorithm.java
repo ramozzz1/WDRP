@@ -80,7 +80,7 @@ public class ArcFlagsAlgorithm extends DijkstraAlgorithm<Arc> {
 			System.out.println("Updating visisted arc flags");
 			
 			//check which arcs were visited and set their flags to true
-			for (Entry<Long,Long> pair : super.previous.entrySet()) {
+			for (Entry<Long,Long> pair : super.p.entrySet()) {
 				long currNode = pair.getKey();
 				long prevNode = pair.getValue();
 				

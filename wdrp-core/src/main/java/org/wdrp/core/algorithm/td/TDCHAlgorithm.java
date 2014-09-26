@@ -274,7 +274,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 	}
 	
 	@Override
-	public int computeTraveTime(long source, long target, int departureTime) {
+	public int computeTravelTime(long source, long target, int departureTime) {
 		//compute the earliest arrival time for the given departure time
 		int earliestArrivalTime = this.computeEarliestArrivalTime(source, target, departureTime);
 		
@@ -299,7 +299,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		int[] travelTimes = new int[maxDepartureTime-minDepartureTime];
 		
 		for(int i=0; i < travelTimes.length;i=i+1)
-			travelTimes[i] = this.computeTraveTime(source, target, i+minDepartureTime);
+			travelTimes[i] = this.computeTravelTime(source, target, i+minDepartureTime);
 		
 		return travelTimes;
 	}
@@ -429,7 +429,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		int eaTime = -1;
 		
 		downwardTDDijkstra.init(NULL_NODE);
-		downwardTDDijkstra.previous = tdDijkstra.previous;
+		downwardTDDijkstra.p = tdDijkstra.p;
 		
 		for (Long u : candidates) {
 			int costU = tdDijkstra.f.get(u);

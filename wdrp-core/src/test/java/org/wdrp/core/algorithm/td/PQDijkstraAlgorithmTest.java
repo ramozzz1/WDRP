@@ -204,9 +204,14 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 		Set<Long> nodes = pqA.graph.nodes.keySet();
 		for (Long u : nodes) {
 			for (Long v : nodes) {
-				System.out.println(u+"<>"+v);
 				travelTimes = pqA.computeTravelTimes(u, v);
-				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
+				int max = ((TDGraph)pqA.graph).getMaxTime();
+				for (int i = 0; i < max; i++) {
+					System.out.println(u+"<>"+v + " @"+i);
+					assertEquals(travelTimes[i],tdA.computeTravelTime(u, v, i));
+					System.out.println(travelTimes[i]);
+					assertEquals(pqA.contructPath(null, v, i, true).toString(), tdA.contructPath(tdA.p, v).toString());
+				}
 			}
 		}
 	}
@@ -230,5 +235,18 @@ public class PQDijkstraAlgorithmTest extends TDTestBase {
 				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
 			}
 		}
+	}
+	
+	@Test
+	public void testContructPath() {
+		tdA = new TDDijkstraAlgorithm(tdGraphTwoMin);
+		pqA = new PQDijkstraAlgorithm(tdGraphTwoMin);
+		
+		int travelTimeTDA = tdA.computeTravelTime(0,5,0);
+		int[] travelTimesPSA = pqA.computeTravelTimes(0,5);
+		System.out.println(travelTimeTDA);
+		System.out.println(tdA.contructPath(tdA.p, 5));
+		System.out.println(pqA.contructPath(null, 5, 0, true));
+		//assertEquals(tdA.contructPath(tdA.p, 1).toString(), Arrays.toString(travelTimesPSA));
 	}
 }

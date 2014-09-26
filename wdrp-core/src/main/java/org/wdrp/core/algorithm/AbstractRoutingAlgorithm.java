@@ -23,7 +23,7 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 	
 	public abstract int computeShortestPath(long source, long target);
 	
-	public int computeTraveTime(long source, long target, int depTime) {
+	public int computeTravelTime(long source, long target, int depTime) {
 		return -1;
 	}
 	
@@ -76,10 +76,12 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 			do {				
 				long prevNode = previous.get(currNode);
 				Arc a = graph.getArc(prevNode, currNode);
+				//System.out.println("arc: " + a);
 				if(convertShortcuts && (a != null && a.isShortcut()))
 					convertShortcutArcToPath(a, prevNode, currNode, p);
 				else
 					p.addNode(graph.getNode(currNode), a);
+				//System.out.println("path: " + p);
 				currNode = prevNode;
 			} while(currNode != NULL_NODE);
 		}
@@ -92,7 +94,7 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 		return contructPath(previous, target, true);
 	}
 	
-	private void convertShortcutArcToPath(Arc a,long fromNode, long toNode, Path p) {
+	protected void convertShortcutArcToPath(Arc a,long fromNode, long toNode, Path p) {
 		if(a != null && a.isShortcut()) {
 			long shortcutNode = a.getShortcutNode();
 			

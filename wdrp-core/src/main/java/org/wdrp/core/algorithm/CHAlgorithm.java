@@ -313,7 +313,7 @@ public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 		dijkstra.considerShortcuts = true;
 		dijkstra.computeShortestPath(targetId, -1);
 		this.distTarget = dijkstra.f;
-		this.previousTarget = dijkstra.previous;
+		this.previousTarget = dijkstra.p;
 		this.visitedNodesTarget = dijkstra.visitedNodesMarks;
 	}
 
@@ -322,7 +322,7 @@ public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 		dijkstra.considerShortcuts = true;
 		dijkstra.computeShortestPath(sourceId, -1);
 		this.distSource = dijkstra.f;
-		this.previousSource = dijkstra.previous;
+		this.previousSource = dijkstra.p;
 		this.visitedNodesSource = dijkstra.visitedNodesMarks;
 	}
 	

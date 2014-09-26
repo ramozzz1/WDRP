@@ -1,9 +1,11 @@
 package org.wdrp.core.algorithm.td;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.mapdb.Fun.Tuple2;
 import org.wdrp.core.algorithm.DijkstraAlgorithm;
+import org.wdrp.core.model.Path;
 import org.wdrp.core.model.TDArc;
 import org.wdrp.core.model.TDGraph;
 import org.wdrp.core.util.ArrayUtils;
@@ -35,7 +37,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	}
 	
 	@Override
-	public int computeTraveTime(long source, long target,
+	public int computeTravelTime(long source, long target,
 			int departureTime) {
 		//compute the earliest arrival time for the given departure time
 		int earliestArrivalTime = this.computeEarliestArrivalTime(source, target, departureTime);
@@ -85,7 +87,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 		int[] travelTimes = new int[maxDepartureTime-minDepartureTime];
 		
 		for(int i=0; i < travelTimes.length;i=i+1)
-			travelTimes[i] = this.computeTraveTime(source, target, i+minDepartureTime);
+			travelTimes[i] = this.computeTravelTime(source, target, i+minDepartureTime);
 		
 		return travelTimes;
 	}
@@ -94,7 +96,7 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	public int getEdgeCost(TDArc a, int arrivalTime) {
 		
 		int index = (int) Math.floor((float) arrivalTime/((TDGraph)graph).getInterval());
-		System.out.println("index "+index + " "+arrivalTime + " " +a.getCostForTime(index) + " " + Arrays.toString(a.getCosts()));
+		//System.out.println("index "+index + " "+arrivalTime + " " +a.getCostForTime(index) + " " + Arrays.toString(a.getCosts()));
 		
 		//check if arrival time is within the possible arrival times of the arc
 		if(index >= a.costs.length) {
@@ -116,6 +118,14 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 				ArrayUtils.getMinValue(travelTimes), 
 				ArrayUtils.getMaxValue(travelTimes)
 				);
+	}
+	
+	@Override
+	public Path contructPath(Map<Long,Long> previous, long target, boolean convertShortcuts) {
+		Integer cost = f.get(target);
+		if(cost==null || cost == Integer.MAX_VALUE)
+			return new Path();
+		return super.contructPath(p, target, convertShortcuts);
 	}
 	
 	@Override

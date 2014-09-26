@@ -374,7 +374,7 @@ public class WDRP {
 											travelTime = alg.computeDepartureTime(sourceId, targetId, minDPIndex, maxDPIndex);
 										}
 										else
-											travelTime = alg.computeTraveTime(sourceId, targetId, minDPIndex);
+											travelTime = alg.computeTravelTime(sourceId, targetId, minDPIndex);
 							    		long end = System.currentTimeMillis() - start;
 							    		Path p = alg.extractPath(targetId);
 							    		System.out.println("Running algorithm: " + alg.getName());

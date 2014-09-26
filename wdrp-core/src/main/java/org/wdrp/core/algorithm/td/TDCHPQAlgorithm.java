@@ -39,7 +39,7 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 	}
 	
 	@Override
-	public int computeTraveTime(long source, long target, int departureTime) {
+	public int computeTravelTime(long source, long target, int departureTime) {
 		return this.computeTravelTimes(source, target)[departureTime];
 	}
 	
