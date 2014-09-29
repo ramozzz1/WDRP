@@ -184,6 +184,9 @@ public class ArrayUtils {
 				
 				int index = (int) Math.floor((float) arrivalTimeV/interval);
 				
+				if(index >= g.length)
+					index = g.length - 1;
+				
 				if(index < g.length) {
 					int travelTimeForArrivalAtG = g[index];
 					if(travelTimeForArrivalAtG >=0)

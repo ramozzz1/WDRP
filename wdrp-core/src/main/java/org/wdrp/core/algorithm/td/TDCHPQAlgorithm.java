@@ -106,9 +106,9 @@ public class TDCHPQAlgorithm extends TDCHAlgorithm {
 				
 				System.out.println("A "+(long)ArrayUtils.getMaxValue(ttfUSource) + (long)ArrayUtils.getMaxValue(ttfUTarget));
 				System.out.println("B "+B);
-				
-				if(B < Integer.MAX_VALUE 
-						&& (((long)ArrayUtils.getMinValue(ttfUSource) + (long)ArrayUtils.getMinValue(ttfUTarget)) <= B)) {
+				//String nullArr = Arrays.toString(ArrayUtils.nullArray(((TDGraph)pqTarget.graph).getMaxTime()));
+				if((ArrayUtils.getMinValue(ttfUSource)!=Integer.MAX_VALUE && (ArrayUtils.getMinValue(ttfUTarget) !=Integer.MAX_VALUE || ttfUTarget[0]==-1))
+						|| (ArrayUtils.getMinValue(ttfUTarget)!=Integer.MAX_VALUE && (ArrayUtils.getMinValue(ttfUSource) !=Integer.MAX_VALUE || ttfUSource[0]==-1))) {
 					System.out.println("NEW CANDIDATE "+u.getNodeId());
 					candidates.add(u.getNodeId());
 				}

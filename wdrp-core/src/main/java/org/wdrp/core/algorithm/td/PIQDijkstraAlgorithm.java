@@ -74,8 +74,8 @@ public class PIQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> {
 			Tuple2<Integer, Integer> intervalU, TDArc arc) {
 			System.out.println("----CONSIDERING EDGE " +u+"->"+arc.getHeadNode());
 			
-			int qNew = intervalU.a + ArrayUtils.getMinValue(arc.getCosts());
-			int rNew = intervalU.b + ArrayUtils.getMaxValue(arc.getCosts());
+			int qNew = (int)Math.min(Integer.MAX_VALUE,(long)intervalU.a + (long)ArrayUtils.getMinValue(arc.getCosts()));
+			int rNew = (int)Math.min(Integer.MAX_VALUE,(long)intervalU.b + (long)ArrayUtils.getMaxValue(arc.getCosts()));
 			
 			System.out.println("qNew " +qNew);
 			System.out.println("rNew " +rNew);

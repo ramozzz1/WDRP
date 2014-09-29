@@ -96,19 +96,17 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	public int getEdgeCost(TDArc a, int arrivalTime) {
 		
 		int index = (int) Math.floor((float) arrivalTime/((TDGraph)graph).getInterval());
-		//System.out.println("index "+index + " "+arrivalTime + " " +a.getCostForTime(index) + " " + Arrays.toString(a.getCosts()));
+		//System.out.println("index "+index + " "+arrivalTime + " " + Arrays.toString(a.getCosts()));
 		
 		//check if arrival time is within the possible arrival times of the arc
 		if(index >= a.costs.length) {
-			//the time interval is not within the bounds of this arc (so arc is not reachable)
-			return Integer.MAX_VALUE;
+			index = a.costs.length-1;
 		}
-		else {
-			if(a.getCostForTime(index)<0) return Integer.MAX_VALUE;
-			//time interval is within the bounds, now calculate the arrival time at the head of the edge
-			
-			return a.getCostForTime(index) + arrivalTime;
-		}
+		
+		if(a.getCostForTime(index)<0) return Integer.MAX_VALUE;
+		//time interval is within the bounds, now calculate the arrival time at the head of the edge
+		
+		return (int) Math.min(Integer.MAX_VALUE,(long)a.getCostForTime(index) + (long)arrivalTime);
 	}
 
 	public Tuple2<Integer, Integer> computeTravelTimesInterval(long source, long target) {

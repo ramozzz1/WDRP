@@ -42,7 +42,7 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 		assertEquals(cost, 19+4);
 		
 		cost = a.getEdgeCost(g1.getArc(0, 1), 20);
-		assertEquals(cost, Integer.MAX_VALUE);
+		assertEquals(cost, 24);
 	}
 	
 	@Test
@@ -77,13 +77,13 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 		assertEquals(139, cost);
 		
 		cost = a.getEdgeCost(tdg.getArc(0, 1), 120);
-		assertEquals(Integer.MAX_VALUE, cost);
+		assertEquals(140, cost);
 		
 		cost = a.getEdgeCost(tdg.getArc(0, 1), 130);
-		assertEquals(Integer.MAX_VALUE, cost);
+		assertEquals(150, cost);
 		
 		cost = a.getEdgeCost(tdg.getArc(0, 1), 180);
-		assertEquals(Integer.MAX_VALUE, cost);
+		assertEquals(200, cost);
 	}
 	
 	@Test
@@ -113,7 +113,7 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 	public void computeSPSourceTargetInvalidDepartureTime() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g1);
 		int arrivalTime = a.computeEarliestArrivalTime(0,1,100);
-		assertEquals(arrivalTime,-1);
+		assertEquals(arrivalTime,104);
 	}
 	
 	@Test
@@ -176,14 +176,14 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 	public void computeSPSourceTargetValidDepartureTime9() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g1);
 		int arrivalTime = a.computeEarliestArrivalTime(0,5,5);
-		assertEquals(arrivalTime,-1);
+		assertEquals(arrivalTime,30);
 	}
 	
 	@Test
 	public void computeEATimes() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g1);
 		int[] eaTimes = a.computeEarliestArrivalTimes(0, 5, 0, 3);
-		assertEquals(Arrays.toString(eaTimes), "[19, 25, 25, 26]");
+		assertEquals(Arrays.toString(eaTimes), "[19, 25, 25]");
 	}
 	
 	@Test
@@ -197,14 +197,14 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 	public void computeBestDepartureTime2() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g1);
 		int bestDepartureTime = a.computeDepartureTime(0, 5, 1, 3);
-		assertEquals(bestDepartureTime, 2);
+		assertEquals(bestDepartureTime, 1);
 	}
 	
 	@Test
 	public void computeBestDepartureTime3() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g1);
 		int bestDepartureTime = a.computeDepartureTime(0, 5, 2, 3);
-		assertEquals(bestDepartureTime, 2);
+		assertEquals(bestDepartureTime, 0);
 	}
 	
 	@Test
@@ -212,6 +212,9 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(tdGraphTwoMin);
 		
 		int eaTime;
+		
+		eaTime = a.computeEarliestArrivalTime(7, 9, 0);
+		assertEquals(eaTime, 25);
 		
 		eaTime = a.computeEarliestArrivalTime(0, 0, 0);
 		assertEquals(eaTime, 0);

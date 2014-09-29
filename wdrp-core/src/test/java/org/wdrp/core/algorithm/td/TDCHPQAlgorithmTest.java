@@ -102,6 +102,24 @@ public class TDCHPQAlgorithmTest extends TDTestBase {
 	}
 	
 	@Test
+	public void testEATimeSourceTargetDynamicAllDPTimesOnTwoMinGraph() {		
+		int[] travelTimes;
+		
+		tdCHPQ = new TDCHPQAlgorithm(tdGraphTwoMin);
+		tdA = new TDDijkstraAlgorithm(tdGraphTwoMin);
+				
+		tdCHPQ.precompute();
+		
+		Set<Long> nodes = tdCHPQ.graph.nodes.keySet();
+		for (Long u : nodes) {
+			for (Long v : nodes) {
+				travelTimes = tdCHPQ.computeTravelTimes(u, v);
+				assertEquals(Arrays.toString(travelTimes), Arrays.toString(tdA.computeTravelTimes(u, v)));
+			}
+		}
+	}
+	
+	@Test
 	public void testTravelTimesSourceTargetDynamicAllDPTimesOnTDGraphGeneratedFromWeather() throws FileNotFoundException, ParseException {		
 		int[] travelTimes;
 		

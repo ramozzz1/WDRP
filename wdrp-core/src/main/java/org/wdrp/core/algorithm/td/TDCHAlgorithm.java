@@ -361,10 +361,9 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 				if(!reverseDirection && costU < u.getDistance())
 					continue;
 				
-				B = (int) Math.min(B, (long)costU + (long)costIntervalU.b);
 				
-				if(B < Integer.MAX_VALUE 
-						&& ((long)costU + (long)costIntervalU.a <= B))
+				B = (int) Math.min(B, Math.min(Integer.MAX_VALUE,(long)costU + (long)costIntervalU.b));
+				if(costU!=Integer.MAX_VALUE && costIntervalU.a != Integer.MAX_VALUE)
 					candidates.add(u.getNodeId());
 				
 				
@@ -436,7 +435,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 			Tuple2<Integer, Integer> costIntervalU = piqDijkstra.f.get(u);
 			if(costIntervalU == null) costIntervalU = new Tuple2<Integer, Integer>(Integer.MAX_VALUE, Integer.MAX_VALUE);
 			
-			if(B < Integer.MAX_VALUE && (costU+costIntervalU.a)<=B) {
+			if(costU!=Integer.MAX_VALUE && costIntervalU.a != Integer.MAX_VALUE) {
 				downwardTDDijkstra.f.put(u, costU);
 				downwardTDDijkstra.queue.add(new NodeEntry(u, costU));
 			}
@@ -467,7 +466,7 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 						if(!considerArc(arc)) {
 //							TDArc rArc = graph.getArc(arc.getHeadNode(), u.getNodeId());
 //							arc.setCosts(rArc.getCosts());
-							System.out.println("RELAXING ARC "+Arrays.toString(arc.getCosts()));
+							System.out.println("RELAXING ARC "+u.getNodeId()+"->"+v+" "+Arrays.toString(arc.getCosts()));
 //							System.out.println("RELAXING RARC "+Arrays.toString(rArc.getCosts()));
 							downwardTDDijkstra.relax(target, u.getNodeId(), downwardTDDijkstra.f.get(u.getNodeId()), arc);
 						}
