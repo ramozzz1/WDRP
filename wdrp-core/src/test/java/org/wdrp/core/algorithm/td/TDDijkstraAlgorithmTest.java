@@ -14,34 +14,34 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 	public void testTDEdgeCost() {
 		TDDijkstraAlgorithm a = new TDDijkstraAlgorithm(g1);
 		
-		int cost = a.getEdgeCost(g1.getArc(0, 1), 0);
+		int cost = a.getEdgeCost(0, g1.getArc(0, 1), 0);
 		assertEquals(cost, 4);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 1);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 1);
 		assertEquals(cost, 5);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 2);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 2);
 		assertEquals(cost, 6);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 3);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 3);
 		assertEquals(cost, 7);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 4);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 4);
 		assertEquals(cost, 8);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 5);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 5);
 		assertEquals(cost, 5+5);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 6);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 6);
 		assertEquals(cost, 5+6);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 10);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 10);
 		assertEquals(cost, 10+9);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 19);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 19);
 		assertEquals(cost, 19+4);
 		
-		cost = a.getEdgeCost(g1.getArc(0, 1), 20);
+		cost = a.getEdgeCost(0, g1.getArc(0, 1), 20);
 		assertEquals(cost, 24);
 	}
 	
@@ -58,31 +58,31 @@ public class TDDijkstraAlgorithmTest extends TDTestBase {
 		
 		int cost;
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 0);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 0);
 		assertEquals(10, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 30);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 30);
 		assertEquals(40, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 59);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 59);
 		assertEquals(69, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 60);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 60);
 		assertEquals(80, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 90);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 90);
 		assertEquals(110, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 119);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 119);
 		assertEquals(139, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 120);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 120);
 		assertEquals(140, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 130);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 130);
 		assertEquals(150, cost);
 		
-		cost = a.getEdgeCost(tdg.getArc(0, 1), 180);
+		cost = a.getEdgeCost(0, tdg.getArc(0, 1), 180);
 		assertEquals(200, cost);
 	}
 	

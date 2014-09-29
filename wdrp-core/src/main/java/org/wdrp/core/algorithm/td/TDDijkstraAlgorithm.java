@@ -93,7 +93,19 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	}
 	
 	@Override
-	public int getEdgeCost(TDArc a, int arrivalTime) {
+	public int getEdgeCost(long fromNode, TDArc a, int arrivalTime) {
+		
+		if(a.isShortcut()) {
+			Integer distSH = f.get(a.getShortcutNode());
+			if(distSH != null && distSH < arrivalTime)
+				return Integer.MAX_VALUE;
+			
+			int intermediateCost = getEdgeCost(fromNode, graph.getArc(fromNode, a.getShortcutNode()), arrivalTime);
+			if(intermediateCost == Integer.MAX_VALUE)
+				return Integer.MAX_VALUE;
+			
+			return getEdgeCost(a.getShortcutNode(), graph.getArc(a.getShortcutNode(), a.getHeadNode()), intermediateCost);
+		}
 		
 		int index = (int) Math.floor((float) arrivalTime/((TDGraph)graph).getInterval());
 		//System.out.println("index "+index + " "+arrivalTime + " " + Arrays.toString(a.getCosts()));
