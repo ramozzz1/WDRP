@@ -541,7 +541,7 @@ public class TDCHAlgorithmTest extends TDTestBase {
 	
 	@Test
 	public void testEATimeSourceTargetDynamicAllDPTimesOnTwoMinGraph() {		
-		int[] eaTimes;
+		int eaTime;
 		
 		TDCHAlgorithm tdch = new TDCHAlgorithm(tdGraphTwoMin);
 		TDDijkstraAlgorithm tdd = new TDDijkstraAlgorithm(tdGraphTwoMin);
@@ -550,9 +550,13 @@ public class TDCHAlgorithmTest extends TDTestBase {
 		Set<Long> nodes = tdch.graph.nodes.keySet();
 		for (Long u : nodes) {
 			for (Long v : nodes) {
-				System.out.println(u+"<>"+v);
-				eaTimes = tdch.computeEarliestArrivalTimes(u, v);
-				assertEquals(Arrays.toString(eaTimes), Arrays.toString(tdd.computeEarliestArrivalTimes(u, v)));
+				int max = ((TDGraph)tdch.graph).getMaxTime();
+				for (int i = 0; i < max; i++) {
+					System.out.println(u+"<>"+v + " @"+i);
+					eaTime = tdch.computeEarliestArrivalTime(u, v, i);
+					assertEquals(eaTime, tdd.computeEarliestArrivalTime(u, v, i));
+					assertEquals(tdch.contructPath(tdch.p, tdch.f, v, true).toString(), tdd.contructPath(tdd.p,tdd.f, v,false).toString());
+				}
 			}
 		}
 	}

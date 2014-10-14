@@ -157,6 +157,8 @@ public class PQDijkstraAlgorithm extends DijkstraAlgorithm<TDArc>  {
 						System.out.println("Arc costs: " + Arrays.toString(a.getCosts()));
 						int index = (int) Math.floor((float) (prevCosts[depTime]+(depTime*((TDGraph)graph).getInterval()))/((TDGraph)graph).getInterval());
 						System.out.println(index);
+						if(index>=a.getCosts().length)
+							index = a.getCosts().length-1;
 						if(a.getCostForTime(index) == (cost - prevCosts[depTime])) {
 							if(convertShortcuts && (a != null && a.isShortcut()))
 								convertShortcutArcToPath(a, predecessor, currNode, path);

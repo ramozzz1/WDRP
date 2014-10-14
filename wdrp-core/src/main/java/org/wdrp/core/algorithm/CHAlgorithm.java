@@ -377,10 +377,10 @@ public class CHAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 	@Override
 	public Path extractPath(long nodeId) {
 		//contruct path from source to the minimum common node [s->...->c]
-		Path sourcePath = contructPath(this.previousSource, this.minCommonNode);
+		Path sourcePath = contructPath(this.previousSource, this.distSource, this.minCommonNode, true);
 		
 		//contruct path from target to the minimum common node [c->...->t]
-		Path targetPath = contructPath(this.previousTarget, this.minCommonNode).reversePath();
+		Path targetPath = contructPath(this.previousTarget, this.distTarget ,this.minCommonNode, true).reversePath();
 		
 		//connect the source path and target path
 		sourcePath.connect(targetPath);

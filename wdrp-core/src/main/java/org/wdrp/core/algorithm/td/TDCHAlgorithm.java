@@ -5,6 +5,7 @@ import gnu.trove.set.hash.THashSet;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.mapdb.Fun.Tuple2;
 import org.wdrp.core.algorithm.DijkstraAlgorithm;
 import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.NodeEntry;
+import org.wdrp.core.model.Path;
 import org.wdrp.core.model.QEntry;
 import org.wdrp.core.model.TDArc;
 import org.wdrp.core.model.TDGraph;
@@ -477,6 +479,25 @@ public class TDCHAlgorithm extends DijkstraAlgorithm<TDArc>  {
 		}
 		
 		return eaTime;
+	}
+	
+	@Override
+	public Path contructPath(Map<Long,Long> previous, Map<Long,Integer> f, long target, boolean convertShortcuts) {
+		//contruct path from target to the minimum common node [c->...->t]
+		Path targetPath = downwardTDDijkstra.contructPath(downwardTDDijkstra.p, downwardTDDijkstra.f, target, convertShortcuts);
+		System.out.println("targetPath: "+targetPath);	
+		//contruct path from source to the minimum common node [s->...->c]
+		if(targetPath.getNodes().size() > 0) {
+			Path sourcePath = tdDijkstra.contructPath(tdDijkstra.p, tdDijkstra.f, targetPath.getNodes().get(0).getId(), convertShortcuts);
+			System.out.println("sourcePath: "+sourcePath);
+			//connect the source path and target path
+			sourcePath.connect(targetPath);
+			
+			//return the connected path
+			return sourcePath;
+		}
+		
+		return targetPath;
 	}
 	
 	@Override

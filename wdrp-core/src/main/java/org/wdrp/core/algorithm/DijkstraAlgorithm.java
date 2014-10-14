@@ -146,7 +146,7 @@ public class DijkstraAlgorithm<K extends Arc> extends AbstractRoutingAlgorithm<K
 	
 	@Override
 	public Path extractPath(long nodeId) {
-		return contructPath(this.p, nodeId);
+		return contructPath(this.p, this.f,nodeId, false);
 	}
 
 	@Override

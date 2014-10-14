@@ -364,7 +364,7 @@ public class CHAlgorithmTest extends SPTestBase {
 		previous.put(0L,-1L);
 		
 		CHAlgorithm ch = new CHAlgorithm(g);
-		Path p = ch.contructPath(previous, 5);
+		Path p = ch.contructPath(previous, null, 5, true);
 		assertEquals(p.toString(), "[0->1->2->3->4->5]");
 	}
 	
@@ -390,7 +390,7 @@ public class CHAlgorithmTest extends SPTestBase {
 		previous.put(1L,-1L);
 		
 		CHAlgorithm ch = new CHAlgorithm(g);
-		Path p = ch.contructPath(previous, 3);
+		Path p = ch.contructPath(previous, null, 3, true);
 		assertEquals(p.toString(), "[1->2->3]");
 	}
 	
@@ -416,7 +416,7 @@ public class CHAlgorithmTest extends SPTestBase {
 		previous.put(4L,-1L);
 		
 		CHAlgorithm ch = new CHAlgorithm(g);
-		Path p = ch.contructPath(previous, 1);
+		Path p = ch.contructPath(previous,null, 1, true);
 		assertEquals(p.toString(), "[4->3->2->1]");
 	}
 	
@@ -442,7 +442,7 @@ public class CHAlgorithmTest extends SPTestBase {
 		previous.put(0L,-1L);
 		
 		CHAlgorithm ch = new CHAlgorithm(g);
-		Path p = ch.contructPath(previous, 4);
+		Path p = ch.contructPath(previous, null, 4, true);
 		assertEquals(p.toString(), "[0->1->2->3->4]");
 	}
 

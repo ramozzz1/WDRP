@@ -288,24 +288,7 @@ public class TransitNodeRoutingAlgorithm extends AbstractRoutingAlgorithm<Arc> {
 
 	@Override
 	public Path extractPath(long targetId) {
-		if(!usedDijkstra) {
-			//contruct path from the source to the minimum source access node
-			Path sourcePath = contructPath(this.ppSource, this.minSourceAccessNode);
-			
-			//contruct path from the minimum source access node to the minimum target access node
-			Path accessPath = contructPath(this.ppAccess, this.minTargetAccessNode);
-			
-			//contruct path from the minimum target access node to the target
-			Path targetPath = contructPath(this.ppTarget, targetId);
-			
-			sourcePath.connect(accessPath);
-			sourcePath.connect(targetPath);
-			
-			return sourcePath;
-		}
-		else {
-			return dijkstra.extractPath(targetId);
-		}
+		return null;
 	}
 
 	@Override

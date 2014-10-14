@@ -131,11 +131,11 @@ public class TDDijkstraAlgorithm extends DijkstraAlgorithm<TDArc> implements Tim
 	}
 	
 	@Override
-	public Path contructPath(Map<Long,Long> previous, long target, boolean convertShortcuts) {
+	public Path contructPath(Map<Long,Long> previous, Map<Long,Integer> f, long target, boolean convertShortcuts) {
 		Integer cost = f.get(target);
 		if(cost==null || cost == Integer.MAX_VALUE)
 			return new Path();
-		return super.contructPath(p, target, convertShortcuts);
+		return super.contructPath(p, f, target, convertShortcuts);
 	}
 	
 	@Override

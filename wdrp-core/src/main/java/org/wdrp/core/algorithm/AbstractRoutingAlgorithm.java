@@ -11,6 +11,8 @@ import java.util.Set;
 import org.wdrp.core.model.Arc;
 import org.wdrp.core.model.Graph;
 import org.wdrp.core.model.Path;
+import org.wdrp.core.model.TDArc;
+import org.wdrp.core.model.TDGraph;
 
 public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 	public Graph<K> graph;
@@ -63,43 +65,63 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 	/**
 	 * Construct path from nodeId to the first element of previous (i.e) the one that was inserted the first (source)
 	 * Note: shortcut edges are transformed into "real" edges if convertShortcut is set to true
-	 * @param previous
+	 * @param p
 	 * @param target
 	 * @param convertShortcuts true if we need to convert shortcuts to real edges
 	 * @return
 	 */
-	public Path contructPath(Map<Long,Long> previous, long target, boolean convertShortcuts) {
-		Path p = new Path();
+	public Path contructPath(Map<Long,Long> p, Map<Long,Integer> f, long target, boolean convertShortcuts) {
+		Path path = new Path();
 		
 		long currNode = target;
-		if(previous.containsKey(currNode)) {
+		if(p.containsKey(currNode)) {
 			do {				
-				long prevNode = previous.get(currNode);
-				Arc a = graph.getArc(prevNode, currNode);
-				//System.out.println("arc: " + a);
+				Integer costToCurr = f.get(currNode);
+				long prevNode = p.get(currNode);
+				System.out.println("curr:"+prevNode);
+				System.out.println("prev:"+prevNode);
+				List<K> arcs = graph.getArcs(prevNode, currNode);
+				K a = null;
+				if(!arcs.isEmpty()) {
+					for (K k : arcs) {
+						Integer costToPrev = f.get(prevNode);
+						if(costToPrev!=null) {
+							System.out.println(f);
+							int arcCost = k.getCost();
+							if(k instanceof TDArc) {
+								int index = (int) Math.floor((float) costToPrev/((TDGraph)graph).getInterval());
+								if(index>=((TDArc)k).getCosts().length)
+									index = ((TDArc)k).getCosts().length-1;
+								arcCost = ((TDArc) k).getCostForTime(index);
+							}
+							System.out.println("arcCost: " + arcCost + " costToPrev: "+costToPrev + " costToCurr: "+costToCurr);
+							if(arcCost+costToPrev == costToCurr) {
+								a = k;
+								break;
+							}
+						}
+					}
+				}
+				
+				System.out.println("arc: " + a);
 				if(convertShortcuts && (a != null && a.isShortcut()))
-					convertShortcutArcToPath(a, prevNode, currNode, p);
+					convertShortcutArcToPath(a, prevNode, currNode, path);
 				else
-					p.addNode(graph.getNode(currNode), a);
-				//System.out.println("path: " + p);
+					path.addNode(graph.getNode(currNode), a);
+				System.out.println("path: " + path);
 				currNode = prevNode;
 			} while(currNode != NULL_NODE);
 		}
 		
-		return p;
+		return path;
 	}
 	
-	//wrapper method
-	public Path contructPath(Map<Long,Long> previous, long target) {
-		return contructPath(previous, target, true);
-	}
-	
-	protected void convertShortcutArcToPath(Arc a,long fromNode, long toNode, Path p) {
+	protected void convertShortcutArcToPath(K a,long fromNode, long toNode, Path p) {
 		if(a != null && a.isShortcut()) {
 			long shortcutNode = a.getShortcutNode();
 			
 			//replace the shortcut by adding edge from the shortcut node to the current node
-			Arc arcSHFrom = graph.getArc(shortcutNode, toNode);
+			K arcSHFrom = graph.getArc(shortcutNode, toNode);
 			if(!arcSHFrom.isShortcut())
 				p.addNode(graph.getNode(shortcutNode), arcSHFrom);
 			else {
@@ -107,7 +129,7 @@ public abstract class AbstractRoutingAlgorithm<K extends Arc> {
 			}
 			
 			//replace the shortcut by adding edge from the previous node to the shortcut node
-			Arc arcSHTo = graph.getArc(fromNode, shortcutNode);
+			K arcSHTo = graph.getArc(fromNode, shortcutNode);
 			if(!arcSHTo.isShortcut())
 				p.addNode(graph.getNode(fromNode), arcSHTo);
 			else {
